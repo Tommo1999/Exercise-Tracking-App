@@ -1,18 +1,123 @@
-<!DOCTYPE  html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Built with jdoodle.ai - Track your workouts, exercises, sets, reps, and weights with this comprehensive fitness tracking app." />
+    <meta name="description" content="Track your workouts, exercises, sets, reps, and weights with this comprehensive fitness tracking app." />
     <meta property="og:title" content="FitTrack - Exercise Tracking App" />
-    <meta property="og:description" content="Built with jdoodle.ai - Track your workouts, exercises, sets, reps, and weights with this comprehensive fitness tracking app." />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?ixid=M3w3MjUzNDh8MHwxfHNlYXJjaHwxfHxmaXRuZXNzJTIwd29ya291dCUyMGd5bSUyMGV4ZXJjaXNlJTIwdHJhY2tpbmd8ZW58MHx8fHwxNzQ0NzEyMTI3fDA&ixlib=rb-4.0.3&fit=fillmax&h=600&w=800" />
+    <meta property="og:description" content="Track your workouts, exercises, sets, reps, and weights with this comprehensive fitness tracking app." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1506784360-0134236a4be1?crop=entropy&cs=tinysrgb&fit=max&ixid=M3w3MjUzNDh8MHwxfHNlYXJjaHwxfHxmaXRuZXNzJTIwd29ya291dCUyMGd5bSUyMGV4ZXJjaXNlJTIwdHJhY2tpbmd8ZW58MHx8fHwxNzQ0NzEyMTI3fDA&ixlib=rb-4.0.3&fit=fillmax&h=600&w=800" />
     <title>FitTrack - Exercise Tracking App</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1hY3Rpdml0eSI+PHBhdGggZD0iTTIyIDEyaC00bC0zIDlMOSAzLTMgOWgtNCIvPjwvc3ZnPg==" />
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1hY3Rpdml0eSI+PHBhdGggZD0iTTIyIDEyaC00bC0zIDlMOSAzLTMgOWgtNCIvPjwvc3ZnPg==" />
+    <style>
+      /* Basic Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f7f8f9;
+        color: #333;
+        line-height: 1.6;
+        padding: 50px 20px;
+      }
+
+      h1 {
+        font-size: 3rem;
+        color: #2c3e50;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        color: #7f8c8d;
+        margin-bottom: 30px;
+      }
+
+      /* Container for Home Page */
+      .home-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 40px 20px;
+      }
+
+      /* Image Section */
+      .home-container img {
+        width: 100%;
+        max-width: 600px;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Buttons Styling */
+      .button {
+        display: inline-block;
+        padding: 15px 40px;
+        margin: 10px;
+        background-color: #27ae60;
+        color: white;
+        font-size: 1.1rem;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .button:hover {
+        background-color: #2ecc71;
+      }
+
+      .button:active {
+        background-color: #16a085;
+      }
+
+      /* Footer Section */
+      .footer {
+        margin-top: 40px;
+        color: #7f8c8d;
+      }
+
+      .footer a {
+        color: #27ae60;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
   </head>
+
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="home-container">
+      <!-- Header Section -->
+      <h1>Welcome to FitTrack</h1>
+      <h2>Track your workouts, exercises, sets, reps, and weights with this comprehensive fitness tracking app.</h2>
+
+      <!-- Fitness Image Section -->
+      <img src="https://images.unsplash.com/photo-1506784360-0134236a4be1?crop=entropy&cs=tinysrgb&fit=max&ixid=M3w3MjUzNDh8MHwxfHNlYXJjaHwxfHxmaXRuZXNzJTIwd29ya291dCUyMGd5bSUyMGV4ZXJjaXNlJTIwdHJhY2tpbmd8ZW58MHx8fHwxNzQ0NzEyMTI3fDA&ixlib=rb-4.0.3&fit=fillmax&h=600&w=800" alt="Fitness Weights" />
+
+      <!-- Action Buttons for Sign Up and Log In -->
+      <div>
+        <a href="/signup" class="button">Sign Up</a>
+        <a href="/login" class="button">Login</a>
+      </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+      <p>
+        &copy; 2025 FitTrack - All Rights Reserved. 
+        <br />
+        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+      </p>
+    </div>
   </body>
 </html>
+
  

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Sign up for FitTrack, the comprehensive fitness tracking app!" />
+    <meta property="og:title" content="FitTrack - Sign Up" />
+    <meta property="og:description" content="Sign up for FitTrack and start tracking your workouts today!" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1592425346166-5a429f568de3?crop=entropy&cs=tinysrgb&fit=max&ixid=M3w3MjUzNDh8MHwxfHNlYXJjaHwxfHxmaXRuZXNzJTIwd29ya291dCUyMGd5bSUyMGV4ZXJjaXNlJTIwdHJhY2tpbmd8ZW58MHx8fHwxNzQ0NzEyMTI3fDA&ixlib=rb-4.0.3&fit=fillmax&h=600&w=800" />
+    <title>FitTrack - Sign Up</title>
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1hY3Rpdml0eSI+PHBhdGggZD0iTTIyIDEyaC00bC0zIDlMOSAzLTMgOWgtNCIvPjwvc3ZnPg==" />
+    <style>
+      /* Basic Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f7f8f9;
+        color: #333;
+        line-height: 1.6;
+        padding: 50px 20px;
+      }
+
+      h1 {
+        font-size: 3rem;
+        color: #2c3e50;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        color: #7f8c8d;
+        margin-bottom: 30px;
+      }
+
+      /* Container for SignUp Page */
+      .signup-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+
+      .signup-container input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+
+      .signup-container button {
+        width: 100%;
+        padding: 15px;
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        font-size: 1.1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .signup-container button:hover {
+        background-color: #2ecc71;
+      }
+
+      .signup-container button:active {
+        background-color: #16a085;
+      }
+
+      /* Error Messages */
+      .error {
+        color: red;
+        font-size: 1rem;
+        margin: 10px 0;
+      }
+
+      /* Footer Section */
+      .footer {
+        margin-top: 30px;
+        text-align: center;
+        color: #7f8c8d;
+      }
+
+      .footer a {
+        color: #27ae60;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Background image for signup page */
+      .background-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('https://images.unsplash.com/photo-1592425346166-5a429f568de3?crop=entropy&cs=tinysrgb&fit=max&ixid=M3w3MjUzNDh8MHwxfHNlYXJjaHwxfHxmaXRuZXNzJTIwd29ya291dCUyMGd5bSUyMGV4ZXJjaXNlJTIwdHJhY2tpbmd8ZW58MHx8fHwxNzQ0NzEyMTI3fDA&ixlib=rb-4.0.3&fit=fillmax&h=600&w=800');
+        background-size: cover;
+        background-position: center;
+        z-index: -1;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Background Image -->
+    <div class="background-image"></div>
+
+    <div class="signup-container">
+      <!-- Header Section -->
+      <h1>Create an Account</h1>
+      <h2>Sign up to start tracking your workouts</h2>
+
+      <!-- Signup Form -->
+      <form action="/signup" method="POST">
+        <input type="text" id="username" name="username" placeholder="Username" required />
+        <input type="email" id="email" name="email" placeholder="Email" required />
+        <input type="password" id="password" name="password" placeholder="Password" required />
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
+        
+        <!-- Error message display -->
+        <div id="errorMessage" class="error"></div>
+        
+        <button type="submit">Sign Up</button>
+      </form>
+
+      <p>Already have an account? <a href="/login">Login here</a></p>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+      <p>&copy; 2025 FitTrack - All Rights Reserved.</p>
+    </div>
+
+    <script>
+      // Signup form validation script
+      const form = document.querySelector("form");
+      const errorMessageDiv = document.getElementById("errorMessage");
+
+      form.addEventListener("submit", function (e) {
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        
+        // Basic validation to check if passwords match
+        if (password !== confirmPassword) {
+          e.preventDefault(); // Stop form submission
+          errorMessageDiv.textContent = "Passwords do not match!";
+        }
+      });
+    </script>
+  </body>
+</html>

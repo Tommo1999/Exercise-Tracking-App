@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your external CSS file -->
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome, [Username]!</h1>
+            <p>Track your fitness progress and goals</p>
+        </div>
+
+        <div class="dashboard-section">
+            <!-- Recent Workouts Card -->
+            <div class="card">
+                <h2>Recent Workouts</h2>
+                <p>Here are your last 5 workouts:</p>
+                <ul id="recent-workouts-list">
+                    <!-- Dynamically populate this list -->
+                </ul>
+                <button class="btn" id="add-workout-btn">Add New Workout</button>
+            </div>
+
+            <!-- Workout Progress Card -->
+            <div class="card">
+                <h2>Your Progress</h2>
+                <p>View your overall progress:</p>
+                <div id="progress-chart">
+                    <p>Graph showing total weight lifted over time</p>
+                </div>
+                <button class="btn" onclick="window.location.href='/workout-progress';">View Full Progress</button>
+            </div>
+        </div>
+
+        <div class="dashboard-section">
+            <!-- Profile Settings Card -->
+            <div class="card">
+                <h2>Profile Settings</h2>
+                <p>Manage your account settings:</p>
+                <button class="btn" onclick="window.location.href='/profile-settings';">Edit Profile</button>
+            </div>
+
+            <!-- Download Workouts Card -->
+            <div class="card">
+                <h2>Download Workouts</h2>
+                <p>Export your workout data:</p>
+                <button class="btn" onclick="window.location.href='/download-workout/[username]';">Download Data</button>
+            </div>
+        </div>
+
+        <!-- Add Exercise Section -->
+        <div class="dashboard-section">
+            <div class="card">
+                <h2>Quick Exercise Input</h2>
+                <p>Add a quick exercise:</p>
+                <button class="btn" id="add-exercise-btn">Add New Exercise</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="btn logout" onclick="window.location.href='/logout';">Logout</button>
+        </div>
+    </div>
+
+    <!-- Link to your external JavaScript file -->
+    <script src="dashboard.js"></script>
+</body>
+</html>
+
