@@ -50,8 +50,8 @@ MongoClient.connect(MONGO_URI)
     });
 
     // Serve the Forgot Password page
-    app.get('/forgot-password', (req, res) => {
-      res.sendFile(path.join(__dirname, 'forgot-password.html'));
+    app.get('/forgot password', (req, res) => {
+      res.sendFile(path.join(__dirname, 'forgot password.html'));
     });
 
     // Serve dashboard page (after login)
@@ -61,7 +61,7 @@ MongoClient.connect(MONGO_URI)
     });
 
     // Forgot Password Route
-    app.post('/forgot-password', async (req, res) => {
+    app.post('/forgot password', async (req, res) => {
       const { usernameOrEmail } = req.body;
 
       const user = await usersCollection.findOne({
