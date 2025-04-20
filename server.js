@@ -27,6 +27,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// MongoDB connection and server setup
 MongoClient.connect(MONGO_URI)
   .then((client) => {
     const db = client.db('ExerciseTrackerApp_db');
@@ -58,15 +59,6 @@ MongoClient.connect(MONGO_URI)
       // For now, just render the dashboard page
       res.sendFile(path.join(__dirname, 'dashboard.html'));
     });
-
-    // Start the server
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error('Error connecting to the database:', error);
-  });
 
     // Forgot Password Route
     app.post('/forgot-password', async (req, res) => {
@@ -326,12 +318,12 @@ MongoClient.connect(MONGO_URI)
 
       res.status(200).json({ message: 'Workout data uploaded successfully!' });
     });
-
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
   })
   .catch((err) => {
     console.error('Failed to connect to MongoDB', err);
   });
 
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
