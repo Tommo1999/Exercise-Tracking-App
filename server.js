@@ -17,6 +17,9 @@ app.use(bodyParser.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Serve static HTML files directly
+app.use(express.static(path.join(__dirname)));
+
+//set up mongo connection in heroku
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 const transporter = nodemailer.createTransport({
@@ -50,8 +53,8 @@ MongoClient.connect(MONGO_URI)
     });
 
     // Serve the Forgot Password page
-    app.get('/forgot password', (req, res) => {
-      res.sendFile(path.join(__dirname, 'forgot password.html'));
+    app.get('/forgot-password', (req, res) => {
+      res.sendFile(path.join(__dirname, 'forgot-password.html'));
     });
 
     // Serve dashboard page (after login)
@@ -61,7 +64,7 @@ MongoClient.connect(MONGO_URI)
     });
 
     // Forgot Password Route
-    app.post('/forgot password', async (req, res) => {
+    app.post('/forgot-password', async (req, res) => {
       const { usernameOrEmail } = req.body;
 
       const user = await usersCollection.findOne({
