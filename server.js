@@ -13,10 +13,10 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Set EJS as the templating engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+// Serve static files from the "images" folder
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
+// Serve static HTML files directly
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 const transporter = nodemailer.createTransport({
@@ -58,6 +58,15 @@ MongoClient.connect(MONGO_URI)
       // For now, just render the dashboard page
       res.sendFile(path.join(__dirname, 'dashboard.html'));
     });
+
+    // Start the server
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Error connecting to the database:', error);
+  });
 
     // Forgot Password Route
     app.post('/forgot-password', async (req, res) => {
