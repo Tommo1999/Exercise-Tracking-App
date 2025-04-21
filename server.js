@@ -33,9 +33,9 @@ const transporter = nodemailer.createTransport({
 // MongoDB connection and server setup
 MongoClient.connect(MONGO_URI)
   .then((client) => {
-    const db = client.db('ExerciseTrackerApp_db');
-    const usersCollection = db.collection('Users');
-    const workoutsCollection = db.collection('Workouts'); // General workouts collection
+    const db = client.db('excersise-tracker-app'); // Corrected database name here
+    const usersCollection = db.collection('Users'); // Users collection
+    const workoutsCollection = db.collection('Workout Data'); // Workout Data collection
 
     // Serve the home page
     app.get('/', (req, res) => {
@@ -200,10 +200,10 @@ MongoClient.connect(MONGO_URI)
         return res.status(400).json({ message: 'Cardio must be a number (duration in minutes) or a string (type of cardio).' });
       }
 
-      const userWorkoutCollection = db.collection(username.toLowerCase());
-
+      // Store workout data in the "Workout Data" collection
       try {
-        await userWorkoutCollection.insertOne({
+        await workoutsCollection.insertOne({
+          username,
           workoutType,
           exercise,
           reps: Number(reps),
@@ -229,3 +229,4 @@ MongoClient.connect(MONGO_URI)
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
