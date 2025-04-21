@@ -30,9 +30,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Use file upload middleware
-app.use(fileUpload());
-
 // MongoDB connection and server setup
 MongoClient.connect(MONGO_URI)
   .then((client) => {
