@@ -1,3 +1,5 @@
+require('dotenv').config(); // Load environment variables from .env file
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
@@ -6,7 +8,6 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // Required for generating password reset tokens
-require('dotenv').config(); // Load environment variables from .env file
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
