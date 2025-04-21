@@ -104,6 +104,63 @@
             background-color: #16a085;
         }
 
+        /* Placeholder when no workouts are added */
+        .no-workouts {
+            color: #bdc3c7;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+
+        /* Add Workout Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal input, .modal textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .modal textarea {
+            height: 120px;
+        }
+
         /* Logout Section */
         .logout-section {
             text-align: center;
@@ -157,47 +214,17 @@
                 <h2>Recent Workouts</h2>
                 <p>Here are your last 5 workouts:</p>
                 <ul id="recent-workouts-list">
-                    <!-- Dynamically populate this list -->
-                    <li>Push-ups - 30 reps</li>
-                    <li>Squats - 50 reps</li>
-                    <li>Deadlifts - 3 sets of 100kg</li>
+                    <!-- Initially, no workouts -->
+                    <li class="no-workouts">No workouts added yet.</li>
                 </ul>
-                <button class="btn" id="add-workout-btn">Add New Workout</button>
+                <button class="btn" id="add-workout-btn">Add Workout</button>
             </div>
 
-            <!-- Workout Progress Card -->
+            <!-- Add Exercise Card -->
             <div class="card">
-                <h2>Your Progress</h2>
-                <p>View your overall progress:</p>
-                <div id="progress-chart">
-                    <p>Graph showing total weight lifted over time</p>
-                </div>
-                <button class="btn" onclick="window.location.href='/workout-progress';">View Full Progress</button>
-            </div>
-        </div>
-
-        <div class="dashboard">
-            <!-- Profile Settings Card -->
-            <div class="card">
-                <h2>Profile Settings</h2>
-                <p>Manage your account settings:</p>
-                <button class="btn" onclick="window.location.href='/profile-settings';">Edit Profile</button>
-            </div>
-
-            <!-- Download Workouts Card -->
-            <div class="card">
-                <h2>Download Workouts</h2>
-                <p>Export your workout data:</p>
-                <button class="btn" onclick="window.location.href='/download-workout/TommoFett99';">Download Data</button>
-            </div>
-        </div>
-
-        <!-- Quick Exercise Input Section -->
-        <div class="dashboard">
-            <div class="card">
-                <h2>Quick Exercise Input</h2>
-                <p>Add a quick exercise:</p>
-                <button class="btn" id="add-exercise-btn">Add New Exercise</button>
+                <h2>Add Exercise</h2>
+                <p>Log a new exercise with details like weights, reps, and cardio.</p>
+                <button class="btn" id="add-exercise-btn">Add Exercise</button>
             </div>
         </div>
 
@@ -206,8 +233,111 @@
         </div>
     </div>
 
-    <script src="dashboard.js"></script> <!-- Link to your external JavaScript file -->
+    <!-- Modal for Adding Workout -->
+    <div id="addWorkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Workout</h2>
+            <form id="add-workout-form">
+                <input type="text" id="workout-name" placeholder="Workout Name" required />
+                <textarea id="workout-description" placeholder="Workout Description" required></textarea>
+                <input type="number" id="workout-duration" placeholder="Duration (min)" required />
+                <input type="number" id="workout-calories" placeholder="Calories Burned" required />
+                <button type="submit" class="btn">Save Workout</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Exercise -->
+    <div id="addExerciseModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add Exercise</h2>
+            <form id="add-exercise-form">
+                <input type="text" id="exercise-name" placeholder="Exercise Name" required />
+                <textarea id="exercise-description" placeholder="Exercise Description" required></textarea>
+                <input type="number" id="exercise-weights" placeholder="Weight (kg)" />
+                <input type="number" id="exercise-reps" placeholder="Reps" />
+                <input type="number" id="exercise-cardio" placeholder="Cardio (min)" />
+                <input type="date" id="exercise-date" placeholder="Date" required />
+                <button type="submit" class="btn">Save Exercise</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal Functionality for Add Workout
+        const addWorkoutBtn = document.getElementById("add-workout-btn");
+        const addWorkoutModal = document.getElementById("addWorkoutModal");
+        const closeWorkoutModal = addWorkoutModal.querySelector(".close");
+
+        addWorkoutBtn.onclick = function() {
+            addWorkoutModal.style.display = "block";
+        };
+
+        closeWorkoutModal.onclick = function() {
+            addWorkoutModal.style.display = "none";
+        };
+
+        window.onclick = function(event) {
+            if (event.target == addWorkoutModal) {
+                addWorkoutModal.style.display = "none";
+            }
+        };
+
+        // Modal Functionality for Add Exercise
+        const addExerciseBtn = document.getElementById("add-exercise-btn");
+        const addExerciseModal = document.getElementById("addExerciseModal");
+        const closeExerciseModal = addExerciseModal.querySelector(".close");
+
+        addExerciseBtn.onclick = function() {
+            addExerciseModal.style.display = "block";
+        };
+
+        closeExerciseModal.onclick = function() {
+            addExerciseModal.style.display = "none";
+        };
+
+        window.onclick = function(event) {
+            if (event.target == addExerciseModal) {
+                addExerciseModal.style.display = "none";
+            }
+        };
+
+        // Handling Form Submission for Exercise
+        const addExerciseForm = document.getElementById("add-exercise-form");
+        addExerciseForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const exerciseName = document.getElementById("exercise-name").value;
+            const exerciseDescription = document.getElementById("exercise-description").value;
+            const weights = document.getElementById("exercise-weights").value;
+            const reps = document.getElementById("exercise-reps").value;
+            const cardio = document.getElementById("exercise-cardio").value;
+            const date = document.getElementById("exercise-date").value;
+
+            // You can handle the data here or store it in a database
+            alert(`Exercise Added: ${exerciseName}, Description: ${exerciseDescription}, Weights: ${weights}kg, Reps: ${reps}, Cardio: ${cardio}min, Date: ${date}`);
+            addExerciseModal.style.display = "none";
+        });
+
+        // Handling Workout Form Submission
+        const addWorkoutForm = document.getElementById("add-workout-form");
+        addWorkoutForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const workoutName = document.getElementById("workout-name").value;
+            const workoutDescription = document.getElementById("workout-description").value;
+            const duration = document.getElementById("workout-duration").value;
+            const calories = document.getElementById("workout-calories").value;
+
+            // You can handle the data here or store it in a database
+            alert(`Workout Added: ${workoutName}, Description: ${workoutDescription}, Duration: ${duration}min, Calories: ${calories}`);
+            addWorkoutModal.style.display = "none";
+        });
+    </script>
 </body>
 </html>
+
 
 
