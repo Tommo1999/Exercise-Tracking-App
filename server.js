@@ -3,11 +3,6 @@ require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
-require('dotenv').config(); // Load environment variables from .env file
-
-const express = require('express');
-const bodyParser = require('body-parser');
-const { MongoClient } = require('mongodb');
 const ExcelJS = require('exceljs');
 const bcrypt = require('bcryptjs');
 const path = require('path');
