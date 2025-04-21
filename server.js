@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // Required for generating password reset tokens
+const fileUpload = require('express-fileupload'); // Added for handling file uploads
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -29,6 +30,9 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD,
   },
 });
+
+// Use file upload middleware
+app.use(fileUpload());
 
 // MongoDB connection and server setup
 MongoClient.connect(MONGO_URI)
@@ -62,16 +66,6 @@ MongoClient.connect(MONGO_URI)
       res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
     });
 
-    // Error handler for unmatched routes
-    app.use((req, res) => {
-      res.status(404).send('Page Not Found');
-    });
-
-  })
-  .catch((err) => {
-    console.error('Failed to connect to MongoDB:', err);
-  });
-
     // Forgot Password Route
     app.post('/forgot-password', async (req, res) => {
       const { usernameOrEmail } = req.body;
@@ -81,7 +75,7 @@ MongoClient.connect(MONGO_URI)
       });
 
       if (!user) {
-        return res.send('User not found');
+        return res.status(404).json({ message: 'User not found' });
       }
 
       const resetToken = crypto.randomBytes(20).toString('hex');
@@ -108,10 +102,15 @@ MongoClient.connect(MONGO_URI)
         }
       });
 
-      res.send('Password reset link has been sent');
+      res.status(200).json({ message: 'Password reset link has been sent' });
     });
 
     // Reset Password Route (This should be a form where the user can input their new password)
+    app.get('/reset-password/:token', (req, res) => {
+      const { token } = req.params;
+      res.sendFile(path.join(__dirname, 'views', 'reset-password.html', token));
+    });
+
     app.post('/reset-password/:token', async (req, res) => {
       const { token } = req.params;
       const { password } = req.body;
@@ -122,7 +121,7 @@ MongoClient.connect(MONGO_URI)
       });
 
       if (!user) {
-        return res.send('Token is invalid or expired');
+        return res.status(400).json({ message: 'Token is invalid or expired' });
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
@@ -131,7 +130,7 @@ MongoClient.connect(MONGO_URI)
         { $set: { password: hashedPassword, resetToken: null, resetTokenExpiration: null } }
       );
 
-      res.send('Your password has been reset');
+      res.status(200).json({ message: 'Your password has been reset' });
     });
 
     // Signup Logic
@@ -141,7 +140,7 @@ MongoClient.connect(MONGO_URI)
 
         // Ensure all fields are provided
         if (!username || !email || !password) {
-          return res.status(400).send('All fields are required.');
+          return res.status(400).json({ message: 'All fields are required.' });
         }
 
         // Hash the password
@@ -152,7 +151,7 @@ MongoClient.connect(MONGO_URI)
           $or: [{ email: email.toLowerCase() }, { username: username.toLowerCase() }],
         });
         if (existingUser) {
-          return res.status(400).send('Username or email already in use.');
+          return res.status(400).json({ message: 'Username or email already in use.' });
         }
 
         // Insert new user data into the 'Users' collection
@@ -162,10 +161,10 @@ MongoClient.connect(MONGO_URI)
           password: hashedPassword,
         });
 
-        res.status(200).send('User registered successfully!');
+        res.status(200).json({ message: 'User registered successfully!' });
       } catch (error) {
         console.error('Error signing up user:', error);
-        res.status(500).send('Error signing up. Please try again.');
+        res.status(500).json({ message: 'Error signing up. Please try again.' });
       }
     });
 
@@ -180,19 +179,19 @@ MongoClient.connect(MONGO_URI)
         });
 
         if (!user) {
-          return res.status(401).send('Invalid username or email.');
+          return res.status(401).json({ message: 'Invalid username or email.' });
         }
 
         // Check if password matches
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
-          return res.status(401).send('Invalid password.');
+          return res.status(401).json({ message: 'Invalid password.' });
         }
 
-        res.status(200).send('User logged in successfully!');
+        res.status(200).json({ message: 'User logged in successfully!' });
       } catch (error) {
         console.error('Error logging in user:', error);
-        res.status(500).send('Error logging in. Please try again.');
+        res.status(500).json({ message: 'Error logging in. Please try again.' });
       }
     });
 
@@ -313,29 +312,57 @@ MongoClient.connect(MONGO_URI)
         res.end();
       } catch (error) {
         console.error('Error downloading workout data:', error);
-        res.status(500).send('Error downloading workout data.');
+        res.status(500).json({ message: 'Error generating workout file. Please try again.' });
       }
     });
 
-    // Upload Workout Data (assuming CSV for simplicity)
-    app.post('/upload-workout/:username', (req, res) => {
+    // Upload workout data from Excel file
+    app.post('/upload-workout/:username', async (req, res) => {
       const { username } = req.params;
-      const file = req.files.file; // Assuming using something like `express-fileupload`
 
-      if (!file) {
+      // Ensure a file is provided
+      if (!req.files || !req.files.file) {
         return res.status(400).json({ message: 'No file uploaded.' });
       }
 
-      // You can add CSV parsing logic here and store the workout data into MongoDB
+      // Read the uploaded file
+      const file = req.files.file;
+      const workbook = new ExcelJS.Workbook();
 
-      res.status(200).json({ message: 'Workout data uploaded successfully!' });
+      try {
+        await workbook.xlsx.load(file.data);
+        const worksheet = workbook.getWorksheet(1); // Get the first worksheet
+        const rows = worksheet.getRows(2, worksheet.rowCount); // Get all rows except headers
+
+        const userWorkoutCollection = db.collection(username.toLowerCase());
+
+        rows.forEach(row => {
+          const workoutData = {
+            date: row.getCell(1).value,
+            workoutType: row.getCell(2).value,
+            exercise: row.getCell(3).value,
+            reps: row.getCell(4).value,
+            weights: row.getCell(5).value,
+            cardio: row.getCell(6).value,
+            weightUnit: row.getCell(7).value,
+          };
+
+          // Insert each row of data into the user's specific workout collection
+          userWorkoutCollection.insertOne(workoutData);
+        });
+
+        res.status(200).json({ message: 'Workouts uploaded successfully!' });
+      } catch (error) {
+        console.error('Error uploading workout data:', error);
+        res.status(500).json({ message: 'Error uploading workout file. Please try again.' });
+      }
+    });
+
+    // Start the server inside the MongoDB connection promise
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('Failed to connect to MongoDB', err);
+    console.error('Failed to connect to MongoDB:', err);
   });
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
