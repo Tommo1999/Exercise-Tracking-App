@@ -88,31 +88,31 @@ MongoClient.connect(MONGO_URI)
       }
     });
 
-    // Login Route
-    app.post('/login', async (req, res) => {
-      const { usernameOrEmail, password } = req.body;
+  // Login Route (Updated to return JSON and username)
+app.post('/login', async (req, res) => {
+  const { usernameOrEmail, password } = req.body;
 
-      try {
-        const user = await usersCollection.findOne({
-          $or: [{ email: usernameOrEmail.toLowerCase() }, { username: usernameOrEmail.toLowerCase() }],
-        });
-
-        if (!user) {
-          return res.status(401).send('Invalid username or email.');
-        }
-
-        const isPasswordCorrect = await bcrypt.compare(password, user.password);
-        if (!isPasswordCorrect) {
-          return res.status(401).send('Invalid password.');
-        }
-
-        // Redirect to dashboard after login
-        res.redirect('/dashboard');
-      } catch (error) {
-        console.error('Error logging in user:', error);
-        res.status(500).send('Error logging in. Please try again.');
-      }
+  try {
+    const user = await usersCollection.findOne({
+      $or: [{ email: usernameOrEmail.toLowerCase() }, { username: usernameOrEmail.toLowerCase() }],
     });
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Invalid username or email.' });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ success: false, message: 'Invalid password.' });
+    }
+
+    // Send username to front-end for storage
+    res.status(200).json({ success: true, username: user.username });
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    res.status(500).json({ success: false, message: 'Error logging in. Please try again.' });
+  }
+});
 
     // Forgot Password
     app.post('/forgot-password', async (req, res) => {
