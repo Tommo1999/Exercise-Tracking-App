@@ -37,7 +37,6 @@
         margin-bottom: 30px;
       }
 
-      /* Container for SignUp Page */
       .signup-container {
         max-width: 600px;
         margin: 0 auto;
@@ -76,14 +75,12 @@
         background-color: #16a085;
       }
 
-      /* Error Messages */
       .error {
         color: red;
         font-size: 1rem;
         margin: 10px 0;
       }
 
-      /* Footer Section */
       .footer {
         margin-top: 30px;
         text-align: center;
@@ -100,7 +97,6 @@
         text-decoration: underline;
       }
 
-      /* Background image for signup page */
       .background-image {
         position: absolute;
         top: 0;
@@ -113,6 +109,19 @@
         z-index: -1;
         height: 100%;
         width: 100%;
+      }
+
+      /* Show Password Checkbox */
+      .show-password {
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+        color: #555;
+        margin: 5px 0 15px;
+      }
+
+      .show-password input {
+        margin-right: 8px;
       }
     </style>
   </head>
@@ -132,10 +141,16 @@
         <input type="email" id="email" name="email" placeholder="Email" required />
         <input type="password" id="password" name="password" placeholder="Password" required />
         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
-        
-        <!-- Error message display -->
+
+        <!-- Show Password Option -->
+        <label class="show-password">
+          <input type="checkbox" id="showPassword" />
+          Show Password
+        </label>
+
+        <!-- Error Message Display -->
         <div id="errorMessage" class="error"></div>
-        
+
         <button type="submit">Sign Up</button>
       </form>
 
@@ -148,20 +163,28 @@
     </div>
 
     <script>
-      // Signup form validation script
       const form = document.querySelector("form");
       const errorMessageDiv = document.getElementById("errorMessage");
+      const showPasswordCheckbox = document.getElementById("showPassword");
+      const passwordField = document.getElementById("password");
+      const confirmPasswordField = document.getElementById("confirmPassword");
 
       form.addEventListener("submit", function (e) {
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
-        
-        // Basic validation to check if passwords match
+        const password = passwordField.value;
+        const confirmPassword = confirmPasswordField.value;
+
         if (password !== confirmPassword) {
-          e.preventDefault(); // Stop form submission
+          e.preventDefault();
           errorMessageDiv.textContent = "Passwords do not match!";
         }
+      });
+
+      showPasswordCheckbox.addEventListener("change", function () {
+        const type = showPasswordCheckbox.checked ? "text" : "password";
+        passwordField.type = type;
+        confirmPasswordField.type = type;
       });
     </script>
   </body>
 </html>
+
