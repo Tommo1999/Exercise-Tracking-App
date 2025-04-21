@@ -142,32 +142,61 @@
       window.location.href = "/login"; // Redirect to the login page
     }
 
-    // Placeholder: add workout/exercise button
+    // Open the 'Create Workout' page or show a modal
     document.getElementById("add-workout-btn").addEventListener("click", () => {
-      alert("Workout creation coming soon!");
+      window.location.href = "/create-workout.html"; // Redirect to workout creation page
     });
 
+    // Open the 'Add Exercise' page or show a modal
     document.getElementById("add-exercise-btn").addEventListener("click", () => {
-      alert("Exercise entry coming soon!");
+      window.location.href = "/add-exercise.html"; // Redirect to exercise entry page
     });
 
-    // Placeholder: upload and download
+    // Handle file upload
     document.getElementById("upload-btn").addEventListener("click", () => {
       const fileInput = document.getElementById("upload-input");
       if (fileInput.files.length === 0) {
         alert("Please select a file to upload.");
       } else {
-        alert("Uploading file: " + fileInput.files[0].name);
-        // You’d process this file in your real app
+        const file = fileInput.files[0];
+        alert("Uploading file: " + file.name);
+        // Process the file (e.g., send it to the server)
+        // Example: FormData API can be used to upload the file to your backend
+        const formData = new FormData();
+        formData.append("file", file);
+        
+        // Example of sending the file to the server (uncomment after implementing your backend):
+        // fetch('/upload', {
+        //   method: 'POST',
+        //   body: formData
+        // }).then(response => response.json())
+        //   .then(data => alert('File uploaded successfully!'))
+        //   .catch(error => alert('Error uploading file.'));
       }
     });
 
+    // Handle workout download
     document.getElementById("download-btn").addEventListener("click", () => {
-      alert("Download functionality coming soon!");
-      // You’d generate and download a file in your real app
+      alert("Downloading workouts...");
+      // Here you would generate the file (CSV/Excel) dynamically from your backend
+      // For now, we just simulate a download
+      const workouts = [
+        { date: "2025-04-21", exercise: "Push-ups", sets: 3, reps: 15 },
+        { date: "2025-04-20", exercise: "Squats", sets: 3, reps: 20 },
+      ];
+      
+      // Create CSV file content
+      const csvContent = "Date,Exercise,Sets,Reps\n" +
+        workouts.map(workout => `${workout.date},${workout.exercise},${workout.sets},${workout.reps}`).join("\n");
+
+      // Create a Blob with the CSV content
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "workouts.csv";
+      link.click();
     });
   </script>
 </body>
 </html>
-
 
