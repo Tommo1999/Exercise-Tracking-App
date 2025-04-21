@@ -3,6 +3,11 @@ require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
+require('dotenv').config(); // Load environment variables from .env file
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const { MongoClient } = require('mongodb');
 const ExcelJS = require('exceljs');
 const bcrypt = require('bcryptjs');
 const path = require('path');
@@ -16,10 +21,10 @@ app.use(bodyParser.json());
 // Serve static files from the "images" folder
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-// Serve static HTML files directly
-app.use(express.static(path.join(__dirname)));
+// Serve static files from the 'views' folder
+app.use(express.static(path.join(__dirname, 'views')));
 
-//set up mongo connection in heroku
+// Set up MongoDB connection in Heroku
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 const transporter = nodemailer.createTransport({
@@ -39,29 +44,38 @@ MongoClient.connect(MONGO_URI)
 
     // Serve the home page
     app.get('/', (req, res) => {
-      res.sendFile(path.join(__dirname, 'index.html'));
+      res.sendFile(path.join(__dirname, 'views', 'index.html'));
     });
 
     // Serve the signup page
     app.get('/signup', (req, res) => {
-      res.sendFile(path.join(__dirname, 'signup.html'));
+      res.sendFile(path.join(__dirname, 'views', 'signup.html'));
     });
 
     // Serve the login page
     app.get('/login', (req, res) => {
-      res.sendFile(path.join(__dirname, 'login.html'));
+      res.sendFile(path.join(__dirname, 'views', 'login.html'));
     });
 
     // Serve the Forgot Password page
     app.get('/forgot-password', (req, res) => {
-      res.sendFile(path.join(__dirname, 'forgot-password.html'));
+      res.sendFile(path.join(__dirname, 'views', 'forgot-password.html'));
     });
 
-    // Serve dashboard page (after login)
+    // Serve the dashboard page (after login)
     app.get('/dashboard', (req, res) => {
-      // For now, just render the dashboard page
-      res.sendFile(path.join(__dirname, 'dashboard.html'));
+      res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
     });
+
+    // Error handler for unmatched routes
+    app.use((req, res) => {
+      res.status(404).send('Page Not Found');
+    });
+
+  })
+  .catch((err) => {
+    console.error('Failed to connect to MongoDB:', err);
+  });
 
     // Forgot Password Route
     app.post('/forgot-password', async (req, res) => {
