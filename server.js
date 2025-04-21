@@ -7,16 +7,14 @@ const ExcelJS = require('exceljs');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const crypto = require('crypto'); // Required for generating password reset tokens
+const crypto = require('crypto'); // For password reset tokens
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Serve static files (like images, CSS, JS) from the "images" folder
+// Serve static files (like images, CSS, JS)
 app.use('/images', express.static(path.join(__dirname, 'images')));
-
-// Serve static files for CSS and JS (typically from a "public" folder or similar)
 app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB connection setup
@@ -30,100 +28,34 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// MongoDB connection and server setup
 MongoClient.connect(MONGO_URI)
   .then((client) => {
-    const db = client.db('excersise-tracker-app'); // Corrected database name here
-    const usersCollection = db.collection('Users'); // Users collection
-    const workoutsCollection = db.collection('Workout Data'); // Workout Data collection
+    const db = client.db('excersise-tracker-app');
+    const usersCollection = db.collection('Users');
+    const workoutsCollection = db.collection('Workout Data');
 
-    // Serve the home page
+    // Serve static pages
     app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, 'views', 'index.html'));
     });
 
-    // Serve the signup page
     app.get('/signup', (req, res) => {
       res.sendFile(path.join(__dirname, 'views', 'signup.html'));
     });
 
-    // Serve the login page
     app.get('/login', (req, res) => {
       res.sendFile(path.join(__dirname, 'views', 'login.html'));
     });
 
-    // Serve the Forgot Password page
-    app.get('/forgot-password', (req, res) => {
-      res.sendFile(path.join(__dirname, 'views', 'forgot-password.html'));
-    });
-
-    // Serve the dashboard page (after login)
     app.get('/dashboard', (req, res) => {
       res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
     });
 
-    // Forgot Password Route
-    app.post('/forgot-password', async (req, res) => {
-      const { usernameOrEmail } = req.body;
-      const user = await usersCollection.findOne({
-        $or: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
-      });
-
-      if (!user) {
-        return res.send('User not found');
-      }
-
-      const resetToken = crypto.randomBytes(20).toString('hex');
-      const resetLink = `http://localhost:${PORT}/reset-password/${resetToken}`;
-
-      // Save the reset token in the user's document
-      await usersCollection.updateOne(
-        { _id: user._id },
-        { $set: { resetToken, resetTokenExpiration: Date.now() + 3600000 } } // Token expires in 1 hour
-      );
-
-      const mailOptions = {
-        from: process.env.EMAIL,
-        to: user.email,
-        subject: 'Password Reset',
-        text: `You requested a password reset. Click the link to reset your password: ${resetLink}`,
-      };
-
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('Email sent: ' + info.response);
-        }
-      });
-
-      res.send('Password reset link has been sent');
+    app.get('/forgot-password', (req, res) => {
+      res.sendFile(path.join(__dirname, 'views', 'forgot-password.html'));
     });
 
-    // Reset Password Route
-    app.post('/reset-password/:token', async (req, res) => {
-      const { token } = req.params;
-      const { password } = req.body;
-
-      const user = await usersCollection.findOne({
-        resetToken: token,
-        resetTokenExpiration: { $gt: Date.now() },
-      });
-
-      if (!user) {
-        return res.send('Token is invalid or expired');
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 12);
-      await usersCollection.updateOne(
-        { _id: user._id },
-        { $set: { password: hashedPassword, resetToken: null, resetTokenExpiration: null } }
-      );
-
-      res.send('Your password has been reset');
-    });
-
-    // Signup Logic
+    // Signup Route
     app.post('/signup', async (req, res) => {
       try {
         const { username, email, password } = req.body;
@@ -148,14 +80,15 @@ MongoClient.connect(MONGO_URI)
           password: hashedPassword,
         });
 
-        res.status(200).send('User registered successfully!');
+        // Redirect to login after signup
+        res.redirect('/login');
       } catch (error) {
         console.error('Error signing up user:', error);
         res.status(500).send('Error signing up. Please try again.');
       }
     });
 
-    // Login Logic
+    // Login Route
     app.post('/login', async (req, res) => {
       const { usernameOrEmail, password } = req.body;
 
@@ -173,14 +106,76 @@ MongoClient.connect(MONGO_URI)
           return res.status(401).send('Invalid password.');
         }
 
-        res.status(200).send('User logged in successfully!');
+        // Redirect to dashboard after login
+        res.redirect('/dashboard');
       } catch (error) {
         console.error('Error logging in user:', error);
         res.status(500).send('Error logging in. Please try again.');
       }
     });
 
-    // Add Workout Logic
+    // Forgot Password
+    app.post('/forgot-password', async (req, res) => {
+      const { usernameOrEmail } = req.body;
+
+      const user = await usersCollection.findOne({
+        $or: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
+      });
+
+      if (!user) {
+        return res.send('User not found');
+      }
+
+      const resetToken = crypto.randomBytes(20).toString('hex');
+      const resetLink = `http://localhost:${PORT}/reset-password/${resetToken}`;
+
+      await usersCollection.updateOne(
+        { _id: user._id },
+        { $set: { resetToken, resetTokenExpiration: Date.now() + 3600000 } } // 1 hour
+      );
+
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: user.email,
+        subject: 'Password Reset',
+        text: `You requested a password reset. Click the link to reset your password: ${resetLink}`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+
+      res.send('Password reset link has been sent');
+    });
+
+    // Reset Password
+    app.post('/reset-password/:token', async (req, res) => {
+      const { token } = req.params;
+      const { password } = req.body;
+
+      const user = await usersCollection.findOne({
+        resetToken: token,
+        resetTokenExpiration: { $gt: Date.now() },
+      });
+
+      if (!user) {
+        return res.send('Token is invalid or expired');
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 12);
+      await usersCollection.updateOne(
+        { _id: user._id },
+        { $set: { password: hashedPassword, resetToken: null, resetTokenExpiration: null } }
+      );
+
+      res.send('Your password has been reset');
+    });
+
+    // Add Workout Route
     app.post('/add-workout', async (req, res) => {
       const { username, workoutType, exercise, reps, weights, cardio, date, weightUnit } = req.body;
 
@@ -196,11 +191,6 @@ MongoClient.connect(MONGO_URI)
         return res.status(400).json({ message: 'Weight unit must be either "kg" or "lbs".' });
       }
 
-      if (isNaN(cardio) && typeof cardio !== 'string') {
-        return res.status(400).json({ message: 'Cardio must be a number (duration in minutes) or a string (type of cardio).' });
-      }
-
-      // Store workout data in the "Workout Data" collection
       try {
         await workoutsCollection.insertOne({
           username,
@@ -208,7 +198,7 @@ MongoClient.connect(MONGO_URI)
           exercise,
           reps: Number(reps),
           weights: Number(weights),
-          cardio: cardio,
+          cardio,
           date,
           weightUnit,
         });
@@ -219,7 +209,6 @@ MongoClient.connect(MONGO_URI)
         res.status(500).json({ message: 'Error adding workout data. Please try again.' });
       }
     });
-
   })
   .catch((err) => {
     console.error('Failed to connect to MongoDB', err);

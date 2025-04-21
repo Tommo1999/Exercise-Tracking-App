@@ -111,17 +111,26 @@
         width: 100%;
       }
 
-      /* Show Password Checkbox */
-      .show-password {
-        display: flex;
-        align-items: center;
-        font-size: 0.95rem;
-        color: #555;
-        margin: 5px 0 15px;
+      /* Eye Icon (Placed to the right of password fields) */
+      .eye-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #27ae60;
       }
 
-      .show-password input {
-        margin-right: 8px;
+      /* Container for password field with eye icon */
+      .password-container {
+        position: relative;
+        margin-bottom: 15px;
+      }
+
+      /* Styling for password container */
+      .password-container input {
+        padding-right: 30px; /* Adjusted padding to make room for the eye icon */
       }
     </style>
   </head>
@@ -139,14 +148,18 @@
       <form action="/signup" method="POST">
         <input type="text" id="username" name="username" placeholder="Username" required />
         <input type="email" id="email" name="email" placeholder="Email" required />
-        <input type="password" id="password" name="password" placeholder="Password" required />
-        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
+        
+        <!-- Password Field with Eye Icon on the Right -->
+        <div class="password-container">
+          <input type="password" id="password" name="password" placeholder="Password" required />
+          <span class="eye-icon" id="togglePassword" onclick="togglePassword()">👁️</span>
+        </div>
 
-        <!-- Show Password Option -->
-        <label class="show-password">
-          <input type="checkbox" id="showPassword" />
-          Show Password
-        </label>
+        <!-- Confirm Password Field with Eye Icon on the Right -->
+        <div class="password-container">
+          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
+          <span class="eye-icon" id="toggleConfirmPassword" onclick="toggleConfirmPassword()">👁️</span>
+        </div>
 
         <!-- Error Message Display -->
         <div id="errorMessage" class="error"></div>
@@ -165,7 +178,6 @@
     <script>
       const form = document.querySelector("form");
       const errorMessageDiv = document.getElementById("errorMessage");
-      const showPasswordCheckbox = document.getElementById("showPassword");
       const passwordField = document.getElementById("password");
       const confirmPasswordField = document.getElementById("confirmPassword");
 
@@ -179,12 +191,21 @@
         }
       });
 
-      showPasswordCheckbox.addEventListener("change", function () {
-        const type = showPasswordCheckbox.checked ? "text" : "password";
+      // Toggle Password Visibility
+      function togglePassword() {
+        const passwordField = document.getElementById("password");
+        const type = passwordField.type === "password" ? "text" : "password";
         passwordField.type = type;
+      }
+
+      // Toggle Confirm Password Visibility
+      function toggleConfirmPassword() {
+        const confirmPasswordField = document.getElementById("confirmPassword");
+        const type = confirmPasswordField.type === "password" ? "text" : "password";
         confirmPasswordField.type = type;
-      });
+      }
     </script>
   </body>
 </html>
+
 
