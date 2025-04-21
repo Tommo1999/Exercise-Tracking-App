@@ -8,7 +8,6 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // Required for generating password reset tokens
-const fileUpload = require('express-fileupload'); // Added for handling file uploads
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
