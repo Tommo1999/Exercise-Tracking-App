@@ -110,7 +110,7 @@
       margin-bottom: 20px;
     }
 
-    .modal input, .modal textarea {
+    .modal input, .modal textarea, .modal select {
       width: 100%;
       padding: 12px;
       margin-bottom: 15px;
@@ -212,6 +212,20 @@
       <h2>Add New Exercise</h2>
       <input type="text" id="exercise-name" placeholder="Exercise Name" required />
       <textarea id="exercise-description" placeholder="Exercise Description"></textarea>
+      
+      <!-- Reps and Weights -->
+      <div style="display: flex; gap: 10px;">
+        <input type="number" id="reps" placeholder="Reps" min="1" style="flex: 1;" />
+        <input type="number" id="weights" placeholder="Weight" min="1" style="flex: 1;" />
+        <select id="weight-units" style="flex: 1;">
+          <option value="kg">Kg</option>
+          <option value="lbs">Lbs</option>
+        </select>
+      </div>
+      
+      <!-- Date Picker -->
+      <input type="date" id="exercise-date" style="margin-top: 15px;" required />
+
       <button id="save-exercise-btn">Save Exercise</button>
     </div>
   </div>
@@ -257,7 +271,12 @@
     document.getElementById("save-exercise-btn").addEventListener("click", () => {
       const exerciseName = document.getElementById("exercise-name").value;
       const exerciseDescription = document.getElementById("exercise-description").value;
-      console.log("Exercise saved:", exerciseName, exerciseDescription);
+      const reps = document.getElementById("reps").value;
+      const weights = document.getElementById("weights").value;
+      const weightUnits = document.getElementById("weight-units").value;
+      const exerciseDate = document.getElementById("exercise-date").value;
+
+      console.log("Exercise saved:", exerciseName, exerciseDescription, reps, weights, weightUnits, exerciseDate);
       closeExerciseModal();
     });
 
@@ -274,4 +293,5 @@
 
 </body>
 </html>
+
 
