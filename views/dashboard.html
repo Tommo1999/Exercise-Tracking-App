@@ -83,6 +83,69 @@
       font-style: italic;
       color: #777;
     }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 500px;
+    }
+
+    .modal h2 {
+      margin-bottom: 20px;
+    }
+
+    .modal input, .modal textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .modal button {
+      background-color: #27ae60;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .modal button:hover {
+      background-color: #219150;
+    }
+
+    .modal .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .modal .close:hover,
+    .modal .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -131,6 +194,28 @@
     </div>
   </div>
 
+  <!-- Modal for Create Workout -->
+  <div id="create-workout-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-workout-modal">&times;</span>
+      <h2>Create New Workout</h2>
+      <input type="text" id="workout-name" placeholder="Workout Name" required />
+      <textarea id="workout-description" placeholder="Workout Description"></textarea>
+      <button id="save-workout-btn">Save Workout</button>
+    </div>
+  </div>
+
+  <!-- Modal for Add Exercise -->
+  <div id="add-exercise-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-exercise-modal">&times;</span>
+      <h2>Add New Exercise</h2>
+      <input type="text" id="exercise-name" placeholder="Exercise Name" required />
+      <textarea id="exercise-description" placeholder="Exercise Description"></textarea>
+      <button id="save-exercise-btn">Save Exercise</button>
+    </div>
+  </div>
+
   <script>
     // Inject the username into the welcome message
     const username = localStorage.getItem("username") || "Guest";
@@ -139,64 +224,54 @@
     // Handle logout
     function logout() {
       localStorage.removeItem("username");
-      window.location.href = "/login"; // Redirect to the login page
+      window.location.href = "/login.html";
     }
 
-    // Open the 'Create Workout' page or show a modal
-    document.getElementById("add-workout-btn").addEventListener("click", () => {
-      window.location.href = "/create-workout.html"; // Redirect to workout creation page
+    // Modal handling functions
+    const workoutModal = document.getElementById("create-workout-modal");
+    const exerciseModal = document.getElementById("add-exercise-modal");
+
+    const openWorkoutModal = () => workoutModal.style.display = "block";
+    const openExerciseModal = () => exerciseModal.style.display = "block";
+
+    const closeWorkoutModal = () => workoutModal.style.display = "none";
+    const closeExerciseModal = () => exerciseModal.style.display = "none";
+
+    // Event listeners for buttons
+    document.getElementById("add-workout-btn").addEventListener("click", openWorkoutModal);
+    document.getElementById("add-exercise-btn").addEventListener("click", openExerciseModal);
+
+    // Close modals when clicking on the "x" button
+    document.getElementById("close-workout-modal").addEventListener("click", closeWorkoutModal);
+    document.getElementById("close-exercise-modal").addEventListener("click", closeExerciseModal);
+
+    // Handle Save Workout (for demo purposes, just log data)
+    document.getElementById("save-workout-btn").addEventListener("click", () => {
+      const workoutName = document.getElementById("workout-name").value;
+      const workoutDescription = document.getElementById("workout-description").value;
+      console.log("Workout saved:", workoutName, workoutDescription);
+      closeWorkoutModal();
     });
 
-    // Open the 'Add Exercise' page or show a modal
-    document.getElementById("add-exercise-btn").addEventListener("click", () => {
-      window.location.href = "/add-exercise.html"; // Redirect to exercise entry page
+    // Handle Save Exercise (for demo purposes, just log data)
+    document.getElementById("save-exercise-btn").addEventListener("click", () => {
+      const exerciseName = document.getElementById("exercise-name").value;
+      const exerciseDescription = document.getElementById("exercise-description").value;
+      console.log("Exercise saved:", exerciseName, exerciseDescription);
+      closeExerciseModal();
     });
 
-    // Handle file upload
-    document.getElementById("upload-btn").addEventListener("click", () => {
-      const fileInput = document.getElementById("upload-input");
-      if (fileInput.files.length === 0) {
-        alert("Please select a file to upload.");
-      } else {
-        const file = fileInput.files[0];
-        alert("Uploading file: " + file.name);
-        // Process the file (e.g., send it to the server)
-        // Example: FormData API can be used to upload the file to your backend
-        const formData = new FormData();
-        formData.append("file", file);
-        
-        // Example of sending the file to the server (uncomment after implementing your backend):
-        // fetch('/upload', {
-        //   method: 'POST',
-        //   body: formData
-        // }).then(response => response.json())
-        //   .then(data => alert('File uploaded successfully!'))
-        //   .catch(error => alert('Error uploading file.'));
+    // Close modal if clicking outside of it
+    window.onclick = function(event) {
+      if (event.target === workoutModal) {
+        closeWorkoutModal();
       }
-    });
-
-    // Handle workout download
-    document.getElementById("download-btn").addEventListener("click", () => {
-      alert("Downloading workouts...");
-      // Here you would generate the file (CSV/Excel) dynamically from your backend
-      // For now, we just simulate a download
-      const workouts = [
-        { date: "2025-04-21", exercise: "Push-ups", sets: 3, reps: 15 },
-        { date: "2025-04-20", exercise: "Squats", sets: 3, reps: 20 },
-      ];
-      
-      // Create CSV file content
-      const csvContent = "Date,Exercise,Sets,Reps\n" +
-        workouts.map(workout => `${workout.date},${workout.exercise},${workout.sets},${workout.reps}`).join("\n");
-
-      // Create a Blob with the CSV content
-      const blob = new Blob([csvContent], { type: "text/csv" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "workouts.csv";
-      link.click();
-    });
+      if (event.target === exerciseModal) {
+        closeExerciseModal();
+      }
+    };
   </script>
+
 </body>
 </html>
 
