@@ -88,31 +88,31 @@ MongoClient.connect(MONGO_URI)
       }
     });
 
-  // Login Route (Updated to return JSON and username)
-app.post('/login', async (req, res) => {
-  const { usernameOrEmail, password } = req.body;
+    // Login Route (Updated to return JSON and username)
+    app.post('/login', async (req, res) => {
+      const { usernameOrEmail, password } = req.body;
 
-  try {
-    const user = await usersCollection.findOne({
-      $or: [{ email: usernameOrEmail.toLowerCase() }, { username: usernameOrEmail.toLowerCase() }],
+      try {
+        const user = await usersCollection.findOne({
+          $or: [{ email: usernameOrEmail.toLowerCase() }, { username: usernameOrEmail.toLowerCase() }],
+        });
+
+        if (!user) {
+          return res.status(401).json({ success: false, message: 'Invalid username or email.' });
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (!isPasswordCorrect) {
+          return res.status(401).json({ success: false, message: 'Invalid password.' });
+        }
+
+        // Send username to front-end for storage
+        res.status(200).json({ success: true, username: user.username });
+      } catch (error) {
+        console.error('Error logging in user:', error);
+        res.status(500).json({ success: false, message: 'Error logging in. Please try again.' });
+      }
     });
-
-    if (!user) {
-      return res.status(401).json({ success: false, message: 'Invalid username or email.' });
-    }
-
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(401).json({ success: false, message: 'Invalid password.' });
-    }
-
-    // Send username to front-end for storage
-    res.status(200).json({ success: true, username: user.username });
-  } catch (error) {
-    console.error('Error logging in user:', error);
-    res.status(500).json({ success: false, message: 'Error logging in. Please try again.' });
-  }
-});
 
     // Forgot Password
     app.post('/forgot-password', async (req, res) => {
@@ -127,7 +127,7 @@ app.post('/login', async (req, res) => {
       }
 
       const resetToken = crypto.randomBytes(20).toString('hex');
-      const resetLink = http://localhost:${PORT}/reset-password/${resetToken};
+      const resetLink = `http://localhost:${PORT}/reset-password/${resetToken}`;
 
       await usersCollection.updateOne(
         { _id: user._id },
@@ -138,7 +138,7 @@ app.post('/login', async (req, res) => {
         from: process.env.EMAIL,
         to: user.email,
         subject: 'Password Reset',
-        text: You requested a password reset. Click the link to reset your password: ${resetLink},
+        text: `You requested a password reset. Click the link to reset your password: ${resetLink}`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
@@ -210,34 +210,33 @@ app.post('/login', async (req, res) => {
       }
     });
 
-// Get Workouts for a User
-app.get('/get-workouts', async (req, res) => {
-  const { username } = req.query;
+    // Get Workouts for a User
+    app.get('/get-workouts', async (req, res) => {
+      const { username } = req.query;
 
-  if (!username) {
-    return res.status(400).json({ message: "Username is required" });
-  }
+      if (!username) {
+        return res.status(400).json({ message: "Username is required" });
+      }
 
-  try {
-    const workouts = await workoutsCollection
-      .find({ username })
-      .sort({ date: -1 })
-      .toArray();
+      try {
+        const workouts = await workoutsCollection
+          .find({ username })
+          .sort({ date: -1 })
+          .toArray();
 
-    res.json(workouts);
-  } catch (error) {
-    console.error("Error fetching workouts:", error);
-    res.status(500).json({ message: "Failed to fetch workouts" });
-  }
-});
-
+        res.json(workouts);
+      } catch (error) {
+        console.error("Error fetching workouts:", error);
+        res.status(500).json({ message: "Failed to fetch workouts" });
+      }
+    });
 
   })
   .catch((err) => {
-    console.error('Failed to connect to MongoDB', err);
+    console.error(`Failed to connect to MongoDB: ${err}`);
   });
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(Server is running on port ${PORT});
+  console.log(`Server is running on port ${PORT}`);
 });
