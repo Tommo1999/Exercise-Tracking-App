@@ -128,6 +128,16 @@
         height: 100%;
         width: 100%;
       }
+
+      /* Eye icon */
+      .eye-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #333;
+      }
     </style>
   </head>
 
@@ -143,7 +153,12 @@
       <!-- Login Form -->
       <form id="loginForm">
         <input type="text" id="usernameOrEmail" name="usernameOrEmail" placeholder="Username or Email" required />
-        <input type="password" id="password" name="password" placeholder="Password" required />
+        
+        <!-- Password Input with Eye Icon -->
+        <div style="position: relative;">
+          <input type="password" id="password" name="password" placeholder="Password" required />
+          <i class="eye-icon" id="togglePassword">👁️</i>
+        </div>
         
         <!-- Error message display -->
         <div id="errorMessage" class="error"></div>
@@ -196,6 +211,16 @@
         } catch (error) {
           errorMessageDiv.textContent = "Error logging in. Please try again."; // Display error message
         }
+      });
+
+      // Toggle password visibility
+      const togglePassword = document.getElementById("togglePassword");
+      const passwordField = document.getElementById("password");
+
+      togglePassword.addEventListener("click", () => {
+        // Toggle between type password and text
+        const type = passwordField.type === "password" ? "text" : "password";
+        passwordField.type = type;
       });
     </script>
   </body>
