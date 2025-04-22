@@ -209,6 +209,39 @@ MongoClient.connect(MONGO_URI)
         res.status(500).json({ message: 'Error adding workout data. Please try again.' });
       }
     });
+// Create Exercise
+app.post('/create-exercise', async (req, res) => {
+  const { username, exerciseName, description, reps, weights, weightUnit } = req.body;
+
+  if (!username || !exerciseName || !description || !reps || !weights || !weightUnit) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+
+  if (isNaN(reps) || isNaN(weights)) {
+    return res.status(400).json({ message: 'Reps and weights must be numbers.' });
+  }
+
+  if (weightUnit !== 'kg' && weightUnit !== 'lbs') {
+    return res.status(400).json({ message: 'Weight unit must be either "kg" or "lbs".' });
+  }
+
+  try {
+    await workoutsCollection.insertOne({
+      username,
+      exerciseName,
+      description,
+      reps: Number(reps),
+      weights: Number(weights),
+      weightUnit,
+      timestamp: new Date(),
+    });
+
+    res.status(200).json({ message: 'Exercise created successfully!' });
+  } catch (error) {
+    console.error('Error creating exercise:', error);
+    res.status(500).json({ message: 'Error creating exercise. Please try again.' });
+  }
+});
 
     // Get Workouts for a User
     app.get('/get-workouts', async (req, res) => {

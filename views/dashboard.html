@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FitTrack Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       margin: 0;
@@ -71,12 +72,6 @@
 
     .logout:hover {
       background-color: #c0392b;
-    }
-
-    #recent-workouts-list {
-      list-style: none;
-      padding: 0;
-      margin-top: 10px;
     }
 
     .empty-message {
@@ -154,18 +149,18 @@
     <div class="header">
       <h1 id="welcome-message">Welcome!</h1>
       <p>Track your workouts and fitness journey</p>
+      <input type="text" id="username" placeholder="Enter Username" />
     </div>
 
     <div class="dashboard-section">
-      <!-- Recent Workouts -->
       <div class="card">
         <h2>Recent Workouts</h2>
-        <p id="no-workouts" class="empty-message">No workouts added yet.</p>
-        <ul id="recent-workouts-list" style="display: none;"></ul>
-        <button class="btn" id="add-workout-btn">Create Workout</button>
+        <div id="workouts-container">
+          <p class="empty-message" id="no-workouts">No workouts loaded.</p>
+        </div>
+        <button class="btn" id="load-btn">Load Workouts</button>
       </div>
 
-      <!-- Add Exercise -->
       <div class="card">
         <h2>Add Exercise</h2>
         <p>Add exercises to your workouts.</p>
@@ -174,17 +169,14 @@
     </div>
 
     <div class="dashboard-section">
-      <!-- Upload / Download -->
       <div class="card">
         <h2>Upload Exercises</h2>
-        <p>Upload a CSV or Excel file with exercises.</p>
         <input type="file" id="upload-input" accept=".csv, .xlsx" />
         <button class="btn" id="upload-btn">Upload</button>
       </div>
 
       <div class="card">
         <h2>Download Workouts</h2>
-        <p>Download your workouts as a spreadsheet.</p>
         <button class="btn" id="download-btn">Download as Excel</button>
       </div>
     </div>
@@ -194,164 +186,148 @@
     </div>
   </div>
 
-  <!-- Modal for Create Workout -->
-  <div id="create-workout-modal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="close-workout-modal">&times;</span>
-      <h2>Create New Workout</h2>
-      <input type="text" id="workout-name" placeholder="Workout Name" required />
-      <textarea id="workout-description" placeholder="Workout Description"></textarea>
-      
-      <!-- Date Picker Added here -->
-      <input type="date" id="workout-date" style="margin-top: 15px;" required />
-      
-      <button id="save-workout-btn">Save Workout</button>
-    </div>
-  </div>
-
-  <!-- Modal for Add Exercise -->
-  <div id="add-exercise-modal" class="modal">
+  <!-- Add Exercise Modal -->
+  <div id="exercise-modal" class="modal">
     <div class="modal-content">
       <span class="close" id="close-exercise-modal">&times;</span>
-      <h2>Add New Exercise</h2>
-      <input type="text" id="exercise-name" placeholder="Exercise Name" required />
-      <textarea id="exercise-description" placeholder="Exercise Description"></textarea>
-      
-      <!-- Reps and Weights -->
-      <div style="display: flex; gap: 10px;">
-        <input type="number" id="reps" placeholder="Reps" min="1" style="flex: 1;" />
-        <input type="number" id="weights" placeholder="Weight" min="1" style="flex: 1;" />
-        <select id="weight-units" style="flex: 1;">
-          <option value="kg">Kg</option>
-          <option value="lbs">Lbs</option>
+      <h2>Add Exercise</h2>
+      <form id="exercise-form">
+        <input type="text" id="exercise-name" placeholder="Exercise Name" required />
+        <textarea id="exercise-description" placeholder="Exercise Description" required></textarea>
+        <input type="number" id="reps" placeholder="Reps" required />
+        <input type="number" id="weights" placeholder="Weights" required />
+        <select id="weight-units" required>
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
         </select>
-      </div>
-      
-      <!-- Remove Date Field Here -->
-
-      <button id="save-exercise-btn">Save Exercise</button>
+        <button type="submit" class="btn">Save Exercise</button>
+      </form>
     </div>
   </div>
 
   <script>
-    // Inject the username into the welcome message
-    const username = localStorage.getItem("username") || "Guest";
-    document.getElementById("welcome-message").textContent = `Welcome, ${username}!`;
+    const loadBtn = document.getElementById("load-btn");
+    const addExerciseBtn = document.getElementById("add-exercise-btn");
+    const workoutsContainer = document.getElementById("workouts-container");
 
-    // Handle logout
-    function logout() {
-      localStorage.removeItem("username");
-      window.location.href = "/login.html";
+    const exerciseModal = document.getElementById("exercise-modal");
+    const closeExerciseModal = document.getElementById("close-exercise-modal");
+    const exerciseForm = document.getElementById("exercise-form");
+
+    // Show username in welcome message
+    const welcomeMessage = document.getElementById("welcome-message");
+    const usernameInput = document.getElementById("username");
+
+    let username = localStorage.getItem("username") || "";
+    if (username) {
+      usernameInput.value = username;
+      welcomeMessage.textContent = `Welcome, ${username}!`;
     }
 
-    // Modal handling functions
-    const workoutModal = document.getElementById("create-workout-modal");
-    const exerciseModal = document.getElementById("add-exercise-modal");
+    // Load workouts
+    async function loadRecentWorkouts() {
+      username = usernameInput.value.trim();
+      if (!username) {
+        alert("Please enter a username first.");
+        return;
+      }
 
-    const openWorkoutModal = () => workoutModal.style.display = "block";
-    const openExerciseModal = () => exerciseModal.style.display = "block";
-
-    const closeWorkoutModal = () => workoutModal.style.display = "none";
-    const closeExerciseModal = () => exerciseModal.style.display = "none";
-
-    // Event listeners for buttons
-    document.getElementById("add-workout-btn").addEventListener("click", openWorkoutModal);
-    document.getElementById("add-exercise-btn").addEventListener("click", openExerciseModal);
-
-    // Close modals when clicking on the "x" button
-    document.getElementById("close-workout-modal").addEventListener("click", closeWorkoutModal);
-    document.getElementById("close-exercise-modal").addEventListener("click", closeExerciseModal);
-
-    // Handle Save Workout (send data to backend)
-    document.getElementById("save-workout-btn").addEventListener("click", async () => {
-      const workoutName = document.getElementById("workout-name").value;
-      const workoutDescription = document.getElementById("workout-description").value;
-      const workoutDate = document.getElementById("workout-date").value;
-
-      // Data to send
-      const workoutData = {
-        username,  
-        workoutType: workoutName,
-        description: workoutDescription,
-        date: workoutDate,  // Send the date with the workout
-      };
+      localStorage.setItem("username", username);
+      welcomeMessage.textContent = `Welcome, ${username}!`;
 
       try {
-        const response = await fetch('/add-workout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(workoutData),
-        });
+        const response = await fetch(`/get-workouts/${username}`);
+        const workouts = await response.json();
 
-        const result = await response.json();
-        if (response.ok) {
-          console.log('Workout saved successfully!', result);
-          alert('Workout saved successfully!');
-          closeWorkoutModal();  // Close the modal after saving
+        workoutsContainer.innerHTML = '<h2>Recent Workouts</h2>';
+        if (!workouts.length) {
+          workoutsContainer.innerHTML += '<p class="empty-message">No workouts found.</p>';
         } else {
-          console.error('Failed to save workout:', result.message);
-          alert('Error saving workout. Please try again.');
+          workouts.forEach(workout => {
+            const div = document.createElement("div");
+            div.classList.add("card");
+            div.innerHTML = `
+              <strong>${workout.exerciseName || 'Workout'}</strong><br/>
+              ${workout.description}<br/>
+              Reps: ${workout.reps}, Weight: ${workout.weights} ${workout.weightUnit}<br/>
+              <small>${new Date(workout.timestamp).toLocaleString()}</small>
+            `;
+            workoutsContainer.appendChild(div);
+          });
         }
       } catch (error) {
-        console.error('Error:', error);
-        alert('Error connecting to the server.');
+        console.error("Error loading workouts:", error);
+        alert("Error loading workouts.");
       }
+    }
+
+    loadBtn.addEventListener("click", loadRecentWorkouts);
+
+    // Modal events
+    addExerciseBtn.addEventListener("click", () => {
+      exerciseModal.style.display = "block";
     });
 
-    // Handle Save Exercise (send data to backend)
-    document.getElementById("save-exercise-btn").addEventListener("click", async () => {
+    closeExerciseModal.addEventListener("click", () => {
+      exerciseModal.style.display = "none";
+    });
+
+    exerciseForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      username = usernameInput.value.trim();
+      if (!username) {
+        alert("Please enter your username first.");
+        return;
+      }
+
       const exerciseName = document.getElementById("exercise-name").value;
-      const exerciseDescription = document.getElementById("exercise-description").value;
+      const description = document.getElementById("exercise-description").value;
       const reps = document.getElementById("reps").value;
       const weights = document.getElementById("weights").value;
-      const weightUnits = document.getElementById("weight-units").value;
-
-      // Data to send
-      const exerciseData = {
-        username,  
-        exercise: exerciseName,
-        description: exerciseDescription,
-        reps,
-        weights,
-        weightUnit: weightUnits,
-      };
+      const weightUnit = document.getElementById("weight-units").value;
 
       try {
-        const response = await fetch('/add-exercise', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(exerciseData),
+        const res = await fetch("/create-exercise", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username,
+            exerciseName,
+            description,
+            reps,
+            weights,
+            weightUnit
+          })
         });
 
-        const result = await response.json();
-        if (response.ok) {
-          console.log('Exercise saved successfully!', result);
-          alert('Exercise saved successfully!');
-          closeExerciseModal();  // Close the modal after saving
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message);
+          exerciseForm.reset();
+          exerciseModal.style.display = "none";
+          loadRecentWorkouts();
         } else {
-          console.error('Failed to save exercise:', result.message);
-          alert('Error saving exercise. Please try again.');
+          alert(data.message);
         }
       } catch (error) {
-        console.error('Error:', error);
-        alert('Error connecting to the server.');
+        console.error("Error creating exercise:", error);
+        alert("Something went wrong while saving the exercise.");
       }
     });
 
-    // Close modal if clicking outside of it
+    // Close modal if user clicks outside
     window.onclick = function(event) {
-      if (event.target === workoutModal) {
-        closeWorkoutModal();
-      }
-      if (event.target === exerciseModal) {
-        closeExerciseModal();
+      if (event.target == exerciseModal) {
+        exerciseModal.style.display = "none";
       }
     };
-  </script>
 
+    // Logout
+    function logout() {
+      localStorage.removeItem("username");
+      location.reload();
+    }
+  </script>
 </body>
 </html>
+
