@@ -201,6 +201,10 @@
       <h2>Create New Workout</h2>
       <input type="text" id="workout-name" placeholder="Workout Name" required />
       <textarea id="workout-description" placeholder="Workout Description"></textarea>
+      
+      <!-- Date Picker Added here -->
+      <input type="date" id="workout-date" style="margin-top: 15px;" required />
+      
       <button id="save-workout-btn">Save Workout</button>
     </div>
   </div>
@@ -223,8 +227,7 @@
         </select>
       </div>
       
-      <!-- Date Picker -->
-      <input type="date" id="exercise-date" style="margin-top: 15px;" required />
+      <!-- Remove Date Field Here -->
 
       <button id="save-exercise-btn">Save Exercise</button>
     </div>
@@ -263,12 +266,14 @@
     document.getElementById("save-workout-btn").addEventListener("click", async () => {
       const workoutName = document.getElementById("workout-name").value;
       const workoutDescription = document.getElementById("workout-description").value;
+      const workoutDate = document.getElementById("workout-date").value;
 
       // Data to send
       const workoutData = {
         username,  
         workoutType: workoutName,
         description: workoutDescription,
+        date: workoutDate,  // Send the date with the workout
       };
 
       try {
@@ -302,7 +307,6 @@
       const reps = document.getElementById("reps").value;
       const weights = document.getElementById("weights").value;
       const weightUnits = document.getElementById("weight-units").value;
-      const exerciseDate = document.getElementById("exercise-date").value;
 
       // Data to send
       const exerciseData = {
@@ -312,11 +316,10 @@
         reps,
         weights,
         weightUnit: weightUnits,
-        date: exerciseDate,
       };
 
       try {
-        const response = await fetch('/add-workout', {
+        const response = await fetch('/add-exercise', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -352,5 +355,3 @@
 
 </body>
 </html>
-
-
