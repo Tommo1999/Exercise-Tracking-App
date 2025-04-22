@@ -259,16 +259,44 @@
     document.getElementById("close-workout-modal").addEventListener("click", closeWorkoutModal);
     document.getElementById("close-exercise-modal").addEventListener("click", closeExerciseModal);
 
-    // Handle Save Workout (for demo purposes, just log data)
-    document.getElementById("save-workout-btn").addEventListener("click", () => {
+    // Handle Save Workout (send data to backend)
+    document.getElementById("save-workout-btn").addEventListener("click", async () => {
       const workoutName = document.getElementById("workout-name").value;
       const workoutDescription = document.getElementById("workout-description").value;
-      console.log("Workout saved:", workoutName, workoutDescription);
-      closeWorkoutModal();
+
+      // Data to send
+      const workoutData = {
+        username,  
+        workoutType: workoutName,
+        description: workoutDescription,
+      };
+
+      try {
+        const response = await fetch('/add-workout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(workoutData),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          console.log('Workout saved successfully!', result);
+          alert('Workout saved successfully!');
+          closeWorkoutModal();  // Close the modal after saving
+        } else {
+          console.error('Failed to save workout:', result.message);
+          alert('Error saving workout. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error connecting to the server.');
+      }
     });
 
-    // Handle Save Exercise (for demo purposes, just log data)
-    document.getElementById("save-exercise-btn").addEventListener("click", () => {
+    // Handle Save Exercise (send data to backend)
+    document.getElementById("save-exercise-btn").addEventListener("click", async () => {
       const exerciseName = document.getElementById("exercise-name").value;
       const exerciseDescription = document.getElementById("exercise-description").value;
       const reps = document.getElementById("reps").value;
@@ -276,8 +304,39 @@
       const weightUnits = document.getElementById("weight-units").value;
       const exerciseDate = document.getElementById("exercise-date").value;
 
-      console.log("Exercise saved:", exerciseName, exerciseDescription, reps, weights, weightUnits, exerciseDate);
-      closeExerciseModal();
+      // Data to send
+      const exerciseData = {
+        username,  
+        exercise: exerciseName,
+        description: exerciseDescription,
+        reps,
+        weights,
+        weightUnit: weightUnits,
+        date: exerciseDate,
+      };
+
+      try {
+        const response = await fetch('/add-workout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(exerciseData),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          console.log('Exercise saved successfully!', result);
+          alert('Exercise saved successfully!');
+          closeExerciseModal();  // Close the modal after saving
+        } else {
+          console.error('Failed to save exercise:', result.message);
+          alert('Error saving exercise. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error connecting to the server.');
+      }
     });
 
     // Close modal if clicking outside of it
