@@ -92,7 +92,7 @@
       padding: 20px;
       border-radius: 10px;
       width: 95%;
-      max-width: 1100px;
+      max-width: 1000px;
       overflow-x: auto;
     }
 
@@ -127,14 +127,10 @@
       color: white;
     }
 
-    input[type="number"], input[type="text"] {
-      width: 100px;
+    input[type="number"] {
+      width: 70px;
       padding: 5px;
       font-size: 0.9rem;
-    }
-
-    .exercise-name-input {
-      width: 140px;
     }
 
     #add-exercise-row-btn {
@@ -162,9 +158,19 @@
 
     .modal input[type="text"], .modal input[type="date"] {
       padding: 8px;
-      font-size: 1rem;
+      font-size: 0.85rem;
       margin-bottom: 15px;
     }
+
+    /* New CSS for smaller text in exercise name input */
+    .exercise-row td:first-child input[type="text"] {
+      font-size: 0.75rem;
+      width: 100%;
+      padding: 4px;
+      max-width: 130px;
+      box-sizing: border-box;
+    }
+
   </style>
 </head>
 <body>
@@ -212,7 +218,6 @@
       <thead>
         <tr>
           <th>Exercise</th>
-          <th>Name</th>
           <th colspan="2">Set 1</th>
           <th colspan="2">Set 2</th>
           <th colspan="2">Set 3</th>
@@ -221,7 +226,6 @@
           <th colspan="2">Set 6</th>
         </tr>
         <tr>
-          <th></th>
           <th></th>
           <th>Weight</th><th>Reps</th>
           <th>Weight</th><th>Reps</th>
@@ -232,7 +236,20 @@
         </tr>
       </thead>
       <tbody id="exercise-rows">
-        <!-- Dynamic rows injected by JS -->
+        <tr class="exercise-row" data-index="0">
+          <td><strong>A.</strong></td>
+          <td><input type="text" placeholder="Exercise name" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td>
+          <td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td>
+          <td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td>
+          <td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td>
+          <td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td>
+          <td><input type="number" placeholder="reps" /></td>
+        </tr>
       </tbody>
     </table>
 
@@ -267,16 +284,22 @@
   };
 
   const maxExercises = 10;
-  let currentExerciseIndex = 0;
+  let currentExerciseIndex = 1;
 
   const resetExerciseRows = () => {
     const tbody = document.getElementById("exercise-rows");
     tbody.innerHTML = "";
-    currentExerciseIndex = 0;
-    addExerciseRow();
+    currentExerciseIndex = 1;
+    const row = document.createElement("tr");
+    row.innerHTML = `<td><strong>A.</strong></td>
+      <td><input type="text" placeholder="Exercise name" /></td>` +
+      [...Array(6)].map(() =>
+        `<td><input type="number" placeholder="kg/lbs" /></td>
+         <td><input type="number" placeholder="reps" /></td>`).join('');
+    tbody.appendChild(row);
   };
 
-  const addExerciseRow = () => {
+  document.getElementById("add-exercise-row-btn").addEventListener("click", () => {
     if (currentExerciseIndex >= maxExercises) {
       alert("Maximum of 10 exercises reached.");
       return;
@@ -288,26 +311,19 @@
 
     const row = document.createElement("tr");
     row.classList.add("exercise-row");
-    row.setAttribute("data-index", currentExerciseIndex);
-
-    let html = `<td><strong>${letter}.</strong></td>`;
-    html += `<td><input type="text" class="exercise-name-input" placeholder="Exercise name" /></td>`;
-
-    for (let i = 0; i < 6; i++) {
-      html += `<td><input type="number" placeholder="kg/lbs" /></td>
-               <td><input type="number" placeholder="reps" /></td>`;
-    }
-
-    row.innerHTML = html;
+    row.innerHTML = `<td><strong>${letter}.</strong></td>
+      <td><input type="text" placeholder="Exercise name" /></td>` +
+      [...Array(6)].map(() =>
+        `<td><input type="number" placeholder="kg/lbs" /></td>
+         <td><input type="number" placeholder="reps" /></td>`).join('');
     tbody.appendChild(row);
     currentExerciseIndex++;
-  };
-
-  document.getElementById("add-exercise-row-btn").addEventListener("click", addExerciseRow);
+  });
 </script>
 
 </body>
 </html>
+
 
 
 
