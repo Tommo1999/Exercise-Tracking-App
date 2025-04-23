@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
-const ExcelJS = require('exceljs'); // Ensure this is included
+const ExcelJS = require('exceljs');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const nodemailer = require('nodemailer');
@@ -17,6 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -106,16 +107,25 @@ MongoClient.connect(MONGO_URI)
       res.send('Password reset successfully');
     });
 
-    // Add Full Workout (with multiple exercises)
+    // ✅ Add Full Workout (Updated & Flat Structure)
     app.post('/add-full-workout', async (req, res) => {
-      const { username, workoutType, workoutDescription, date, exercises, progress, nextSessionMark, workoutRating, additionalNotes, cardio } = req.body;
+      const {
+        username,
+        workoutType,
+        workoutDescription,
+        date,
+        exercises,
+        progressYourLifts,
+        progressForNextSession,
+        workoutRating,
+        additionalNotes,
+        cardio
+      } = req.body;
 
-      // Validate received data
       if (!username || !workoutType || !date || !Array.isArray(exercises) || exercises.length === 0) {
         return res.status(400).json({ message: 'Invalid workout data' });
       }
 
-      // Validate each exercise
       for (let ex of exercises) {
         if (!ex.name || !Array.isArray(ex.sets) || ex.sets.length === 0) {
           return res.status(400).json({ message: 'Invalid exercise data' });
@@ -128,34 +138,30 @@ MongoClient.connect(MONGO_URI)
       }
 
       try {
-        // Process and save workout with exercises
-        const docs = exercises.map((ex) => (
-          ex.sets.map((set) => ({
+        const docs = exercises.map((ex) =>
+          ex.sets.map((set, index) => ({
             username,
             workoutType,
             workoutDescription,
-            exerciseName: ex.name, // Use exerciseName
-            weightUnit: ex.weightUnit || 'kg', // Default to kg if no weightUnit is provided
-            sets: ex.sets.map((set) => ({
-              weight: Number(set.weight), // Weight is a number
-              reps: Number(set.reps), // Reps are a number
-            })),
-            progress, // Whether the user has made progress
-            nextSessionMark, // Whether the exercise is marked for progress next session
-            workoutRating, // Rating of workout (1-10)
-            additionalNotes, // Any additional workout notes
-            cardio: cardio || "", // Treat cardio as a separate field, defaulting to an empty string if not provided
+            exerciseName: ex.name,
+            weightUnit: ex.weightUnit || 'kg',
+            reps: Number(set.reps) || 0,
+            weights: Number(set.weight) || 0,
             date,
-            timestamp: new Date(), // Current timestamp
+            timestamp: new Date(),
+            progressYourLifts,
+            progressForNextSession,
+            workoutRating,
+            additionalNotes,
+            cardio,
+            setIndex: index + 1,
           }))
-        )).flat(); // Flatten array to make sure all sets are individually inserted
+        ).flat();
 
-        // Insert all the sets into MongoDB
         await workoutsCollection.insertMany(docs);
-
-        res.status(200).json({ message: 'Workout added with all exercises' });
+        res.status(200).json({ message: 'Workout added with all exercises and sets' });
       } catch (error) {
-        console.error(error);
+        console.error('Error saving workout:', error);
         res.status(500).json({ message: 'Error saving workout' });
       }
     });
@@ -175,60 +181,55 @@ MongoClient.connect(MONGO_URI)
         res.status(500).json({ message: "Failed to fetch workouts" });
       }
     });
-// Export workouts as Excel
-app.get('/export-workouts', async (req, res) => {
-  const { username } = req.query;
-  if (!username) return res.status(400).json({ message: "Username is required" });
 
-  try {
-    const workouts = await workoutsCollection.find({ username }).toArray();
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Workouts');
+    // Export workouts to Excel
+    app.get('/export-workouts', async (req, res) => {
+      const { username } = req.query;
+      if (!username) return res.status(400).json({ message: "Username is required" });
 
-    // Add column headers (including the updated fields)
-    worksheet.columns = [
-      { header: 'Exercise Name', key: 'exerciseName' },
-      { header: 'Weight Unit', key: 'weightUnit' },
-      { header: 'Weight', key: 'weight' },
-      { header: 'Reps', key: 'reps' },
-      { header: 'Date', key: 'date' },
-      { header: 'Progress Your Lifts', key: 'progressYourLifts' }, // Corrected
-      { header: 'Progress for Next Session', key: 'progressForNextSession' }, // Corrected
-      { header: 'Workout Rating', key: 'workoutRating' }, // Corrected
-      { header: 'Additional Notes', key: 'additionalNotes' }, // Corrected
-      { header: 'Cardio', key: 'cardio' }, // Cardio column
-    ];
+      try {
+        const workouts = await workoutsCollection.find({ username }).toArray();
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Workouts');
 
-    // Add workout data
-    workouts.forEach((workout) => {
-      workout.sets.forEach((set) => {
-        worksheet.addRow({
-          exerciseName: workout.exerciseName,
-          weightUnit: workout.weightUnit,
-          weight: set.weight,
-          reps: set.reps,
-          date: workout.date,
-          progressYourLifts: workout.progressYourLifts, // Corrected field
-          progressForNextSession: workout.progressForNextSession, // Corrected field
-          workoutRating: workout.workoutRating, // Corrected field
-          additionalNotes: workout.additionalNotes, // Corrected field
-          cardio: workout.cardio, // Cardio data
+        worksheet.columns = [
+          { header: 'Exercise Name', key: 'exerciseName' },
+          { header: 'Weight Unit', key: 'weightUnit' },
+          { header: 'Weight', key: 'weights' },
+          { header: 'Reps', key: 'reps' },
+          { header: 'Date', key: 'date' },
+          { header: 'Progress Your Lifts', key: 'progressYourLifts' },
+          { header: 'Progress for Next Session', key: 'progressForNextSession' },
+          { header: 'Workout Rating', key: 'workoutRating' },
+          { header: 'Additional Notes', key: 'additionalNotes' },
+          { header: 'Cardio', key: 'cardio' },
+        ];
+
+        workouts.forEach((workout) => {
+          worksheet.addRow({
+            exerciseName: workout.exerciseName,
+            weightUnit: workout.weightUnit,
+            weights: workout.weights,
+            reps: workout.reps,
+            date: workout.date,
+            progressYourLifts: workout.progressYourLifts,
+            progressForNextSession: workout.progressForNextSession,
+            workoutRating: workout.workoutRating,
+            additionalNotes: workout.additionalNotes,
+            cardio: workout.cardio,
+          });
         });
-      });
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=workouts.xlsx');
+
+        await workbook.xlsx.write(res);
+        res.end();
+      } catch (error) {
+        console.error("Error exporting workouts:", error);
+        res.status(500).json({ message: "Failed to export workouts" });
+      }
     });
-
-    // Set response headers for downloading the Excel file
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=workouts.xlsx');
-
-    // Write workbook to the response stream
-    await workbook.xlsx.write(res);
-    res.end();
-  } catch (error) {
-    console.error("Error exporting workouts:", error);
-    res.status(500).json({ message: "Failed to export workouts" });
-  }
-});
 
   })
   .catch((err) => console.error(`Failed to connect to MongoDB: ${err}`));
@@ -236,4 +237,3 @@ app.get('/export-workouts', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
