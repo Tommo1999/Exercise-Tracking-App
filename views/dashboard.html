@@ -269,8 +269,7 @@
 
 <div class="container">
   <div class="header">
-    <!-- Dynamic Welcome Message -->
-    <h1 id="welcome-message">Welcome, <span id="username">[Username]</span>!</h1>
+    <h1 id="welcome-message">Welcome!</h1>
     <p>Track your workouts and fitness journey</p>
   </div>
 
@@ -425,101 +424,118 @@
 </div>
 
 <script>
-// Show username in welcome message
-const welcomeMessage = document.getElementById("welcome-message");
-const usernameInput = document.getElementById("username");
+  const modal = document.getElementById('create-workout-modal');
+  const addWorkoutBtn = document.getElementById('add-workout-btn');
+  const closeModal = document.getElementById('close-workout-modal');
+  const body = document.body;
+  const exerciseRowsContainer = document.getElementById('exercise-rows');
+  const addExerciseRowBtn = document.getElementById('add-exercise-row-btn');
+  const saveWorkoutBtn = document.getElementById('save-workout-btn');
 
-let username = localStorage.getItem("username") || "";
-if (username) {
-  usernameInput.value = username;
-  welcomeMessage.textContent = `Welcome, ${username}!`;
-}
+  let isEditing = false;
+  let currentWorkoutIndex = null;
 
-// Handle opening and closing the workout modal
-const modal = document.getElementById('create-workout-modal');
-const addWorkoutBtn = document.getElementById('add-workout-btn');
-const closeModal = document.getElementById('close-workout-modal');
-const body = document.body; // For preventing scroll on modal open
-
-addWorkoutBtn.addEventListener('click', () => {
-  modal.style.display = 'block';
-  body.style.overflow = 'hidden';  // Disable background scrolling
-});
-
-closeModal.addEventListener('click', () => {
-  modal.style.display = 'none';
-  body.style.overflow = '';  // Re-enable background scrolling
-});
-
-// Close the modal if the user clicks outside the modal
-window.addEventListener('click', (event) => {
-  if (event.target === modal) {
-    modal.style.display = 'none';
-    body.style.overflow = '';  // Re-enable background scrolling
-  }
-});
-
-// Handle Save Workout Button
-document.getElementById('save-workout-btn').addEventListener('click', async function(e) {
-  e.preventDefault(); // Prevent form submission behavior
-
-  // Collect workout data
-  const workoutData = {
-    workoutName: document.getElementById('workout-name').value,
-    workoutDate: document.getElementById('workout-date').value,
-    exercises: [],
-    progressLifts: document.querySelector('.question select').value, // Progress your lifts
-    progressNextSession: document.querySelector('.question select:nth-of-type(2)').value, // Progress for next session
-    workoutRating: document.querySelector('.question input[type="number"]').value, // Workout rating
-    additionalNotes: document.querySelector('.question textarea').value, // Additional notes
-    cardioDescription: document.querySelector('.modal .question textarea:nth-of-type(2)').value, // Cardio
+  addWorkoutBtn.onclick = function() {
+    modal.style.display = 'block';
+    body.classList.add('modal-open');
+    resetForm();
   };
 
-  // Collect exercises from the table
-  const exerciseRows = document.querySelectorAll('.exercise-row');
-  exerciseRows.forEach((row) => {
-    const exerciseName = row.querySelector('input[type="text"]').value;
-    const unit = row.querySelector('.set-weight-dropdown').value;
+  closeModal.onclick = function() {
+    modal.style.display = 'none';
+    body.classList.remove('modal-open');
+  };
 
-    const sets = [];
-    for (let i = 1; i <= 6; i++) {
-      const weight = row.querySelector(`td:nth-child(${2 + i * 2}) input[type="number"]`).value;
-      const reps = row.querySelector(`td:nth-child(${3 + i * 2}) input[type="number"]`).value;
-      sets.push({ weight, reps });
-    }
+  // Reset form and remove extra exercise rows
+  function resetForm() {
+    document.getElementById('workout-date').value = '';
+    document.getElementById('workout-name').value = '';
+    exerciseRowsContainer.innerHTML = ''; // Clear all rows
 
-    workoutData.exercises.push({ exerciseName, unit, sets });
+    // Add initial row
+    addExerciseRow();
+    
+    document.getElementById('save-workout-btn').style.display = 'block';
+    document.getElementById('edit-workout-btn').style.display = 'none';
+    document.getElementById('delete-workout-btn').style.display = 'none';
+  }
+
+  // Add a new exercise row
+  function addExerciseRow() {
+    const index = exerciseRowsContainer.children.length;
+    const row = document.createElement('tr');
+    row.className = 'exercise-row';
+    row.setAttribute('data-index', index);
+
+    row.innerHTML = `
+      <td><strong>${String.fromCharCode(65 + index)}.</strong>
+        <input type="text" placeholder="Exercise name" />
+      </td>
+      <td>
+        <select class="set-weight-dropdown">
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
+        </select>
+      </td>
+      ${[...Array(6)].map(() => `
+        <td><input type="number" placeholder="Weight" /></td>
+        <td><input type="number" placeholder="Reps" /></td>
+      `).join('')}
+    `;
+
+    exerciseRowsContainer.appendChild(row);
+  }
+
+  addExerciseRowBtn.addEventListener('click', () => {
+    addExerciseRow();
   });
 
-  // Send the workout data to the server
-  try {
-    const response = await fetch('/save-workout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(workoutData),
+  // Save workout functionality
+  saveWorkoutBtn.addEventListener("click", () => {
+    const workoutName = document.getElementById("workout-name").value;
+    const workoutDate = document.getElementById("workout-date").value;
+
+    const exercises = [];
+    document.querySelectorAll(".exercise-row").forEach(row => {
+      const name = row.querySelector("td:first-child input").value;
+      const unit = row.querySelector(".set-weight-dropdown").value;
+
+      const sets = [];
+      const inputs = row.querySelectorAll('input[type="number"]');
+      for (let i = 0; i < inputs.length; i += 2) {
+        sets.push({
+          weight: inputs[i].value,
+          reps: inputs[i + 1].value
+        });
+      }
+
+      exercises.push({ name, unit, sets });
     });
 
-    const result = await response.json();
-    if (response.ok) {
-      alert('Workout saved successfully!');
-      modal.style.display = 'none';
-      body.style.overflow = ''; // Re-enable background scrolling
-    } else {
-      alert('Error saving workout: ' + result.message);
-    }
-  } catch (error) {
-    console.error('Error saving workout:', error);
-    alert('There was an error saving your workout. Please try again later.');
-  }
-});
+    const workout = {
+      name: workoutName,
+      date: workoutDate,
+      exercises: exercises
+    };
 
-// Log out function (example)
-function logout() {
-  alert("You have logged out.");
-  // Logic to clear session or JWT token and redirect to login page
-}
+    // Send to backend (optional: only if you have backend setup)
+    fetch('/api/workouts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(workout)
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert("Workout saved!");
+      modal.style.display = 'none';
+      body.classList.remove('modal-open');
+    })
+    .catch(err => {
+      console.error("Save error:", err);
+      alert("Failed to save workout.");
+    });
+  });
+
 </script>
 
 </body>
