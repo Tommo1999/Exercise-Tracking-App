@@ -127,7 +127,7 @@
       color: white;
     }
 
-    input[type="number"] {
+    input[type="number"], input[type="text"] {
       width: 70px;
       padding: 5px;
       font-size: 0.9rem;
@@ -162,18 +162,10 @@
       font-weight: bold;
     }
 
-    .modal input[type="text"], .modal input[type="date"] {
+    .modal input[type="date"], .modal input[type="text"] {
       padding: 8px;
       font-size: 0.85rem;
       margin-bottom: 15px;
-    }
-
-    .exercise-row td:first-child input[type="text"] {
-      font-size: 0.75rem;
-      width: 100%;
-      padding: 4px;
-      max-width: 130px;
-      box-sizing: border-box;
     }
 
     .exercise-row td:first-child {
@@ -188,6 +180,8 @@
       font-size: 0.8rem;
       padding: 6px;
       text-align: center;
+      max-width: 130px;
+      box-sizing: border-box;
     }
   </style>
 </head>
@@ -216,7 +210,7 @@
   </div>
 
   <div style="text-align: center; margin-top: 40px;">
-    <button class="btn logout" onclick="logout()">Logout</button>
+    <button class="btn logout" id="logout-btn">Logout</button>
   </div>
 </div>
 
@@ -236,8 +230,92 @@
       <thead>
         <tr>
           <th rowspan="2">Exercise</th>
-          <
-::contentReference[oaicite:0]{index=0}
+          <th colspan="3">Set 1</th>
+          <th colspan="3">Set 2</th>
+          <th colspan="3">Set 3</th>
+          <th colspan="3">Set 4</th>
+          <th colspan="3">Set 5</th>
+          <th colspan="3">Set 6</th>
+        </tr>
+        <tr>
+          <th>Unit</th><th>Weight</th><th>Reps</th>
+          <th>Unit</th><th>Weight</th><th>Reps</th>
+          <th>Unit</th><th>Weight</th><th>Reps</th>
+          <th>Unit</th><th>Weight</th><th>Reps</th>
+          <th>Unit</th><th>Weight</th><th>Reps</th>
+          <th>Unit</th><th>Weight</th><th>Reps</th>
+        </tr>
+      </thead>
+      <tbody id="exercise-table-body">
+        <!-- Dynamic exercise rows -->
+      </tbody>
+    </table>
+
+    <button class="btn" id="add-exercise-row-btn">Add Exercise</button>
+    <button class="btn" id="save-workout-btn">Save Workout</button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('create-workout-modal');
+    const addWorkoutBtn = document.getElementById('add-workout-btn');
+    const closeModalBtn = document.getElementById('close-workout-modal');
+    const addRowBtn = document.getElementById('add-exercise-row-btn');
+    const tableBody = document.getElementById('exercise-table-body');
+    const saveWorkoutBtn = document.getElementById('save-workout-btn');
+
+    addWorkoutBtn.onclick = () => modal.style.display = 'block';
+    closeModalBtn.onclick = () => modal.style.display = 'none';
+    window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
+
+    addRowBtn.onclick = () => {
+      const row = document.createElement('tr');
+      row.classList.add('exercise-row');
+
+      const exerciseTd = document.createElement('td');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Exercise Name';
+      exerciseTd.appendChild(input);
+      row.appendChild(exerciseTd);
+
+      for (let i = 0; i < 6; i++) {
+        const unitTd = document.createElement('td');
+        const unitSelect = document.createElement('select');
+        unitSelect.className = 'set-weight-dropdown';
+        unitSelect.innerHTML = '<option value="kg">kg</option><option value="lbs">lbs</option>';
+        unitTd.appendChild(unitSelect);
+        row.appendChild(unitTd);
+
+        const weightTd = document.createElement('td');
+        const weightInput = document.createElement('input');
+        weightInput.type = 'number';
+        weightInput.placeholder = 'Weight';
+        weightTd.appendChild(weightInput);
+        row.appendChild(weightTd);
+
+        const repsTd = document.createElement('td');
+        const repsInput = document.createElement('input');
+        repsInput.type = 'number';
+        repsInput.placeholder = 'Reps';
+        repsTd.appendChild(repsInput);
+        row.appendChild(repsTd);
+      }
+
+      tableBody.appendChild(row);
+    };
+
+    saveWorkoutBtn.onclick = () => {
+      alert('Workout saved (not yet persisted)!');
+      modal.style.display = 'none';
+    };
+  });
+</script>
+
+</body>
+</html>
+
  
 
 
