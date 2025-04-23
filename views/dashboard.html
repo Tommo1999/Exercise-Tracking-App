@@ -269,8 +269,7 @@
 
 <div class="container">
   <div class="header">
-   <!-- Dynamic Welcome Message -->
-     <h1 id="welcome-message">Welcome, <span id="username">[Username]</span>!</h1>
+  <h1 id="welcome-message">Welcome!</h1>
     <p>Track your workouts and fitness journey</p>
   </div>
 
@@ -426,14 +425,12 @@
 
 <script>
 // Show username in welcome message
-const welcomeMessage = document.getElementById("welcome-message");
-const usernameInput = document.getElementById("username");
+  const welcomeMessage = document.getElementById("welcome-message");
 
-let username = localStorage.getItem("username") || "";
-if (username) {
-  usernameInput.value = username;
-  welcomeMessage.textContent = `Welcome, ${username}!`;
-}
+  let username = localStorage.getItem("username") || "";
+  if (username) {
+    welcomeMessage.textContent = `Welcome, ${username}!`;
+  }
 
 // Handle opening and closing the workout modal
 const modal = document.getElementById('create-workout-modal');
