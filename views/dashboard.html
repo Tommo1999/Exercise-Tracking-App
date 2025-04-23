@@ -134,7 +134,7 @@
     }
 
     .set-weight-dropdown {
-      width: 80px;
+      width: 70px;
       padding: 5px;
       font-size: 0.9rem;
     }
@@ -236,17 +236,21 @@
       <thead>
         <tr>
           <th>Exercise</th>
-          <th>Unit</th>
+          <th>Set 1 Unit</th>
           <th colspan="2">Set 1</th>
+          <th>Set 2 Unit</th>
           <th colspan="2">Set 2</th>
+          <th>Set 3 Unit</th>
           <th colspan="2">Set 3</th>
+          <th>Set 4 Unit</th>
           <th colspan="2">Set 4</th>
+          <th>Set 5 Unit</th>
           <th colspan="2">Set 5</th>
+          <th>Set 6 Unit</th>
           <th colspan="2">Set 6</th>
         </tr>
         <tr>
           <th></th>
-          <th>Weight Unit</th>
           <th>Weight</th><th>Reps</th>
           <th>Weight</th><th>Reps</th>
           <th>Weight</th><th>Reps</th>
@@ -260,42 +264,60 @@
           <td><strong>A.</strong>
             <input type="text" placeholder="Exercise name" />
           </td>
+          <!-- Set 1 -->
           <td>
             <select class="set-weight-dropdown">
               <option value="kg">kg</option>
               <option value="lbs">lbs</option>
             </select>
           </td>
-          <!-- Set 1 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="Weight" /></td>
+          <td><input type="number" placeholder="Reps" /></td>
           <!-- Set 2 -->
           <td>
-            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
           </td>
-          <td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="Weight" /></td>
+          <td><input type="number" placeholder="Reps" /></td>
           <!-- Set 3 -->
           <td>
-            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
           </td>
-          <td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="Weight" /></td>
+          <td><input type="number" placeholder="Reps" /></td>
           <!-- Set 4 -->
           <td>
-            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
           </td>
-          <td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="Weight" /></td>
+          <td><input type="number" placeholder="Reps" /></td>
           <!-- Set 5 -->
           <td>
-            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
           </td>
-          <td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="Weight" /></td>
+          <td><input type="number" placeholder="Reps" /></td>
           <!-- Set 6 -->
           <td>
-            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
           </td>
-          <td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="Weight" /></td>
+          <td><input type="number" placeholder="Reps" /></td>
         </tr>
       </tbody>
     </table>
@@ -339,18 +361,20 @@
     currentExerciseIndex = 1;
     const row = document.createElement("tr");
     row.innerHTML = `<td><strong>A.</strong>
-      <input type="text" placeholder="Exercise name" /></td>
-      <td>
-        <select class="set-weight-dropdown">
-          <option value="kg">kg</option>
-          <option value="lbs">lbs</option>
-        </select>
-      </td>` +
-      [...Array(6)].map(() =>
-        `<td>
+      <input type="text" placeholder="Exercise name" /></td>` +
+      [...Array(6)].map((_, idx) => {
+        const setIndex = idx + 1;
+        return `<td>
+          <select class="set-weight-dropdown">
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+          </select>
+        </td>
+        <td>
           <input type="number" placeholder="Weight" />
         </td>
-         <td><input type="number" placeholder="reps" /></td>`).join('');
+        <td><input type="number" placeholder="Reps" /></td>`;
+      }).join('');
     tbody.appendChild(row);
   };
 
@@ -367,18 +391,20 @@
     const row = document.createElement("tr");
     row.classList.add("exercise-row");
     row.innerHTML = `<td><strong>${letter}.</strong>
-      <input type="text" placeholder="Exercise name" /></td>
-      <td>
-        <select class="set-weight-dropdown">
-          <option value="kg">kg</option>
-          <option value="lbs">lbs</option>
-        </select>
-      </td>` +
-      [...Array(6)].map(() =>
-        `<td>
+      <input type="text" placeholder="Exercise name" /></td>` +
+      [...Array(6)].map((_, idx) => {
+        const setIndex = idx + 1;
+        return `<td>
+          <select class="set-weight-dropdown">
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+          </select>
+        </td>
+        <td>
           <input type="number" placeholder="Weight" />
         </td>
-         <td><input type="number" placeholder="reps" /></td>`).join('');
+        <td><input type="number" placeholder="Reps" /></td>`;
+      }).join('');
     tbody.appendChild(row);
     currentExerciseIndex++;
   });
@@ -386,5 +412,6 @@
 
 </body>
 </html>
+
 
 
