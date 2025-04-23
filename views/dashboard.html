@@ -269,7 +269,8 @@
 
 <div class="container">
   <div class="header">
-    <h1 id="welcome-message">Welcome!</h1>
+    <!-- Dynamic Welcome Message -->
+    <h1 id="welcome-message">Welcome, <span id="username">[Username]</span>!</h1>
     <p>Track your workouts and fitness journey</p>
   </div>
 
@@ -424,61 +425,40 @@
 </div>
 
 <script>
+  // Simulate a logged-in user for the purpose of this example
+  const username = "JohnDoe";  // Replace with dynamic user data
+
+  // Set the username in the welcome message
+  document.getElementById("username").textContent = username;
+
   // Handle opening and closing the workout modal
   const modal = document.getElementById('create-workout-modal');
   const addWorkoutBtn = document.getElementById('add-workout-btn');
   const closeModal = document.getElementById('close-workout-modal');
-  const body = document.body; // To toggle body scroll
-  let isEditing = false;
-  let currentWorkoutIndex = null;
-
-  addWorkoutBtn.onclick = function() {
+  const body = document.body; // For preventing scroll on modal open
+  
+  addWorkoutBtn.addEventListener('click', () => {
     modal.style.display = 'block';
-    body.classList.add('modal-open'); // Disable body scroll when modal is open
-    resetForm();
-  }
-
-  closeModal.onclick = function() {
-    modal.style.display = 'none';
-    body.classList.remove('modal-open'); // Enable body scroll when modal is closed
-  }
-
-  // Save workout functionality
-  document.getElementById('save-workout-btn').addEventListener('click', function() {
-    if (isEditing) {
-      alert('Workout Updated!');
-    } else {
-      alert('Workout Saved!');
-    }
-    modal.style.display = 'none';
-    body.classList.remove('modal-open');
+    body.style.overflow = 'hidden';  // Disable background scrolling
   });
-
-  // Edit workout functionality
-  document.getElementById('edit-workout-btn').addEventListener('click', function() {
-    isEditing = true;
-    alert('Editing workout ' + currentWorkoutIndex);
+  
+  closeModal.addEventListener('click', () => {
+    modal.style.display = 'none';
+    body.style.overflow = '';  // Re-enable background scrolling
   });
-
-  // Delete workout functionality
-  document.getElementById('delete-workout-btn').addEventListener('click', function() {
-    const confirmDelete = confirm('Are you sure you want to delete this workout?');
-    if (confirmDelete) {
-      alert('Workout deleted');
+  
+  // Close the modal if the user clicks outside the modal
+  window.addEventListener('click', (event) => {
+    if (event.target === modal) {
       modal.style.display = 'none';
-      body.classList.remove('modal-open');
+      body.style.overflow = '';  // Re-enable background scrolling
     }
   });
 
-  function resetForm() {
-    // Reset form fields if not editing
-    if (!isEditing) {
-      document.getElementById('workout-date').value = '';
-      document.getElementById('workout-name').value = '';
-    }
-    document.getElementById('save-workout-btn').style.display = 'block';
-    document.getElementById('edit-workout-btn').style.display = 'none';
-    document.getElementById('delete-workout-btn').style.display = 'none';
+  // Log out function (example)
+  function logout() {
+    alert("You have logged out.");
+    // Logic to clear session or JWT token and redirect to login page
   }
 </script>
 
