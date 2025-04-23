@@ -205,6 +205,22 @@
     body.modal-open {
       overflow: hidden;
     }
+
+    .form-section {
+      margin-top: 20px;
+    }
+
+    .form-section label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-section input[type="number"], .form-section select, .form-section textarea {
+      width: 100%;
+      padding: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -317,26 +333,36 @@
     </table>
 
     <!-- Additional Questions Below Table -->
-    <label>Did you progress your lifts?</label>
-    <select>
-      <option>Yes</option>
-      <option>No</option>
-    </select>
+    <div class="form-section">
+      <label>Did you progress your lifts?</label>
+      <select>
+        <option>Yes</option>
+        <option>No</option>
+      </select>
+    </div>
 
-    <label>Have you marked the exercise to progress next session?</label>
-    <select>
-      <option>Yes</option>
-      <option>No</option>
-    </select>
+    <div class="form-section">
+      <label>Have you marked the exercise to progress next session?</label>
+      <select>
+        <option>Yes</option>
+        <option>No</option>
+      </select>
+    </div>
 
-    <label>How do you feel the workout went out of 10?</label>
-    <input type="number" min="1" max="10" placeholder="1-10" />
+    <div class="form-section">
+      <label>How do you feel the workout went out of 10?</label>
+      <input type="number" min="1" max="10" placeholder="1-10" />
+    </div>
 
-    <label>Additional workout notes:</label>
-    <textarea placeholder="Type your notes here..." rows="4" style="width: 100%;"></textarea>
+    <div class="form-section">
+      <label>Additional workout notes:</label>
+      <textarea placeholder="Type your notes here..." rows="4"></textarea>
+    </div>
 
-    <label>Cardio:</label>
-    <textarea placeholder="Describe your cardio workout..." rows="4" style="width: 100%;"></textarea>
+    <div class="form-section">
+      <label>Cardio:</label>
+      <textarea placeholder="Describe your cardio workout..." rows="4"></textarea>
+    </div>
 
     <!-- Buttons -->
     <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
@@ -379,6 +405,7 @@
 
 </body>
 </html>
+
 
 
 
