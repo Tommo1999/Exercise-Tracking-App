@@ -73,27 +73,17 @@
       background-color: #c0392b;
     }
 
-    #recent-workouts-list {
-      list-style: none;
-      padding: 0;
-      margin-top: 10px;
-    }
-
-    .empty-message {
-      font-style: italic;
-      color: #777;
-    }
-
     .modal {
       display: none;
       position: fixed;
-      z-index: 1;
+      z-index: 1000;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
+      overflow-y: auto;
       background-color: rgba(0, 0, 0, 0.5);
-      padding-top: 60px;
+      padding-top: 40px;
     }
 
     .modal-content {
@@ -101,33 +91,9 @@
       margin: auto;
       padding: 20px;
       border-radius: 10px;
-      width: 80%;
-      max-width: 500px;
-    }
-
-    .modal input,
-    .modal textarea,
-    .modal select {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-
-    .modal button {
-      background-color: #27ae60;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .modal button:hover {
-      background-color: #219150;
+      width: 95%;
+      max-width: 1000px;
+      overflow-x: auto;
     }
 
     .modal .close {
@@ -142,6 +108,58 @@
       color: black;
       text-decoration: none;
       cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #27ae60;
+      color: white;
+    }
+
+    input[type="number"] {
+      width: 70px;
+      padding: 5px;
+      font-size: 0.9rem;
+    }
+
+    #add-exercise-row-btn {
+      margin-bottom: 20px;
+      background-color: #2980b9;
+    }
+
+    #add-exercise-row-btn:hover {
+      background-color: #1c5985;
+    }
+
+    #save-workout-btn {
+      background-color: #27ae60;
+    }
+
+    #save-workout-btn:hover {
+      background-color: #219150;
+    }
+
+    .modal label {
+      display: inline-block;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    .modal input[type="text"], .modal input[type="date"] {
+      padding: 8px;
+      font-size: 1rem;
+      margin-bottom: 15px;
     }
   </style>
 </head>
@@ -174,31 +192,51 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Workout Modal -->
 <div id="create-workout-modal" class="modal">
   <div class="modal-content">
     <span class="close" id="close-workout-modal">&times;</span>
     <h2>Create New Workout</h2>
 
-    <input type="text" id="workout-name" placeholder="Workout Name" required />
-    <textarea id="workout-description" placeholder="Workout Description"></textarea>
-    <input type="date" id="workout-date" required />
+    <label for="workout-date">Date:</label>
+    <input type="date" id="workout-date" />
 
-    <hr/>
+    <label for="workout-name" style="margin-left: 30px;">Workout:</label>
+    <input type="text" id="workout-name" placeholder="e.g. Upper Body" />
 
-    <h3>Exercise Details</h3>
-    <input type="text" id="exercise-name" placeholder="Exercise Name" required />
-    <textarea id="exercise-description" placeholder="Exercise Description"></textarea>
-    <div style="display: flex; gap: 10px;">
-      <input type="number" id="reps" placeholder="Reps" min="1" style="flex: 1;" />
-      <input type="number" id="weights" placeholder="Weight" min="1" style="flex: 1;" />
-      <select id="weight-units" style="flex: 1;">
-        <option value="kg">Kg</option>
-        <option value="lbs">Lbs</option>
-      </select>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Exercise</th>
+          <th colspan="2">Set 1</th>
+          <th colspan="2">Set 2</th>
+          <th colspan="2">Set 3</th>
+          <th colspan="2">Set 4</th>
+          <th colspan="2">Set 5</th>
+          <th colspan="2">Set 6</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+        </tr>
+      </thead>
+      <tbody id="exercise-rows">
+        <tr class="exercise-row" data-index="0">
+          <td><strong>A.</strong></td>
+          ${[...Array(6)].map(() => `
+            <td><input type="number" placeholder="kg/lbs" /></td>
+            <td><input type="number" placeholder="reps" /></td>
+          `).join('')}
+        </tr>
+      </tbody>
+    </table>
 
-    <button id="add-exercise-btn">Add Exercise</button>
+    <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
     <button id="save-workout-btn">Save Workout</button>
   </div>
 </div>
@@ -213,7 +251,10 @@
   }
 
   const workoutModal = document.getElementById("create-workout-modal");
-  const openWorkoutModal = () => workoutModal.style.display = "block";
+  const openWorkoutModal = () => {
+    workoutModal.style.display = "block";
+    resetExerciseRows();
+  };
   const closeWorkoutModal = () => workoutModal.style.display = "none";
 
   document.getElementById("add-workout-btn").addEventListener("click", openWorkoutModal);
@@ -225,112 +266,46 @@
     }
   };
 
-  let exerciseList = [];
+  const maxExercises = 10;
+  let currentExerciseIndex = 1;
 
-  const resetExerciseForm = () => {
-    document.getElementById("exercise-name").value = "";
-    document.getElementById("exercise-description").value = "";
-    document.getElementById("reps").value = "";
-    document.getElementById("weights").value = "";
-    document.getElementById("weight-units").value = "kg";
+  const resetExerciseRows = () => {
+    const tbody = document.getElementById("exercise-rows");
+    tbody.innerHTML = "";
+    currentExerciseIndex = 1;
+    const row = document.createElement("tr");
+    row.innerHTML = `<td><strong>A.</strong></td>` +
+      [...Array(6)].map(() =>
+        `<td><input type="number" placeholder="kg/lbs" /></td>
+         <td><input type="number" placeholder="reps" /></td>`
+      ).join('');
+    tbody.appendChild(row);
   };
 
-  document.getElementById("add-exercise-btn").addEventListener("click", () => {
-    const name = document.getElementById("exercise-name").value;
-    const description = document.getElementById("exercise-description").value;
-    const reps = document.getElementById("reps").value;
-    const weights = document.getElementById("weights").value;
-    const weightUnit = document.getElementById("weight-units").value;
-
-    if (!name || !reps || !weights) {
-      alert("Please fill in all exercise fields.");
+  document.getElementById("add-exercise-row-btn").addEventListener("click", () => {
+    if (currentExerciseIndex >= maxExercises) {
+      alert("Maximum of 10 exercises reached.");
       return;
     }
 
-    exerciseList.push({ name, description, reps, weights, weightUnit });
-    alert(`Exercise "${name}" added. Add more or click Save Workout.`);
-    resetExerciseForm();
-  });
+    const letters = "ABCDEFGHIJ";
+    const letter = letters[currentExerciseIndex];
+    const tbody = document.getElementById("exercise-rows");
 
-  document.getElementById("save-workout-btn").addEventListener("click", async () => {
-    const workoutType = document.getElementById("workout-name").value;
-    const workoutDescription = document.getElementById("workout-description").value;
-    const date = document.getElementById("workout-date").value;
-
-    if (!workoutType || !date || exerciseList.length === 0) {
-      alert("Please complete workout and add at least one exercise.");
-      return;
-    }
-
-    const data = {
-      username,
-      workoutType,
-      workoutDescription,
-      date,
-      exercises: exerciseList,
-    };
-
-    try {
-      const res = await fetch("/add-full-workout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        alert("Workout saved with all exercises!");
-        closeWorkoutModal();
-        exerciseList = [];
-      } else {
-        const result = await res.json();
-        alert(result.message || "Failed to save workout.");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Server error.");
-    }
-  });
-
-  document.getElementById("load-workouts-btn").addEventListener("click", async () => {
-    try {
-      const res = await fetch(`/get-workouts/${username}`);
-      const workouts = await res.json();
-
-      const list = document.getElementById("recent-workouts-list");
-      list.innerHTML = "";
-      if (workouts.length === 0) {
-        document.getElementById("no-workouts").style.display = "block";
-        list.style.display = "none";
-        return;
-      }
-
-      document.getElementById("no-workouts").style.display = "none";
-      list.style.display = "block";
-
-      workouts.forEach(w => {
-        const item = document.createElement("li");
-        item.innerHTML = `
-          <strong>${w.workoutType || 'Workout'}</strong><br/>
-          ${w.workoutDescription || ''}<br/>
-          ${
-            w.exercises
-              ? w.exercises.map(e =>
-                  `Exercise: ${e.name}, Reps: ${e.reps}, Weight: ${e.weights} ${e.weightUnit}`
-                ).join("<br/>")
-              : ""
-          }
-          <br/><small>${new Date(w.timestamp).toLocaleString()}</small>
-        `;
-        list.appendChild(item);
-      });
-    } catch (err) {
-      console.error("Failed to load workouts:", err);
-      alert("Error loading workouts.");
-    }
+    const row = document.createElement("tr");
+    row.classList.add("exercise-row");
+    row.innerHTML = `<td><strong>${letter}.</strong></td>` +
+      [...Array(6)].map(() =>
+        `<td><input type="number" placeholder="kg/lbs" /></td>
+         <td><input type="number" placeholder="reps" /></td>`
+      ).join('');
+    tbody.appendChild(row);
+    currentExerciseIndex++;
   });
 </script>
 
 </body>
 </html>
+
 
 

@@ -109,31 +109,42 @@ MongoClient.connect(MONGO_URI)
     // Add Full Workout (with multiple exercises)
     app.post('/add-full-workout', async (req, res) => {
       const { username, workoutType, workoutDescription, date, exercises } = req.body;
+
+      // Validate received data
       if (!username || !workoutType || !date || !Array.isArray(exercises) || exercises.length === 0) {
         return res.status(400).json({ message: 'Invalid workout data' });
       }
 
+      // Validate each exercise
       for (let ex of exercises) {
-        if (!ex.name || isNaN(ex.reps) || isNaN(ex.weights) || !['kg', 'lbs'].includes(ex.weightUnit)) {
+        if (!ex.name || !Array.isArray(ex.sets) || ex.sets.length === 0) {
           return res.status(400).json({ message: 'Invalid exercise data' });
+        }
+        for (let set of ex.sets) {
+          if (isNaN(set.weight) || isNaN(set.reps)) {
+            return res.status(400).json({ message: 'Invalid set data (weight/reps)' });
+          }
         }
       }
 
       try {
-        const docs = exercises.map((ex) => ({
-          username,
-          workoutType,
-          workoutDescription,
-          exercise: ex.name,
-          description: ex.description,
-          reps: Number(ex.reps),
-          weights: Number(ex.weights),
-          weightUnit: ex.weightUnit,
-          date,
-          timestamp: new Date(),
-        }));
+        // Process and save workout with exercises
+        const docs = exercises.map((ex) => (
+          ex.sets.map((set) => ({
+            username,
+            workoutType,
+            workoutDescription,
+            exercise: ex.name,
+            reps: Number(set.reps),
+            weights: Number(set.weight),
+            date,
+            timestamp: new Date(),
+          }))
+        )).flat(); // Flatten array to make sure all sets are individually inserted
 
+        // Insert all the sets into MongoDB
         await workoutsCollection.insertMany(docs);
+
         res.status(200).json({ message: 'Workout added with all exercises' });
       } catch (error) {
         console.error(error);
@@ -163,3 +174,4 @@ MongoClient.connect(MONGO_URI)
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
