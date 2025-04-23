@@ -236,6 +236,7 @@
       <thead>
         <tr>
           <th>Exercise</th>
+          <th>Unit</th>
           <th colspan="2">Set 1</th>
           <th colspan="2">Set 2</th>
           <th colspan="2">Set 3</th>
@@ -245,6 +246,7 @@
         </tr>
         <tr>
           <th></th>
+          <th>Weight Unit</th>
           <th>Weight</th><th>Reps</th>
           <th>Weight</th><th>Reps</th>
           <th>Weight</th><th>Reps</th>
@@ -258,53 +260,40 @@
           <td><strong>A.</strong>
             <input type="text" placeholder="Exercise name" />
           </td>
-          <!-- Weight and Unit selection -->
           <td>
-            <input type="number" placeholder="Weight" />
             <select class="set-weight-dropdown">
               <option value="kg">kg</option>
               <option value="lbs">lbs</option>
             </select>
           </td>
-          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 1 -->
           <td>
             <input type="number" placeholder="Weight" />
-            <select class="set-weight-dropdown">
-              <option value="kg">kg</option>
-              <option value="lbs">lbs</option>
-            </select>
           </td>
           <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 2 -->
           <td>
             <input type="number" placeholder="Weight" />
-            <select class="set-weight-dropdown">
-              <option value="kg">kg</option>
-              <option value="lbs">lbs</option>
-            </select>
           </td>
           <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 3 -->
           <td>
             <input type="number" placeholder="Weight" />
-            <select class="set-weight-dropdown">
-              <option value="kg">kg</option>
-              <option value="lbs">lbs</option>
-            </select>
           </td>
           <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 4 -->
           <td>
             <input type="number" placeholder="Weight" />
-            <select class="set-weight-dropdown">
-              <option value="kg">kg</option>
-              <option value="lbs">lbs</option>
-            </select>
           </td>
           <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 5 -->
           <td>
             <input type="number" placeholder="Weight" />
-            <select class="set-weight-dropdown">
-              <option value="kg">kg</option>
-              <option value="lbs">lbs</option>
-            </select>
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 6 -->
+          <td>
+            <input type="number" placeholder="Weight" />
           </td>
           <td><input type="number" placeholder="reps" /></td>
         </tr>
@@ -350,14 +339,16 @@
     currentExerciseIndex = 1;
     const row = document.createElement("tr");
     row.innerHTML = `<td><strong>A.</strong>
-      <input type="text" placeholder="Exercise name" /></td>` +
+      <input type="text" placeholder="Exercise name" /></td>
+      <td>
+        <select class="set-weight-dropdown">
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
+        </select>
+      </td>` +
       [...Array(6)].map(() =>
         `<td>
           <input type="number" placeholder="Weight" />
-          <select class="set-weight-dropdown">
-            <option value="kg">kg</option>
-            <option value="lbs">lbs</option>
-          </select>
         </td>
          <td><input type="number" placeholder="reps" /></td>`).join('');
     tbody.appendChild(row);
@@ -376,14 +367,16 @@
     const row = document.createElement("tr");
     row.classList.add("exercise-row");
     row.innerHTML = `<td><strong>${letter}.</strong>
-      <input type="text" placeholder="Exercise name" /></td>` +
+      <input type="text" placeholder="Exercise name" /></td>
+      <td>
+        <select class="set-weight-dropdown">
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
+        </select>
+      </td>` +
       [...Array(6)].map(() =>
         `<td>
           <input type="number" placeholder="Weight" />
-          <select class="set-weight-dropdown">
-            <option value="kg">kg</option>
-            <option value="lbs">lbs</option>
-          </select>
         </td>
          <td><input type="number" placeholder="reps" /></td>`).join('');
     tbody.appendChild(row);
