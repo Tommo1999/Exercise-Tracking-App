@@ -424,6 +424,36 @@
 </div>
 
 <script>
+// Show username in welcome message
+const welcomeMessage = document.getElementById("welcome-message");
+const usernameInput = document.getElementById("username");
+
+let username = localStorage.getItem("username") || "";
+if (username) {
+  usernameInput.value = username;
+  welcomeMessage.textContent = `Welcome, ${username}!`;
+}
+
+// Handle opening and closing the workout modal
+const modal = document.getElementById('create-workout-modal');
+const addWorkoutBtn = document.getElementById('add-workout-btn');
+const closeModal = document.getElementById('close-workout-modal');
+const body = document.body; // For preventing scroll on modal open
+
+addWorkoutBtn.addEventListener('click', () => {
+  modal.style.display = 'block';
+  body.style.overflow = 'hidden';  // Disable background scrolling
+});
+
+closeModal.addEventListener('click', () => {
+  modal.style.display = 'none';
+  body.style.overflow = '';  // Re-enable background scrolling
+});
+
+// Close the modal if the user clicks outside the modal
+window.addEventListener('click', (event) => {
+  if (event.target === modal) {
+
   const modal = document.getElementById('create-workout-modal');
   const addWorkoutBtn = document.getElementById('add-workout-btn');
   const closeModal = document.getElementById('close-workout-modal');
