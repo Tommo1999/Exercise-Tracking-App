@@ -171,6 +171,20 @@
       box-sizing: border-box;
     }
 
+    /* Exercise name under the A. inside the same box */
+    .exercise-row td:first-child {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .exercise-row td:first-child input[type="text"] {
+      margin-top: 5px;
+      width: 100%;
+      font-size: 0.8rem;
+      padding: 6px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -237,8 +251,9 @@
       </thead>
       <tbody id="exercise-rows">
         <tr class="exercise-row" data-index="0">
-          <td><strong>A.</strong></td>
-          <td><input type="text" placeholder="Exercise name" /></td>
+          <td><strong>A.</strong>
+            <input type="text" placeholder="Exercise name" />
+          </td>
           <td><input type="number" placeholder="kg/lbs" /></td>
           <td><input type="number" placeholder="reps" /></td>
           <td><input type="number" placeholder="kg/lbs" /></td>
@@ -291,8 +306,8 @@
     tbody.innerHTML = "";
     currentExerciseIndex = 1;
     const row = document.createElement("tr");
-    row.innerHTML = `<td><strong>A.</strong></td>
-      <td><input type="text" placeholder="Exercise name" /></td>` +
+    row.innerHTML = `<td><strong>A.</strong>
+      <input type="text" placeholder="Exercise name" /></td>` +
       [...Array(6)].map(() =>
         `<td><input type="number" placeholder="kg/lbs" /></td>
          <td><input type="number" placeholder="reps" /></td>`).join('');
@@ -311,8 +326,8 @@
 
     const row = document.createElement("tr");
     row.classList.add("exercise-row");
-    row.innerHTML = `<td><strong>${letter}.</strong></td>
-      <td><input type="text" placeholder="Exercise name" /></td>` +
+    row.innerHTML = `<td><strong>${letter}.</strong>
+      <input type="text" placeholder="Exercise name" /></td>` +
       [...Array(6)].map(() =>
         `<td><input type="number" placeholder="kg/lbs" /></td>
          <td><input type="number" placeholder="reps" /></td>`).join('');
@@ -323,8 +338,6 @@
 
 </body>
 </html>
-
-
 
 
 
