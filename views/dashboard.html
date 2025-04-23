@@ -127,7 +127,7 @@
       color: white;
     }
 
-    input[type="number"] {
+    input[type="number"], input[type="text"] {
       width: 70px;
       padding: 5px;
       font-size: 0.9rem;
@@ -157,6 +157,13 @@
     }
 
     .modal input[type="text"], .modal input[type="date"] {
+      padding: 8px;
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+
+    .exercise-name {
+      width: 100%;
       padding: 8px;
       font-size: 1rem;
       margin-bottom: 15px;
@@ -227,11 +234,13 @@
       </thead>
       <tbody id="exercise-rows">
         <tr class="exercise-row" data-index="0">
-          <td><strong>A.</strong></td>
-          ${[...Array(6)].map(() => `
-            <td><input type="number" placeholder="kg/lbs" /></td>
-            <td><input type="number" placeholder="reps" /></td>
-          `).join('')}
+          <td><input type="text" class="exercise-name" placeholder="Exercise name" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>
+          <td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>
         </tr>
       </tbody>
     </table>
@@ -274,11 +283,13 @@
     tbody.innerHTML = "";
     currentExerciseIndex = 1;
     const row = document.createElement("tr");
-    row.innerHTML = `<td><strong>A.</strong></td>` +
-      [...Array(6)].map(() =>
-        `<td><input type="number" placeholder="kg/lbs" /></td>
-         <td><input type="number" placeholder="reps" /></td>`
-      ).join('');
+    row.innerHTML = `<td><input type="text" class="exercise-name" placeholder="Exercise name" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>`;
     tbody.appendChild(row);
   };
 
@@ -288,17 +299,17 @@
       return;
     }
 
-    const letters = "ABCDEFGHIJ";
-    const letter = letters[currentExerciseIndex];
     const tbody = document.getElementById("exercise-rows");
 
     const row = document.createElement("tr");
     row.classList.add("exercise-row");
-    row.innerHTML = `<td><strong>${letter}.</strong></td>` +
-      [...Array(6)].map(() =>
-        `<td><input type="number" placeholder="kg/lbs" /></td>
-         <td><input type="number" placeholder="reps" /></td>`
-      ).join('');
+    row.innerHTML = `<td><input type="text" class="exercise-name" placeholder="Exercise name" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>` +
+      `<td><input type="number" placeholder="kg/lbs" /></td><td><input type="number" placeholder="reps" /></td>`;
     tbody.appendChild(row);
     currentExerciseIndex++;
   });
