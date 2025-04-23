@@ -425,12 +425,12 @@
 
 <script>
 // Show username in welcome message
-  const welcomeMessage = document.getElementById("welcome-message");
+const welcomeMessage = document.getElementById("welcome-message");
 
-  let username = localStorage.getItem("username") || "";
-  if (username) {
-    welcomeMessage.textContent = `Welcome, ${username}!`;
-  }
+let username = localStorage.getItem("username") || "";
+if (username) {
+  welcomeMessage.textContent = `Welcome, ${username}!`;
+}
 
 // Handle opening and closing the workout modal
 const modal = document.getElementById('create-workout-modal');
