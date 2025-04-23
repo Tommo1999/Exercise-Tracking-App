@@ -425,11 +425,15 @@
 </div>
 
 <script>
-  // Simulate a logged-in user for the purpose of this example
-  const username = "JohnDoe";  // Replace with dynamic user data
+// Show username in welcome message
+    const welcomeMessage = document.getElementById("welcome-message");
+    const usernameInput = document.getElementById("username");
 
-  // Set the username in the welcome message
-  document.getElementById("username").textContent = username;
+    let username = localStorage.getItem("username") || "";
+    if (username) {
+      usernameInput.value = username;
+      welcomeMessage.textContent = `Welcome, ${username}!`;
+    }
 
   // Handle opening and closing the workout modal
   const modal = document.getElementById('create-workout-modal');
