@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
-const ExcelJS = require('exceljs');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const nodemailer = require('nodemailer');
@@ -67,48 +66,9 @@ MongoClient.connect(MONGO_URI)
       res.status(200).json({ success: true, username: user.username });
     });
 
-    // Forgot Password
-    app.post('/forgot-password', async (req, res) => {
-      const { usernameOrEmail } = req.body;
-      const user = await usersCollection.findOne({
-        $or: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
-      });
-      if (!user) return res.send('User not found');
-      const resetToken = crypto.randomBytes(20).toString('hex');
-      const resetLink = `http://localhost:${PORT}/reset-password/${resetToken}`;
-      await usersCollection.updateOne(
-        { _id: user._id },
-        { $set: { resetToken, resetTokenExpiration: Date.now() + 3600000 } }
-      );
-      const mailOptions = {
-        from: process.env.EMAIL,
-        to: user.email,
-        subject: 'Password Reset',
-        text: `Click to reset your password: ${resetLink}`,
-      };
-      transporter.sendMail(mailOptions);
-      res.send('Password reset link has been sent');
-    });
-
-    app.post('/reset-password/:token', async (req, res) => {
-      const { token } = req.params;
-      const { password } = req.body;
-      const user = await usersCollection.findOne({
-        resetToken: token,
-        resetTokenExpiration: { $gt: Date.now() },
-      });
-      if (!user) return res.send('Token is invalid or expired');
-      const hashedPassword = await bcrypt.hash(password, 12);
-      await usersCollection.updateOne(
-        { _id: user._id },
-        { $set: { password: hashedPassword, resetToken: null, resetTokenExpiration: null } }
-      );
-      res.send('Password reset successfully');
-    });
-
     // Add Full Workout (with multiple exercises)
     app.post('/add-full-workout', async (req, res) => {
-      const { username, workoutType, workoutDescription, date, exercises } = req.body;
+      const { username, workoutType, workoutDescription, date, exercises, progress, nextSessionMark, workoutRating, additionalNotes, cardio } = req.body;
 
       // Validate received data
       if (!username || !workoutType || !date || !Array.isArray(exercises) || exercises.length === 0) {
@@ -134,11 +94,19 @@ MongoClient.connect(MONGO_URI)
             username,
             workoutType,
             workoutDescription,
-            exercise: ex.name,
-            reps: Number(set.reps),
-            weights: Number(set.weight),
+            exerciseName: ex.name, // Use exerciseName
+            weightUnit: ex.weightUnit || 'kg', // Default to kg if no weightUnit is provided
+            sets: ex.sets.map((set) => ({
+              weight: Number(set.weight), // Weight is a number
+              reps: Number(set.reps), // Reps are a number
+            })),
+            progress, // Whether the user has made progress
+            nextSessionMark, // Whether the exercise is marked for progress next session
+            workoutRating, // Rating of workout (1-10)
+            additionalNotes, // Any additional workout notes
+            cardio: cardio || "", // Treat cardio as a separate field, defaulting to an empty string if not provided
             date,
-            timestamp: new Date(),
+            timestamp: new Date(), // Current timestamp
           }))
         )).flat(); // Flatten array to make sure all sets are individually inserted
 
