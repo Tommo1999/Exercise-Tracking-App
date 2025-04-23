@@ -93,9 +93,7 @@
       border-radius: 10px;
       width: 95%;
       max-width: 1000px;
-      overflow-x: hidden;
-      max-height: 90vh;
-      overflow-y: auto;
+      overflow-x: auto;
     }
 
     .modal .close {
@@ -158,6 +156,22 @@
       background-color: #219150;
     }
 
+    #edit-workout-btn {
+      background-color: #f39c12;
+    }
+
+    #edit-workout-btn:hover {
+      background-color: #e67e22;
+    }
+
+    #delete-workout-btn {
+      background-color: #e74c3c;
+    }
+
+    #delete-workout-btn:hover {
+      background-color: #c0392b;
+    }
+
     .modal label {
       display: inline-block;
       margin-right: 10px;
@@ -192,35 +206,27 @@
       text-align: center;
     }
 
-    /* Additional form styles */
-    textarea {
-      width: 100%;
-      padding: 10px;
-      font-size: 0.9rem;
-      resize: vertical;
-      margin-bottom: 15px;
+    .modal .question {
+      margin-bottom: 20px;
     }
 
-    /* Disable body scroll when modal is open */
-    body.modal-open {
-      overflow: hidden;
-    }
-
-    .form-section {
-      margin-top: 20px;
-    }
-
-    .form-section label {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .form-section input[type="number"], .form-section select, .form-section textarea {
-      width: 100%;
+    .modal .question input {
       padding: 8px;
-      font-size: 0.9rem;
-      margin-bottom: 10px;
+      margin-top: 10px;
     }
+
+    .modal .question select {
+      padding: 8px;
+      margin-top: 10px;
+    }
+
+    .modal .question textarea {
+      padding: 8px;
+      margin-top: 10px;
+      width: 100%;
+      height: 100px;
+    }
+
   </style>
 </head>
 <body>
@@ -261,7 +267,7 @@
     <label for="workout-date">Date:</label>
     <input type="date" id="workout-date" />
 
-    <label for="workout-name" style="margin-left: 30px;">Workout:</label>
+    <label for="workout-name">Workout:</label>
     <input type="text" id="workout-name" placeholder="e.g. Upper Body" />
 
     <table>
@@ -332,41 +338,44 @@
       </tbody>
     </table>
 
-    <!-- Additional Questions Below Table -->
-    <div class="form-section">
-      <label>Did you progress your lifts?</label>
+    <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
+
+    <!-- New questions under the workout table -->
+    <div class="question">
+      <label>Did you progress your lifts? (Yes/No)</label>
       <select>
-        <option>Yes</option>
-        <option>No</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
       </select>
     </div>
 
-    <div class="form-section">
-      <label>Have you marked the exercise to progress next session?</label>
+    <div class="question">
+      <label>Have you marked the exercise where you are to progress next session? (Yes/No)</label>
       <select>
-        <option>Yes</option>
-        <option>No</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
       </select>
     </div>
 
-    <div class="form-section">
-      <label>How do you feel the workout went out of 10?</label>
-      <input type="number" min="1" max="10" placeholder="1-10" />
+    <div class="question">
+      <label>How do you feel the workout went? (1-10)</label>
+      <input type="number" min="1" max="10" />
     </div>
 
-    <div class="form-section">
-      <label>Additional workout notes:</label>
-      <textarea placeholder="Type your notes here..." rows="4"></textarea>
+    <div class="question">
+      <label>Additional Workout Notes</label>
+      <textarea placeholder="Write any notes..." rows="4"></textarea>
     </div>
 
-    <div class="form-section">
+    <div class="question">
       <label>Cardio:</label>
       <textarea placeholder="Describe your cardio workout..." rows="4"></textarea>
     </div>
 
-    <!-- Buttons -->
-    <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
+    <!-- Buttons for saving, editing, and deleting workouts -->
     <button id="save-workout-btn">Save Workout</button>
+    <button id="edit-workout-btn" style="display:none;">Edit Workout</button>
+    <button id="delete-workout-btn" style="display:none;">Delete Workout</button>
   </div>
 </div>
 
@@ -376,10 +385,13 @@
   const addWorkoutBtn = document.getElementById('add-workout-btn');
   const closeModal = document.getElementById('close-workout-modal');
   const body = document.body; // To toggle body scroll
+  let isEditing = false;
+  let currentWorkoutIndex = null;
 
   addWorkoutBtn.onclick = function() {
     modal.style.display = 'block';
     body.classList.add('modal-open'); // Disable body scroll when modal is open
+    resetForm();
   }
 
   closeModal.onclick = function() {
@@ -387,24 +399,48 @@
     body.classList.remove('modal-open'); // Enable body scroll when modal is closed
   }
 
-  window.onclick = function(event) {
-    if (event.target === modal) {
-      modal.style.display = 'none';
-      body.classList.remove('modal-open'); // Enable body scroll when modal is closed
-    }
-  }
-
   // Save workout functionality
   document.getElementById('save-workout-btn').addEventListener('click', function() {
-    // Save the workout data (you can modify this to send data to a server)
-    alert('Workout Saved!');
+    if (isEditing) {
+      alert('Workout Updated!');
+    } else {
+      alert('Workout Saved!');
+    }
     modal.style.display = 'none';
     body.classList.remove('modal-open');
   });
+
+  // Edit workout functionality
+  document.getElementById('edit-workout-btn').addEventListener('click', function() {
+    isEditing = true;
+    alert('Editing workout ' + currentWorkoutIndex);
+  });
+
+  // Delete workout functionality
+  document.getElementById('delete-workout-btn').addEventListener('click', function() {
+    const confirmDelete = confirm('Are you sure you want to delete this workout?');
+    if (confirmDelete) {
+      alert('Workout deleted');
+      modal.style.display = 'none';
+      body.classList.remove('modal-open');
+    }
+  });
+
+  function resetForm() {
+    // Reset form fields if not editing
+    if (!isEditing) {
+      document.getElementById('workout-date').value = '';
+      document.getElementById('workout-name').value = '';
+    }
+    document.getElementById('save-workout-btn').style.display = 'block';
+    document.getElementById('edit-workout-btn').style.display = 'none';
+    document.getElementById('delete-workout-btn').style.display = 'none';
+  }
 </script>
 
 </body>
 </html>
+
 
 
 
