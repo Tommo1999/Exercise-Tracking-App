@@ -107,7 +107,7 @@ MongoClient.connect(MONGO_URI)
       res.send('Password reset successfully');
     });
 
-    // ✅ Add Full Workout (Updated & Flat Structure)
+    // Add Full Workout (Updated & Flat Structure)
     app.post('/add-full-workout', async (req, res) => {
       const {
         username,

@@ -269,7 +269,8 @@
 
 <div class="container">
   <div class="header">
-    <h1 id="welcome-message">Welcome!</h1>
+    <!-- Dynamic Welcome Message -->
+    <h1 id="welcome-message">Welcome, <span id="username">[Username]</span>!</h1>
     <p>Track your workouts and fitness journey</p>
   </div>
 
@@ -424,62 +425,101 @@
 </div>
 
 <script>
-  // Handle opening and closing the workout modal
-  const modal = document.getElementById('create-workout-modal');
-  const addWorkoutBtn = document.getElementById('add-workout-btn');
-  const closeModal = document.getElementById('close-workout-modal');
-  const body = document.body; // To toggle body scroll
-  let isEditing = false;
-  let currentWorkoutIndex = null;
+// Show username in welcome message
+const welcomeMessage = document.getElementById("welcome-message");
+const usernameInput = document.getElementById("username");
 
-  addWorkoutBtn.onclick = function() {
-    modal.style.display = 'block';
-    body.classList.add('modal-open'); // Disable body scroll when modal is open
-    resetForm();
-  }
+let username = localStorage.getItem("username") || "";
+if (username) {
+  usernameInput.value = username;
+  welcomeMessage.textContent = `Welcome, ${username}!`;
+}
 
-  closeModal.onclick = function() {
+// Handle opening and closing the workout modal
+const modal = document.getElementById('create-workout-modal');
+const addWorkoutBtn = document.getElementById('add-workout-btn');
+const closeModal = document.getElementById('close-workout-modal');
+const body = document.body; // For preventing scroll on modal open
+
+addWorkoutBtn.addEventListener('click', () => {
+  modal.style.display = 'block';
+  body.style.overflow = 'hidden';  // Disable background scrolling
+});
+
+closeModal.addEventListener('click', () => {
+  modal.style.display = 'none';
+  body.style.overflow = '';  // Re-enable background scrolling
+});
+
+// Close the modal if the user clicks outside the modal
+window.addEventListener('click', (event) => {
+  if (event.target === modal) {
     modal.style.display = 'none';
-    body.classList.remove('modal-open'); // Enable body scroll when modal is closed
+    body.style.overflow = '';  // Re-enable background scrolling
   }
+});
 
-  // Save workout functionality
-  document.getElementById('save-workout-btn').addEventListener('click', function() {
-    if (isEditing) {
-      alert('Workout Updated!');
-    } else {
-      alert('Workout Saved!');
+// Handle Save Workout Button
+document.getElementById('save-workout-btn').addEventListener('click', async function(e) {
+  e.preventDefault(); // Prevent form submission behavior
+
+  // Collect workout data
+  const workoutData = {
+    workoutName: document.getElementById('workout-name').value,
+    workoutDate: document.getElementById('workout-date').value,
+    exercises: [],
+    progressLifts: document.querySelector('.question select').value, // Progress your lifts
+    progressNextSession: document.querySelector('.question select:nth-of-type(2)').value, // Progress for next session
+    workoutRating: document.querySelector('.question input[type="number"]').value, // Workout rating
+    additionalNotes: document.querySelector('.question textarea').value, // Additional notes
+    cardioDescription: document.querySelector('.modal .question textarea:nth-of-type(2)').value, // Cardio
+  };
+
+  // Collect exercises from the table
+  const exerciseRows = document.querySelectorAll('.exercise-row');
+  exerciseRows.forEach((row) => {
+    const exerciseName = row.querySelector('input[type="text"]').value;
+    const unit = row.querySelector('.set-weight-dropdown').value;
+
+    const sets = [];
+    for (let i = 1; i <= 6; i++) {
+      const weight = row.querySelector(`td:nth-child(${2 + i * 2}) input[type="number"]`).value;
+      const reps = row.querySelector(`td:nth-child(${3 + i * 2}) input[type="number"]`).value;
+      sets.push({ weight, reps });
     }
-    modal.style.display = 'none';
-    body.classList.remove('modal-open');
+
+    workoutData.exercises.push({ exerciseName, unit, sets });
   });
 
-  // Edit workout functionality
-  document.getElementById('edit-workout-btn').addEventListener('click', function() {
-    isEditing = true;
-    alert('Editing workout ' + currentWorkoutIndex);
-  });
+  // Send the workout data to the server
+  try {
+    const response = await fetch('/save-workout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(workoutData),
+    });
 
-  // Delete workout functionality
-  document.getElementById('delete-workout-btn').addEventListener('click', function() {
-    const confirmDelete = confirm('Are you sure you want to delete this workout?');
-    if (confirmDelete) {
-      alert('Workout deleted');
+    const result = await response.json();
+    if (response.ok) {
+      alert('Workout saved successfully!');
       modal.style.display = 'none';
-      body.classList.remove('modal-open');
+      body.style.overflow = ''; // Re-enable background scrolling
+    } else {
+      alert('Error saving workout: ' + result.message);
     }
-  });
-
-  function resetForm() {
-    // Reset form fields if not editing
-    if (!isEditing) {
-      document.getElementById('workout-date').value = '';
-      document.getElementById('workout-name').value = '';
-    }
-    document.getElementById('save-workout-btn').style.display = 'block';
-    document.getElementById('edit-workout-btn').style.display = 'none';
-    document.getElementById('delete-workout-btn').style.display = 'none';
+  } catch (error) {
+    console.error('Error saving workout:', error);
+    alert('There was an error saving your workout. Please try again later.');
   }
+});
+
+// Log out function (example)
+function logout() {
+  alert("You have logged out.");
+  // Logic to clear session or JWT token and redirect to login page
+}
 </script>
 
 </body>
