@@ -94,6 +94,8 @@
       width: 95%;
       max-width: 1000px;
       overflow-x: auto;
+      max-height: 90%;
+      overflow-y: auto;
     }
 
     .modal .close {
@@ -150,6 +152,7 @@
 
     #save-workout-btn {
       background-color: #27ae60;
+      margin-left: 10px;
     }
 
     #save-workout-btn:hover {
@@ -206,6 +209,28 @@
       text-align: center;
     }
 
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header .btn-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* New styles for horizontal scroll */
+    .horizontal-scroll {
+      overflow-x: auto;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .horizontal-scroll table {
+      min-width: 1000px;
+    }
+
     .modal .question {
       margin-bottom: 20px;
     }
@@ -225,6 +250,17 @@
       margin-top: 10px;
       width: 100%;
       height: 100px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header .btn-container {
+      display: flex;
+      gap: 10px;
     }
 
   </style>
@@ -262,81 +298,90 @@
 <div id="create-workout-modal" class="modal">
   <div class="modal-content">
     <span class="close" id="close-workout-modal">&times;</span>
-    <h2>Create New Workout</h2>
+    
+    <div class="modal-header">
+      <div>
+        <label for="workout-name">Workout:</label>
+        <input type="text" id="workout-name" placeholder="e.g. Upper Body" />
+      </div>
+      <div class="btn-container">
+        <button id="save-workout-btn">Save Workout</button>
+      </div>
+    </div>
 
     <label for="workout-date">Date:</label>
     <input type="date" id="workout-date" />
 
-    <label for="workout-name">Workout:</label>
-    <input type="text" id="workout-name" placeholder="e.g. Upper Body" />
-
-    <table>
-      <thead>
-        <tr>
-          <th>Exercise</th>
-          <th>Unit</th>
-          <th colspan="2">Set 1</th>
-          <th colspan="2">Set 2</th>
-          <th colspan="2">Set 3</th>
-          <th colspan="2">Set 4</th>
-          <th colspan="2">Set 5</th>
-          <th colspan="2">Set 6</th>
-        </tr>
-        <tr>
-          <th></th>
-          <th>Weight Unit</th>
-          <th>Weight</th><th>Reps</th>
-          <th>Weight</th><th>Reps</th>
-          <th>Weight</th><th>Reps</th>
-          <th>Weight</th><th>Reps</th>
-          <th>Weight</th><th>Reps</th>
-          <th>Weight</th><th>Reps</th>
-        </tr>
-      </thead>
-      <tbody id="exercise-rows">
-        <tr class="exercise-row" data-index="0">
-          <td><strong>A.</strong>
-            <input type="text" placeholder="Exercise name" />
-          </td>
-          <td>
-            <select class="set-weight-dropdown">
-              <option value="kg">kg</option>
-              <option value="lbs">lbs</option>
-            </select>
-          </td>
-          <!-- Set 1 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-          <!-- Set 2 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-          <!-- Set 3 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-          <!-- Set 4 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-          <!-- Set 5 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-          <!-- Set 6 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Horizontal scroll container for the table -->
+    <div class="horizontal-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Exercise</th>
+            <th>Unit</th>
+            <th colspan="2">Set 1</th>
+            <th colspan="2">Set 2</th>
+            <th colspan="2">Set 3</th>
+            <th colspan="2">Set 4</th>
+            <th colspan="2">Set 5</th>
+            <th colspan="2">Set 6</th>
+          </tr>
+          <tr>
+            <th></th>
+            <th>Weight Unit</th>
+            <th>Weight</th><th>Reps</th>
+            <th>Weight</th><th>Reps</th>
+            <th>Weight</th><th>Reps</th>
+            <th>Weight</th><th>Reps</th>
+            <th>Weight</th><th>Reps</th>
+            <th>Weight</th><th>Reps</th>
+          </tr>
+        </thead>
+        <tbody id="exercise-rows">
+          <tr class="exercise-row" data-index="0">
+            <td><strong>A.</strong>
+              <input type="text" placeholder="Exercise name" />
+            </td>
+            <td>
+              <select class="set-weight-dropdown">
+                <option value="kg">kg</option>
+                <option value="lbs">lbs</option>
+              </select>
+            </td>
+            <!-- Set 1 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+            <!-- Set 2 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+            <!-- Set 3 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+            <!-- Set 4 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+            <!-- Set 5 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+            <!-- Set 6 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
 
@@ -372,8 +417,7 @@
       <textarea placeholder="Describe your cardio workout..." rows="4"></textarea>
     </div>
 
-    <!-- Buttons for saving, editing, and deleting workouts -->
-    <button id="save-workout-btn">Save Workout</button>
+    <!-- Buttons for editing and deleting workouts -->
     <button id="edit-workout-btn" style="display:none;">Edit Workout</button>
     <button id="delete-workout-btn" style="display:none;">Delete Workout</button>
   </div>
