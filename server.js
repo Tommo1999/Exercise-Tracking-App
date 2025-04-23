@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
+const ExcelJS = require('exceljs'); // Ensure this is included
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const nodemailer = require('nodemailer');
@@ -64,6 +65,45 @@ MongoClient.connect(MONGO_URI)
       const isPasswordCorrect = await bcrypt.compare(password, user.password);
       if (!isPasswordCorrect) return res.status(401).json({ success: false, message: 'Invalid password.' });
       res.status(200).json({ success: true, username: user.username });
+    });
+
+    // Forgot Password
+    app.post('/forgot-password', async (req, res) => {
+      const { usernameOrEmail } = req.body;
+      const user = await usersCollection.findOne({
+        $or: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
+      });
+      if (!user) return res.send('User not found');
+      const resetToken = crypto.randomBytes(20).toString('hex');
+      const resetLink = `http://localhost:${PORT}/reset-password/${resetToken}`;
+      await usersCollection.updateOne(
+        { _id: user._id },
+        { $set: { resetToken, resetTokenExpiration: Date.now() + 3600000 } }
+      );
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: user.email,
+        subject: 'Password Reset',
+        text: `Click to reset your password: ${resetLink}`,
+      };
+      transporter.sendMail(mailOptions);
+      res.send('Password reset link has been sent');
+    });
+
+    app.post('/reset-password/:token', async (req, res) => {
+      const { token } = req.params;
+      const { password } = req.body;
+      const user = await usersCollection.findOne({
+        resetToken: token,
+        resetTokenExpiration: { $gt: Date.now() },
+      });
+      if (!user) return res.send('Token is invalid or expired');
+      const hashedPassword = await bcrypt.hash(password, 12);
+      await usersCollection.updateOne(
+        { _id: user._id },
+        { $set: { password: hashedPassword, resetToken: null, resetTokenExpiration: null } }
+      );
+      res.send('Password reset successfully');
     });
 
     // Add Full Workout (with multiple exercises)
@@ -135,6 +175,60 @@ MongoClient.connect(MONGO_URI)
         res.status(500).json({ message: "Failed to fetch workouts" });
       }
     });
+// Export workouts as Excel
+app.get('/export-workouts', async (req, res) => {
+  const { username } = req.query;
+  if (!username) return res.status(400).json({ message: "Username is required" });
+
+  try {
+    const workouts = await workoutsCollection.find({ username }).toArray();
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Workouts');
+
+    // Add column headers (including the updated fields)
+    worksheet.columns = [
+      { header: 'Exercise Name', key: 'exerciseName' },
+      { header: 'Weight Unit', key: 'weightUnit' },
+      { header: 'Weight', key: 'weight' },
+      { header: 'Reps', key: 'reps' },
+      { header: 'Date', key: 'date' },
+      { header: 'Progress Your Lifts', key: 'progressYourLifts' }, // Corrected
+      { header: 'Progress for Next Session', key: 'progressForNextSession' }, // Corrected
+      { header: 'Workout Rating', key: 'workoutRating' }, // Corrected
+      { header: 'Additional Notes', key: 'additionalNotes' }, // Corrected
+      { header: 'Cardio', key: 'cardio' }, // Cardio column
+    ];
+
+    // Add workout data
+    workouts.forEach((workout) => {
+      workout.sets.forEach((set) => {
+        worksheet.addRow({
+          exerciseName: workout.exerciseName,
+          weightUnit: workout.weightUnit,
+          weight: set.weight,
+          reps: set.reps,
+          date: workout.date,
+          progressYourLifts: workout.progressYourLifts, // Corrected field
+          progressForNextSession: workout.progressForNextSession, // Corrected field
+          workoutRating: workout.workoutRating, // Corrected field
+          additionalNotes: workout.additionalNotes, // Corrected field
+          cardio: workout.cardio, // Cardio data
+        });
+      });
+    });
+
+    // Set response headers for downloading the Excel file
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=workouts.xlsx');
+
+    // Write workbook to the response stream
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    console.error("Error exporting workouts:", error);
+    res.status(500).json({ message: "Failed to export workouts" });
+  }
+});
 
   })
   .catch((err) => console.error(`Failed to connect to MongoDB: ${err}`));
