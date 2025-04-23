@@ -258,21 +258,55 @@
           <td><strong>A.</strong>
             <input type="text" placeholder="Exercise name" />
           </td>
-          <td><input type="number" placeholder="kg/lbs" /></td>
-          <td><input type="number" placeholder="reps" /></td>
-          <td><input type="number" placeholder="kg/lbs" /></td>
-          <td><input type="number" placeholder="reps" /></td>
-          <td><input type="number" placeholder="kg/lbs" /></td>
-          <td><input type="number" placeholder="reps" /></td>
-          <td><input type="number" placeholder="kg/lbs" /></td>
-          <td><input type="number" placeholder="reps" /></td>
-          <td><input type="number" placeholder="kg/lbs" /></td>
-          <td><input type="number" placeholder="reps" /></td>
-          <td><select class="set-weight-dropdown">
+          <!-- Weight and Unit selection -->
+          <td>
+            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
               <option value="kg">kg</option>
               <option value="lbs">lbs</option>
             </select>
           </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <td>
+            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <td>
+            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <td>
+            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <td>
+            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <td>
+            <input type="number" placeholder="Weight" />
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
         </tr>
       </tbody>
     </table>
@@ -318,13 +352,14 @@
     row.innerHTML = `<td><strong>A.</strong>
       <input type="text" placeholder="Exercise name" /></td>` +
       [...Array(6)].map(() =>
-        `<td><input type="number" placeholder="kg/lbs" /></td>
-         <td><input type="number" placeholder="reps" /></td>
-         <td><select class="set-weight-dropdown">
-              <option value="kg">kg</option>
-              <option value="lbs">lbs</option>
-            </select>
-         </td>`).join('');
+        `<td>
+          <input type="number" placeholder="Weight" />
+          <select class="set-weight-dropdown">
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+          </select>
+        </td>
+         <td><input type="number" placeholder="reps" /></td>`).join('');
     tbody.appendChild(row);
   };
 
@@ -343,13 +378,14 @@
     row.innerHTML = `<td><strong>${letter}.</strong>
       <input type="text" placeholder="Exercise name" /></td>` +
       [...Array(6)].map(() =>
-        `<td><input type="number" placeholder="kg/lbs" /></td>
-         <td><input type="number" placeholder="reps" /></td>
-         <td><select class="set-weight-dropdown">
-              <option value="kg">kg</option>
-              <option value="lbs">lbs</option>
-            </select>
-         </td>`).join('');
+        `<td>
+          <input type="number" placeholder="Weight" />
+          <select class="set-weight-dropdown">
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+          </select>
+        </td>
+         <td><input type="number" placeholder="reps" /></td>`).join('');
     tbody.appendChild(row);
     currentExerciseIndex++;
   });
@@ -357,7 +393,5 @@
 
 </body>
 </html>
-
-
 
 
