@@ -255,83 +255,97 @@
           <th>Weight</th><th>Reps</th>
         </tr>
       </thead>
-      <tbody id="exercise-rows"></tbody>
+      <tbody id="exercise-rows">
+        <tr class="exercise-row" data-index="0">
+          <td><strong>A.</strong>
+            <input type="text" placeholder="Exercise name" />
+          </td>
+          <td>
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
+          </td>
+          <!-- Set 1 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 2 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 3 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 4 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 5 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 6 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+        </tr>
+      </tbody>
     </table>
 
     <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
+
+    <!-- Workout Summary Section -->
+    <div style="margin-top: 30px;">
+      <h3>Workout Summary</h3>
+
+      <!-- 1. Progressed Lifts -->
+      <label>Did you progress your lifts?</label><br>
+      <input type="radio" name="progressed-lifts" id="progressed-yes" value="yes">
+      <label for="progressed-yes">Yes</label>
+      <input type="radio" name="progressed-lifts" id="progressed-no" value="no">
+      <label for="progressed-no">No</label><br><br>
+
+      <!-- 2. Marked for Next Session -->
+      <label>Have you marked the exercise where you are to progress next session?</label><br>
+      <input type="radio" name="marked-next-session" id="marked-yes" value="yes">
+      <label for="marked-yes">Yes</label>
+      <input type="radio" name="marked-next-session" id="marked-no" value="no">
+      <label for="marked-no">No</label><br><br>
+
+      <!-- 3. Workout Rating -->
+      <label for="workout-rating">How do you feel the workout went? (1–10):</label><br>
+      <input type="number" id="workout-rating" name="workout-rating" min="1" max="10" style="width: 60px;"><br><br>
+
+      <!-- 4. Additional Notes -->
+      <label for="workout-notes">Additional Workout Notes:</label><br>
+      <textarea id="workout-notes" rows="4" style="width: 100%;" placeholder="Type any notes here..."></textarea><br><br>
+
+      <!-- 5. Cardio -->
+      <label for="cardio-notes">Cardio:</label><br>
+      <textarea id="cardio-notes" rows="3" style="width: 100%;" placeholder="E.g. 20 min treadmill, 10 min bike..."></textarea><br><br>
+    </div>
+
+    <!-- Save Button -->
     <button id="save-workout-btn">Save Workout</button>
   </div>
 </div>
 
 <script>
-  const username = localStorage.getItem("username") || "Guest";
-  document.getElementById("welcome-message").textContent = `Welcome, ${username}!`;
-
-  function logout() {
-    localStorage.removeItem("username");
-    window.location.href = "/login.html";
-  }
-
-  const workoutModal = document.getElementById("create-workout-modal");
-  const openWorkoutModal = () => {
-    workoutModal.style.display = "block";
-    resetExerciseRows();
-  };
-  const closeWorkoutModal = () => workoutModal.style.display = "none";
-
-  document.getElementById("add-workout-btn").addEventListener("click", openWorkoutModal);
-  document.getElementById("close-workout-modal").addEventListener("click", closeWorkoutModal);
-
-  window.onclick = function(event) {
-    if (event.target === workoutModal) {
-      closeWorkoutModal();
-    }
-  };
-
-  const maxExercises = 10;
-  let currentExerciseIndex = 0;
-
-  const resetExerciseRows = () => {
-    const tbody = document.getElementById("exercise-rows");
-    tbody.innerHTML = "";
-    currentExerciseIndex = 0;
-    addExerciseRow();
-  };
-
-  const addExerciseRow = () => {
-    if (currentExerciseIndex >= maxExercises) {
-      alert("Maximum of 10 exercises reached.");
-      return;
-    }
-
-    const letters = "ABCDEFGHIJ";
-    const letter = letters[currentExerciseIndex];
-    const tbody = document.getElementById("exercise-rows");
-
-    const row = document.createElement("tr");
-    row.classList.add("exercise-row");
-    row.innerHTML = `
-      <td><strong>${letter}.</strong><input type="text" placeholder="Exercise name" /></td>
-      <td>
-        <select class="set-weight-dropdown">
-          <option value="kg">kg</option>
-          <option value="lbs">lbs</option>
-        </select>
-      </td>
-      ${[...Array(6)].map(() => `
-        <td><input type="number" placeholder="Weight" /></td>
-        <td><input type="number" placeholder="reps" /></td>
-      `).join('')}
-    `;
-    tbody.appendChild(row);
-    currentExerciseIndex++;
-  };
-
-  document.getElementById("add-exercise-row-btn").addEventListener("click", addExerciseRow);
+  // JS code to handle modal behavior and workout logic can go here
 </script>
 
 </body>
 </html>
+
+
 
 
 
