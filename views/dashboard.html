@@ -93,7 +93,9 @@
       border-radius: 10px;
       width: 95%;
       max-width: 1000px;
-      overflow-x: auto;
+      overflow-x: hidden;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .modal .close {
@@ -188,6 +190,20 @@
       font-size: 0.8rem;
       padding: 6px;
       text-align: center;
+    }
+
+    /* Additional form styles */
+    textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 0.9rem;
+      resize: vertical;
+      margin-bottom: 15px;
+    }
+
+    /* Disable body scroll when modal is open */
+    body.modal-open {
+      overflow: hidden;
     }
   </style>
 </head>
@@ -300,107 +316,70 @@
       </tbody>
     </table>
 
+    <!-- Additional Questions Below Table -->
+    <label>Did you progress your lifts?</label>
+    <select>
+      <option>Yes</option>
+      <option>No</option>
+    </select>
+
+    <label>Have you marked the exercise to progress next session?</label>
+    <select>
+      <option>Yes</option>
+      <option>No</option>
+    </select>
+
+    <label>How do you feel the workout went out of 10?</label>
+    <input type="number" min="1" max="10" placeholder="1-10" />
+
+    <label>Additional workout notes:</label>
+    <textarea placeholder="Type your notes here..." rows="4" style="width: 100%;"></textarea>
+
+    <label>Cardio:</label>
+    <textarea placeholder="Describe your cardio workout..." rows="4" style="width: 100%;"></textarea>
+
+    <!-- Buttons -->
     <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
-
-    <!-- Workout Summary Section -->
-    <div style="margin-top: 30px;">
-      <h3>Workout Summary</h3>
-
-      <!-- 1. Progressed Lifts -->
-      <label>Did you progress your lifts?</label><br>
-      <input type="radio" name="progressed-lifts" id="progressed-yes" value="yes">
-      <label for="progressed-yes">Yes</label>
-      <input type="radio" name="progressed-lifts" id="progressed-no" value="no">
-      <label for="progressed-no">No</label><br><br>
-
-      <!-- 2. Marked for Next Session -->
-      <label>Have you marked the exercise where you are to progress next session?</label><br>
-      <input type="radio" name="marked-next-session" id="marked-yes" value="yes">
-      <label for="marked-yes">Yes</label>
-      <input type="radio" name="marked-next-session" id="marked-no" value="no">
-      <label for="marked-no">No</label><br><br>
-
-      <!-- 3. Workout Rating -->
-      <label for="workout-rating">How do you feel the workout went? (1–10):</label><br>
-      <input type="number" id="workout-rating" name="workout-rating" min="1" max="10" style="width: 60px;"><br><br>
-
-      <!-- 4. Additional Notes -->
-      <label for="workout-notes">Additional Workout Notes:</label><br>
-      <textarea id="workout-notes" rows="4" style="width: 100%;" placeholder="Type any notes here..."></textarea><br><br>
-
-      <!-- 5. Cardio -->
-      <label for="cardio-notes">Cardio:</label><br>
-      <textarea id="cardio-notes" rows="3" style="width: 100%;" placeholder="E.g. 20 min treadmill, 10 min bike..."></textarea><br><br>
-    </div>
-
-    <!-- Save Button -->
     <button id="save-workout-btn">Save Workout</button>
   </div>
 </div>
 
 <script>
-// JavaScript code
+  // Handle opening and closing the workout modal
+  const modal = document.getElementById('create-workout-modal');
+  const addWorkoutBtn = document.getElementById('add-workout-btn');
+  const closeModal = document.getElementById('close-workout-modal');
+  const body = document.body; // To toggle body scroll
 
-// Handle opening and closing the workout modal
-const modal = document.getElementById('create-workout-modal');
-const addWorkoutBtn = document.getElementById('add-workout-btn');
-const closeModal = document.getElementById('close-workout-modal');
-
-addWorkoutBtn.onclick = function() {
-  modal.style.display = 'block';
-}
-
-closeModal.onclick = function() {
-  modal.style.display = 'none';
-}
-
-window.onclick = function(event) {
-  if (event.target === modal) {
-    modal.style.display = 'none';
+  addWorkoutBtn.onclick = function() {
+    modal.style.display = 'block';
+    body.classList.add('modal-open'); // Disable body scroll when modal is open
   }
-}
 
-// Add a new exercise row when the button is clicked
-const addExerciseRowBtn = document.getElementById('add-exercise-row-btn');
-const exerciseRows = document.getElementById('exercise-rows');
+  closeModal.onclick = function() {
+    modal.style.display = 'none';
+    body.classList.remove('modal-open'); // Enable body scroll when modal is closed
+  }
 
-addExerciseRowBtn.onclick = function() {
-  const newRow = document.createElement('tr');
-  newRow.classList.add('exercise-row');
+  window.onclick = function(event) {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+      body.classList.remove('modal-open'); // Enable body scroll when modal is closed
+    }
+  }
 
-  newRow.innerHTML = `
-    <td><input type="text" placeholder="Exercise name" /></td>
-    <td>
-      <select class="set-weight-dropdown">
-        <option value="kg">kg</option>
-        <option value="lbs">lbs</option>
-      </select>
-    </td>
-    <td><input type="number" placeholder="Weight" /></td>
-    <td><input type="number" placeholder="reps" /></td>
-    <td><input type="number" placeholder="Weight" /></td>
-    <td><input type="number" placeholder="reps" /></td>
-    <td><input type="number" placeholder="Weight" /></td>
-    <td><input type="number" placeholder="reps" /></td>
-    <td><input type="number" placeholder="Weight" /></td>
-    <td><input type="number" placeholder="reps" /></td>
-    <td><input type="number" placeholder="Weight" /></td>
-    <td><input type="number" placeholder="reps" /></td>
-  `;
-  exerciseRows.appendChild(newRow);
-}
-
-// Save workout functionality (just a placeholder for now)
-const saveWorkoutBtn = document.getElementById('save-workout-btn');
-
-saveWorkoutBtn.onclick = function() {
-  alert('Workout saved!');
-  modal.style.display = 'none'; // Close the modal after saving
-}
+  // Save workout functionality
+  document.getElementById('save-workout-btn').addEventListener('click', function() {
+    // Save the workout data (you can modify this to send data to a server)
+    alert('Workout Saved!');
+    modal.style.display = 'none';
+    body.classList.remove('modal-open');
+  });
 </script>
 
 </body>
 </html>
+
 
 
 
