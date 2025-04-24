@@ -383,6 +383,16 @@
 </div>
 
 <script>
+//show username in welcome message
+document.addEventListener('DOMContentLoaded', () => {
+  const welcomeMessage = document.getElementById("welcome-message");
+  const username = localStorage.getItem("username");
+
+  welcomeMessage.textContent = username
+    ? `Welcome, ${username}!`
+    : "Welcome!";
+});
+
   // Handle opening and closing the workout modal
   const modal = document.getElementById('create-workout-modal');
   const addWorkoutBtn = document.getElementById('add-workout-btn');
