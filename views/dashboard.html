@@ -269,7 +269,7 @@
 
 <div class="container">
   <div class="header">
-  <h1 id="welcome-message">Welcome!</h1>
+    <h1 id="welcome-message">Welcome!</h1>
     <p>Track your workouts and fitness journey</p>
   </div>
 
@@ -424,146 +424,62 @@
 </div>
 
 <script>
-// Show username in welcome message
-  const welcomeMessage = document.getElementById("welcome-message");
-
-  let username = localStorage.getItem("username") || "";
-  if (username) {
-    welcomeMessage.textContent = Welcome, ${username}!;
-  }
-
-// Handle opening and closing the workout modal
-const modal = document.getElementById('create-workout-modal');
-const addWorkoutBtn = document.getElementById('add-workout-btn');
-const closeModal = document.getElementById('close-workout-modal');
-const body = document.body; // For preventing scroll on modal open
-
-addWorkoutBtn.addEventListener('click', () => {
-  modal.style.display = 'block';
-  body.style.overflow = 'hidden';  // Disable background scrolling
-});
-
-closeModal.addEventListener('click', () => {
-  modal.style.display = 'none';
-  body.style.overflow = '';  // Re-enable background scrolling
-});
-
-// Close the modal if the user clicks outside the modal
-window.addEventListener('click', (event) => {
-  if (event.target === modal) {
-
+  // Handle opening and closing the workout modal
   const modal = document.getElementById('create-workout-modal');
   const addWorkoutBtn = document.getElementById('add-workout-btn');
   const closeModal = document.getElementById('close-workout-modal');
-  const body = document.body;
-  const exerciseRowsContainer = document.getElementById('exercise-rows');
-  const addExerciseRowBtn = document.getElementById('add-exercise-row-btn');
-  const saveWorkoutBtn = document.getElementById('save-workout-btn');
-
+  const body = document.body; // To toggle body scroll
   let isEditing = false;
   let currentWorkoutIndex = null;
 
   addWorkoutBtn.onclick = function() {
     modal.style.display = 'block';
-    body.classList.add('modal-open');
+    body.classList.add('modal-open'); // Disable body scroll when modal is open
     resetForm();
-  };
+  }
 
   closeModal.onclick = function() {
     modal.style.display = 'none';
+    body.classList.remove('modal-open'); // Enable body scroll when modal is closed
+  }
+
+  // Save workout functionality
+  document.getElementById('save-workout-btn').addEventListener('click', function() {
+    if (isEditing) {
+      alert('Workout Updated!');
+    } else {
+      alert('Workout Saved!');
+    }
+    modal.style.display = 'none';
     body.classList.remove('modal-open');
-  };
+  });
 
-  // Reset form and remove extra exercise rows
+  // Edit workout functionality
+  document.getElementById('edit-workout-btn').addEventListener('click', function() {
+    isEditing = true;
+    alert('Editing workout ' + currentWorkoutIndex);
+  });
+
+  // Delete workout functionality
+  document.getElementById('delete-workout-btn').addEventListener('click', function() {
+    const confirmDelete = confirm('Are you sure you want to delete this workout?');
+    if (confirmDelete) {
+      alert('Workout deleted');
+      modal.style.display = 'none';
+      body.classList.remove('modal-open');
+    }
+  });
+
   function resetForm() {
-    document.getElementById('workout-date').value = '';
-    document.getElementById('workout-name').value = '';
-    exerciseRowsContainer.innerHTML = ''; // Clear all rows
-
-    // Add initial row
-    addExerciseRow();
-    
+    // Reset form fields if not editing
+    if (!isEditing) {
+      document.getElementById('workout-date').value = '';
+      document.getElementById('workout-name').value = '';
+    }
     document.getElementById('save-workout-btn').style.display = 'block';
     document.getElementById('edit-workout-btn').style.display = 'none';
     document.getElementById('delete-workout-btn').style.display = 'none';
   }
-
-  // Add a new exercise row
-  function addExerciseRow() {
-    const index = exerciseRowsContainer.children.length;
-    const row = document.createElement('tr');
-    row.className = 'exercise-row';
-    row.setAttribute('data-index', index);
-
-    row.innerHTML = 
-      <td><strong>${String.fromCharCode(65 + index)}.</strong>
-        <input type="text" placeholder="Exercise name" />
-      </td>
-      <td>
-        <select class="set-weight-dropdown">
-          <option value="kg">kg</option>
-          <option value="lbs">lbs</option>
-        </select>
-      </td>
-      ${[...Array(6)].map(() => 
-        <td><input type="number" placeholder="Weight" /></td>
-        <td><input type="number" placeholder="Reps" /></td>
-      ).join('')}
-    ;
-
-    exerciseRowsContainer.appendChild(row);
-  }
-
-  addExerciseRowBtn.addEventListener('click', () => {
-    addExerciseRow();
-  });
-
-  // Save workout functionality
-  saveWorkoutBtn.addEventListener("click", () => {
-    const workoutName = document.getElementById("workout-name").value;
-    const workoutDate = document.getElementById("workout-date").value;
-
-    const exercises = [];
-    document.querySelectorAll(".exercise-row").forEach(row => {
-      const name = row.querySelector("td:first-child input").value;
-      const unit = row.querySelector(".set-weight-dropdown").value;
-
-      const sets = [];
-      const inputs = row.querySelectorAll('input[type="number"]');
-      for (let i = 0; i < inputs.length; i += 2) {
-        sets.push({
-          weight: inputs[i].value,
-          reps: inputs[i + 1].value
-        });
-      }
-
-      exercises.push({ name, unit, sets });
-    });
-
-    const workout = {
-      name: workoutName,
-      date: workoutDate,
-      exercises: exercises
-    };
-
-    // Send to backend (optional: only if you have backend setup)
-    fetch('/api/workouts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(workout)
-    })
-    .then(res => res.json())
-    .then(data => {
-      alert("Workout saved!");
-      modal.style.display = 'none';
-      body.classList.remove('modal-open');
-    })
-    .catch(err => {
-      console.error("Save error:", err);
-      alert("Failed to save workout.");
-    });
-  });
-
 </script>
 
 </body>
