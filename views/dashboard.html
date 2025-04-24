@@ -451,6 +451,72 @@ document.addEventListener("DOMContentLoaded", () => {
   const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
   const exerciseRowsContainer = document.getElementById("exercise-rows");
 
+document.getElementById("save-workout-btn").addEventListener("click", () => {
+  const username = localStorage.getItem("username");
+  const workout = document.getElementById("workout-name").value.trim();
+  const date = document.getElementById("workout-date").value;
+  const progressYourLifts = document.querySelectorAll(".question select")[0].value;
+  const progressForNextSession = document.querySelectorAll(".question select")[1].value;
+  const workoutRating = parseInt(document.querySelectorAll(".question input[type='number']")[0].value) || null;
+  const additionalNotes = document.querySelectorAll(".question textarea")[0].value;
+  const cardio = document.querySelectorAll(".question textarea")[1].value;
+
+  const exerciseRows = Array.from(document.querySelectorAll(".exercise-row"));
+  const exercises = exerciseRows.map(row => {
+    const name = row.querySelector("input[type='text']").value;
+    const weightUnit = row.querySelector("select").value;
+    const inputs = row.querySelectorAll("input[type='number']");
+    
+    const sets = [];
+    for (let i = 0; i < inputs.length; i += 2) {
+      const weight = parseFloat(inputs[i].value);
+      const reps = parseInt(inputs[i + 1].value);
+
+      if (!isNaN(weight) && !isNaN(reps)) {
+        sets.push({ weight, reps });
+      }
+    }
+
+    return { name, weightUnit, sets };
+  }).filter(ex => ex.sets.length > 0 && ex.name);
+
+  // Validation (optional)
+  if (!username || !workout || !date || exercises.length === 0) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  const workoutData = {
+    username,
+    workout,
+    date,
+    exercises,
+    progressYourLifts,
+    progressForNextSession,
+    workoutRating,
+    additionalNotes,
+    cardio,
+  };
+
+  // Send to backend
+  fetch("/add-workout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(workoutData)
+  })
+    .then(res => res.json())
+    .then(data => {
+      alert("Workout saved successfully!");
+      console.log("Saved workout:", data);
+      document.getElementById("create-workout-modal").style.display = "none";
+      document.body.style.overflow = "";
+    })
+    .catch(err => {
+      console.error("Failed to save workout:", err);
+      alert("Error saving workout. Check console for details.");
+    });
+});
+
   // Show username
   const welcomeMessage = document.getElementById("welcome-message");
   const username = localStorage.getItem("username");

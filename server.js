@@ -107,25 +107,23 @@ MongoClient.connect(MONGO_URI)
       res.send('Password reset successfully');
     });
 
-    // Add Full Workout (Updated & Flat Structure)
-    app.post('/add-full-workout', async (req, res) => {
+    // Add Workout 
+    app.post('/add-workout', async (req, res) => {
       const {
-        username,
-        workoutType,
-        workoutDescription,
-        date,
-        exercises,
-        progressYourLifts,
-        progressForNextSession,
-        workoutRating,
-        additionalNotes,
-        cardio
-      } = req.body;
+  username,
+  workout,
+  date,
+  exercises,
+  progressYourLifts,
+  progressForNextSession,
+  workoutRating,
+  additionalNotes,
+  cardio
+} = req.body;
 
-      if (!username || !workoutType || !date || !Array.isArray(exercises) || exercises.length === 0) {
-        return res.status(400).json({ message: 'Invalid workout data' });
-      }
-
+if (!username || !workout || !date || !Array.isArray(exercises) || exercises.length === 0) {
+  return res.status(400).json({ message: 'Invalid workout data' });
+}
       for (let ex of exercises) {
         if (!ex.name || !Array.isArray(ex.sets) || ex.sets.length === 0) {
           return res.status(400).json({ message: 'Invalid exercise data' });
@@ -139,24 +137,23 @@ MongoClient.connect(MONGO_URI)
 
       try {
         const docs = exercises.map((ex) =>
-          ex.sets.map((set, index) => ({
-            username,
-            workoutType,
-            workoutDescription,
-            exerciseName: ex.name,
-            weightUnit: ex.weightUnit || 'kg',
-            reps: Number(set.reps) || 0,
-            weights: Number(set.weight) || 0,
-            date,
-            timestamp: new Date(),
-            progressYourLifts,
-            progressForNextSession,
-            workoutRating,
-            additionalNotes,
-            cardio,
-            setIndex: index + 1,
-          }))
-        ).flat();
+  ex.sets.map((set, index) => ({
+    username,
+    workout,
+    exerciseName: ex.name,
+    weightUnit: ex.weightUnit || 'kg',
+    reps: Number(set.reps) || 0,
+    weights: Number(set.weight) || 0,
+    date,
+    timestamp: new Date(),
+    progressYourLifts,
+    progressForNextSession,
+    workoutRating,
+    additionalNotes,
+    cardio,
+    setIndex: index + 1,
+  }))
+).flat();
 
         await workoutsCollection.insertMany(docs);
         res.status(200).json({ message: 'Workout added with all exercises and sets' });
