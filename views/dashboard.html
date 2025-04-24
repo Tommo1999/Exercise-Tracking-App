@@ -432,6 +432,44 @@
   let isEditing = false;
   let currentWorkoutIndex = null;
 
+document.addEventListener("DOMContentLoaded", () => {
+    const exerciseRowsContainer = document.getElementById("exercise-rows");
+    const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
+
+    function addExerciseRow() {
+      const index = exerciseRowsContainer.children.length;
+      const row = document.createElement("tr");
+      row.className = "exercise-row";
+      row.setAttribute("data-index", index);
+
+      row.innerHTML = `
+        <td><strong>${String.fromCharCode(65 + index)}.</strong>
+          <input type="text" placeholder="Exercise name" />
+        </td>
+        <td>
+          <select class="set-weight-dropdown">
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+          </select>
+        </td>
+        ${[...Array(6)].map(() => `
+          <td><input type="number" placeholder="Weight" /></td>
+          <td><input type="number" placeholder="Reps" /></td>
+        `).join('')}
+      `;
+
+      exerciseRowsContainer.appendChild(row);
+    }
+
+    // Event listener for button
+    addExerciseRowBtn.addEventListener("click", () => {
+      addExerciseRow();
+    });
+
+    // Add the initial row once on load
+    addExerciseRow();
+  });
+
   addWorkoutBtn.onclick = function() {
     modal.style.display = 'block';
     body.classList.add('modal-open'); // Disable body scroll when modal is open
