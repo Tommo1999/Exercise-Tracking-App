@@ -487,60 +487,60 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-  addWorkoutBtn.onclick = function() {
-    modal.style.display = 'block';
-    body.classList.add('modal-open'); // Disable body scroll when modal is open
-    resetForm();
-  }
-
-  closeModal.onclick = function() {
-    modal.style.display = 'none';
-    body.classList.remove('modal-open'); // Enable body scroll when modal is closed
-  }
-
-  // Save workout functionality
-  document.getElementById('save-workout-btn').addEventListener('click', function() {
-    if (isEditing) {
-      alert('Workout Updated!');
-    } else {
-      alert('Workout Saved!');
-    }
-    modal.style.display = 'none';
-    body.classList.remove('modal-open');
-  });
-
-  // Edit workout functionality
-  document.getElementById('edit-workout-btn').addEventListener('click', function() {
-    isEditing = true;
-    alert('Editing workout ' + currentWorkoutIndex);
-  });
-
-  // Delete workout functionality
-  document.getElementById('delete-workout-btn').addEventListener('click', function() {
-    const confirmDelete = confirm('Are you sure you want to delete this workout?');
-    if (confirmDelete) {
-      alert('Workout deleted');
-      modal.style.display = 'none';
-      body.classList.remove('modal-open');
-    }
-  });
-
-  function resetForm() {
-    // Reset form fields if not editing
-    if (!isEditing) {
-      document.getElementById('workout-date').value = '';
-      document.getElementById('workout-name').value = '';
-    }
-    document.getElementById('save-workout-btn').style.display = 'block';
-    document.getElementById('edit-workout-btn').style.display = 'none';
-    document.getElementById('delete-workout-btn').style.display = 'none';
-  }
-
-// Logout function
-  function logout() {
-    localStorage.removeItem("username");
-    window.location.href = "/login"; // Adjust if your login route is different
-  }
+   addWorkoutBtn.onclick = function() {
+     modal.style.display = 'block';
+     body.classList.add('modal-open'); // Disable body scroll when modal is open
+     resetForm();
+   }
+ 
+   closeModal.onclick = function() {
+     modal.style.display = 'none';
+     body.classList.remove('modal-open'); // Enable body scroll when modal is closed
+   }
+ 
+   // Save workout functionality
+   document.getElementById('save-workout-btn').addEventListener('click', function() {
+     if (isEditing) {
+       alert('Workout Updated!');
+     } else {
+       alert('Workout Saved!');
+     }
+     modal.style.display = 'none';
+     body.classList.remove('modal-open');
+   });
+ 
+   // Edit workout functionality
+   document.getElementById('edit-workout-btn').addEventListener('click', function() {
+     isEditing = true;
+     alert('Editing workout ' + currentWorkoutIndex);
+   });
+ 
+   // Delete workout functionality
+   document.getElementById('delete-workout-btn').addEventListener('click', function() {
+     const confirmDelete = confirm('Are you sure you want to delete this workout?');
+     if (confirmDelete) {
+       alert('Workout deleted');
+       modal.style.display = 'none';
+       body.classList.remove('modal-open');
+     }
+   });
+ 
+   function resetForm() {
+     // Reset form fields if not editing
+     if (!isEditing) {
+       document.getElementById('workout-date').value = '';
+       document.getElementById('workout-name').value = '';
+     }
+     document.getElementById('save-workout-btn').style.display = 'block';
+     document.getElementById('edit-workout-btn').style.display = 'none';
+     document.getElementById('delete-workout-btn').style.display = 'none';
+   }
+ 
+ // Logout function
+   function logout() {
+     localStorage.removeItem("username");
+     window.location.href = "/login"; // Adjust if your login route is different
+   }
  
 </script>
 
