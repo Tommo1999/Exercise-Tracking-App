@@ -424,10 +424,13 @@
 </div>
 
 <script>
-// Username greeting
+// Show username in welcome message
   const welcomeMessage = document.getElementById("welcome-message");
-  const username = localStorage.getItem("username");
-  welcomeMessage.textContent = username ? `Welcome, ${username}!` : "Welcome!";
+
+  let username = localStorage.getItem("username") || "";
+  if (username) {
+    welcomeMessage.textContent = Welcome, ${username}!;
+  }
 
 // Handle opening and closing the workout modal
 const modal = document.getElementById('create-workout-modal');
@@ -560,11 +563,6 @@ window.addEventListener('click', (event) => {
       alert("Failed to save workout.");
     });
   });
-// Logout logic
-  function logout() {
-    localStorage.removeItem("username");
-    window.location.href = "/login";
-  }
 
 </script>
 
