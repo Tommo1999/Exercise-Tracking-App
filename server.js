@@ -28,9 +28,9 @@ const transporter = nodemailer.createTransport({
 
 MongoClient.connect(MONGO_URI)
   .then((client) => {
-    const db = client.db('excersise-tracker-app');
+    const db = client.db('fit-track');
     const usersCollection = db.collection('Users');
-    const workoutsCollection = db.collection('Workout Data');
+    const workoutsCollection = db.collection('Workouts');
 
     // Serve static pages
     app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'views', 'index.html')));
