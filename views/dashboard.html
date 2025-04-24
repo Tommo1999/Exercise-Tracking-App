@@ -480,6 +480,13 @@
     document.getElementById('edit-workout-btn').style.display = 'none';
     document.getElementById('delete-workout-btn').style.display = 'none';
   }
+
+// Logout function
+  function logout() {
+    localStorage.removeItem("username");
+    window.location.href = "/login"; // Adjust if your login route is different
+  }
+ 
 </script>
 
 </body>
