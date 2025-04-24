@@ -312,37 +312,79 @@
     <label for="workout-date">Date:</label>
     <input type="date" id="workout-date" />
 
-    <!-- Horizontal scroll container for the table -->
-    <div class="horizontal-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Exercise</th>
-            <th>Unit</th>
-            <th colspan="2">Set 1</th>
-            <th colspan="2">Set 2</th>
-            <th colspan="2">Set 3</th>
-            <th colspan="2">Set 4</th>
-            <th colspan="2">Set 5</th>
-            <th colspan="2">Set 6</th>
-          </tr>
-          <tr>
-            <th></th>
-            <th>Weight Unit</th>
-            <th>Weight</th><th>Reps</th>
-            <th>Weight</th><th>Reps</th>
-            <th>Weight</th><th>Reps</th>
-            <th>Weight</th><th>Reps</th>
-            <th>Weight</th><th>Reps</th>
-            <th>Weight</th><th>Reps</th>
-          </tr>
-        </thead>
-        <tbody id="exercise-rows">
-        </tbody>
-      </table>
-    </div>
+   <!-- Horizontal scroll container for the table -->
+<div class="horizontal-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>Exercise</th>
+        <th>Unit</th>
+        <th colspan="2">Set 1</th>
+        <th colspan="2">Set 2</th>
+        <th colspan="2">Set 3</th>
+        <th colspan="2">Set 4</th>
+        <th colspan="2">Set 5</th>
+        <th colspan="2">Set 6</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th>Weight Unit</th>
+        <th>Weight</th><th>Reps</th>
+        <th>Weight</th><th>Reps</th>
+        <th>Weight</th><th>Reps</th>
+        <th>Weight</th><th>Reps</th>
+        <th>Weight</th><th>Reps</th>
+        <th>Weight</th><th>Reps</th>
+      </tr>
+    </thead>
+    <tbody id="exercise-rows">
+      <!-- Row A is initially present -->
+      <tr class="exercise-row" data-index="0">
+        <td><strong>A.</strong>
+          <input type="text" placeholder="Exercise name" />
+        </td>
+        <td>
+          <select class="set-weight-dropdown">
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+          </select>
+        </td>
+        <!-- Set 1 -->
+        <td>
+          <input type="number" placeholder="Weight" />
+        </td>
+        <td><input type="number" placeholder="reps" /></td>
+        <!-- Set 2 -->
+        <td>
+          <input type="number" placeholder="Weight" />
+        </td>
+        <td><input type="number" placeholder="reps" /></td>
+        <!-- Set 3 -->
+        <td>
+          <input type="number" placeholder="Weight" />
+        </td>
+        <td><input type="number" placeholder="reps" /></td>
+        <!-- Set 4 -->
+        <td>
+          <input type="number" placeholder="Weight" />
+        </td>
+        <td><input type="number" placeholder="reps" /></td>
+        <!-- Set 5 -->
+        <td>
+          <input type="number" placeholder="Weight" />
+        </td>
+        <td><input type="number" placeholder="reps" /></td>
+        <!-- Set 6 -->
+        <td>
+          <input type="number" placeholder="Weight" />
+        </td>
+        <td><input type="number" placeholder="reps" /></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-    <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
+<button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
 
     <!-- New questions under the workout table -->
     <div class="question">
@@ -433,8 +475,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Event listener for the "Add Another Exercise" button
   addExerciseRowBtn.addEventListener("click", () => {
-    addExerciseRow();
+    addExerciseRow();  // Adds a new exercise row on each click
   });
+});
 
   // Add the first row only when the "Create Workout" button is clicked
   const createWorkoutBtn = document.getElementById("create-workout-btn");  // Change this to match your actual button ID
