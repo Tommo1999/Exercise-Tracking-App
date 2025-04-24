@@ -176,53 +176,51 @@
       <p>&copy; 2025 FitTrack - All Rights Reserved.</p>
     </div>
 
-    <script>
-      // Login form submission with Fetch API
-      const form = document.getElementById("loginForm");
-      const errorMessageDiv = document.getElementById("errorMessage");
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.getElementById("loginForm"); // Make sure this ID matches your HTML
+    const errorMessageDiv = document.getElementById("errorMessage"); // Add a div with this ID for errors
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordField = document.getElementById("password");
 
-      form.addEventListener("submit", async function (e) {
-        e.preventDefault(); // Prevent default form submission
+    // Submit login form
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-        const usernameOrEmail = document.getElementById("usernameOrEmail").value;
-        const password = document.getElementById("password").value;
+      const usernameOrEmail = document.getElementById("usernameOrEmail").value;
+      const password = document.getElementById("password").value;
 
-        try {
-          const response = await fetch("/login", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              usernameOrEmail,
-              password,
-            }),
-          });
+      try {
+        const response = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usernameOrEmail, password })
+        });
 
-          const data = await response.json();
+        const data = await response.json();
 
-          if (data.success) {
-            // Store the username in localStorage
-            localStorage.setItem("username", data.username);
-            window.location.href = "/dashboard"; // Redirect to dashboard
-          } else {
-            errorMessageDiv.textContent = data.message; // Display error message
-          }
-        } catch (error) {
-          errorMessageDiv.textContent = "Error logging in. Please try again."; // Display error message
+        if (data.success) {
+          localStorage.setItem("username", data.username); // Save username
+          window.location.href = "/dashboard"; // Redirect
+        } else {
+          errorMessageDiv.textContent = data.message || "Login failed.";
         }
-      });
+      } catch (err) {
+        console.error("Login error:", err);
+        errorMessageDiv.textContent = "Something went wrong. Please try again.";
+      }
+    });
 
-      // Toggle password visibility
-      const togglePassword = document.getElementById("togglePassword");
-      const passwordField = document.getElementById("password");
-
+    // Toggle password visibility
+    if (togglePassword && passwordField) {
       togglePassword.addEventListener("click", () => {
-        // Toggle between type password and text
         const type = passwordField.type === "password" ? "text" : "password";
         passwordField.type = type;
       });
-    </script>
+    }
+  });
+</script>
+
   </body>
 </html>
 
