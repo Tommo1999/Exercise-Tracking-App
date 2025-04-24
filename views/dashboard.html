@@ -446,10 +446,16 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener("DOMContentLoaded", () => {
   const exerciseRowsContainer = document.getElementById("exercise-rows");
   const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
+  const createWorkoutBtn = document.getElementById("create-workout-btn");
+  const logoutBtn = document.getElementById("logout-btn");
 
-  // Function to add a new exercise row
+  // Get the modal and close button elements
+  const modal = document.getElementById("create-workout-modal");
+  const closeModalBtn = document.getElementById("close-modal-btn");
+
+  // Function to add a new exercise row to the modal
   function addExerciseRow() {
-    const index = exerciseRowsContainer.children.length;
+    const index = document.getElementById("modal-exercise-rows").children.length;
     const row = document.createElement("tr");
     row.className = "exercise-row";
     row.setAttribute("data-index", index);
@@ -470,34 +476,27 @@ document.addEventListener("DOMContentLoaded", () => {
       `).join('')}
     `;
 
-    exerciseRowsContainer.appendChild(row);
+    document.getElementById("modal-exercise-rows").appendChild(row);
   }
 
   // Event listener for the "Add Another Exercise" button
   addExerciseRowBtn.addEventListener("click", () => {
     addExerciseRow();  // Adds a new exercise row on each click
   });
-});
-
-  // Add the first row only when the "Create Workout" button is clicked
-  const createWorkoutBtn = document.getElementById("create-workout-btn");  // Change this to match your actual button ID
-  createWorkoutBtn.addEventListener("click", () => {
-    exerciseRowsContainer.innerHTML = ""; // Clears any existing rows
-    addExerciseRow(); // Adds the first row
-  });
-});
 
   // Event listener for the "Create Workout" button
   createWorkoutBtn.addEventListener("click", () => {
-    // Logic for creating a workout goes here
-    console.log("Workout created!");
-    alert("Your workout has been created!");
+    modal.style.display = "block"; // Show the modal
+  });
+
+  // Event listener for closing the modal
+  closeModalBtn.addEventListener("click", () => {
+    modal.style.display = "none"; // Hide the modal when clicking on the close button
   });
 
   // Event listener for the "Logout" button
   logoutBtn.addEventListener("click", () => {
-    // Logic for logging out the user goes here
-    localStorage.removeItem("username");  // Removing username from localStorage
+    localStorage.removeItem("username");  // Remove username from localStorage
     window.location.href = "/login";  // Redirect to login page
   });
 });
