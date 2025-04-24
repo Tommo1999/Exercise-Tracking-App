@@ -444,18 +444,41 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentWorkoutIndex = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  const exerciseRowsContainer = document.getElementById("exercise-rows");
-  const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
-  const createWorkoutBtn = document.getElementById("create-workout-btn");
-  const logoutBtn = document.getElementById("logout-btn");
-
-  // Get the modal and close button elements
+  // Elements
   const modal = document.getElementById("create-workout-modal");
-  const closeModalBtn = document.getElementById("close-modal-btn");
+  const addWorkoutBtn = document.getElementById("add-workout-btn");
+  const closeModal = document.getElementById("close-workout-modal");
+  const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
+  const exerciseRowsContainer = document.getElementById("exercise-rows");
 
-  // Function to add a new exercise row to the modal
-  function addExerciseRow() {
-    const index = document.getElementById("modal-exercise-rows").children.length;
+  // Show username
+  const welcomeMessage = document.getElementById("welcome-message");
+  const username = localStorage.getItem("username");
+  welcomeMessage.textContent = username ? `Welcome, ${username}!` : "Welcome!";
+
+  // Open modal
+  addWorkoutBtn.addEventListener("click", () => {
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
+  });
+
+  // Close modal
+  closeModal.addEventListener("click", () => {
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+  });
+
+  // Close modal when clicking outside of it
+  window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.style.display = "none";
+      document.body.style.overflow = "";
+    }
+  });
+
+  // Add a new exercise row
+  addExerciseRowBtn.addEventListener("click", () => {
+    const index = exerciseRowsContainer.children.length;
     const row = document.createElement("tr");
     row.className = "exercise-row";
     row.setAttribute("data-index", index);
@@ -473,34 +496,20 @@ document.addEventListener("DOMContentLoaded", () => {
       ${[...Array(6)].map(() => `
         <td><input type="number" placeholder="Weight" /></td>
         <td><input type="number" placeholder="Reps" /></td>
-      `).join('')}
+      `).join("")}
     `;
 
-    document.getElementById("modal-exercise-rows").appendChild(row);
-  }
-
-  // Event listener for the "Add Another Exercise" button
-  addExerciseRowBtn.addEventListener("click", () => {
-    addExerciseRow();  // Adds a new exercise row on each click
+    exerciseRowsContainer.appendChild(row);
   });
 
-  // Event listener for the "Create Workout" button
-  createWorkoutBtn.addEventListener("click", () => {
-    modal.style.display = "block"; // Show the modal
-  });
-
-  // Event listener for closing the modal
-  closeModalBtn.addEventListener("click", () => {
-    modal.style.display = "none"; // Hide the modal when clicking on the close button
-  });
-
-  // Event listener for the "Logout" button
+  // Logout functionality
+  const logoutBtn = document.querySelector(".logout");
   logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("username");  // Remove username from localStorage
-    window.location.href = "/login";  // Redirect to login page
+    localStorage.removeItem("username");
+    window.location.href = "/login"; // or adjust to your actual login page
   });
 });
- 
+
 </script>
 
 </body>
