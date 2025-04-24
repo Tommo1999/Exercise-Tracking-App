@@ -517,6 +517,41 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
     });
 });
 
+function resetWorkoutForm() {
+  document.getElementById("workout-name").value = "";
+  document.getElementById("workout-date").value = "";
+
+  // Reset all exercise rows
+  const exerciseRowsContainer = document.getElementById("exercise-rows");
+  exerciseRowsContainer.innerHTML = "";
+
+  // Add back the initial row (A)
+  const row = document.createElement("tr");
+  row.className = "exercise-row";
+  row.setAttribute("data-index", "0");
+  row.innerHTML = `
+    <td><strong>A.</strong>
+      <input type="text" placeholder="Exercise name" />
+    </td>
+    <td>
+      <select class="set-weight-dropdown">
+        <option value="kg">kg</option>
+        <option value="lbs">lbs</option>
+      </select>
+    </td>
+    ${[...Array(6)].map(() => `
+      <td><input type="number" placeholder="Weight" /></td>
+      <td><input type="number" placeholder="Reps" /></td>
+    `).join("")}
+  `;
+  exerciseRowsContainer.appendChild(row);
+
+  // Reset selects and inputs
+  document.querySelectorAll(".question select").forEach(select => select.value = "yes");
+  document.querySelectorAll(".question input[type='number']").forEach(input => input.value = "");
+  document.querySelectorAll(".question textarea").forEach(textarea => textarea.value = "");
+}
+
   // Show username
   const welcomeMessage = document.getElementById("welcome-message");
   const username = localStorage.getItem("username");
