@@ -220,6 +220,7 @@
       gap: 10px;
     }
 
+    /* New styles for horizontal scroll */
     .horizontal-scroll {
       overflow-x: auto;
       width: 100%;
@@ -234,24 +235,41 @@
       margin-bottom: 20px;
     }
 
-    .modal .question input,
-    .modal .question select,
+    .modal .question input {
+      padding: 8px;
+      margin-top: 10px;
+    }
+
+    .modal .question select {
+      padding: 8px;
+      margin-top: 10px;
+    }
+
     .modal .question textarea {
       padding: 8px;
       margin-top: 10px;
       width: 100%;
-    }
-
-    .modal .question textarea {
       height: 100px;
     }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header .btn-container {
+      display: flex;
+      gap: 10px;
+    }
+
   </style>
 </head>
 <body>
 
 <div class="container">
   <div class="header">
-    <h1 id="welcome-message">Welcome!</h1>
+  <h1 id="welcome-message">Welcome!</h1>
     <p>Track your workouts and fitness journey</p>
   </div>
 
@@ -280,7 +298,7 @@
 <div id="create-workout-modal" class="modal">
   <div class="modal-content">
     <span class="close" id="close-workout-modal">&times;</span>
-
+    
     <div class="modal-header">
       <div>
         <label for="workout-name">Workout:</label>
@@ -294,6 +312,7 @@
     <label for="workout-date">Date:</label>
     <input type="date" id="workout-date" />
 
+    <!-- Horizontal scroll container for the table -->
     <div class="horizontal-scroll">
       <table>
         <thead>
@@ -318,12 +337,55 @@
             <th>Weight</th><th>Reps</th>
           </tr>
         </thead>
-        <tbody id="exercise-rows"></tbody>
+        <tbody id="exercise-rows">
+          <tr class="exercise-row" data-index="0">
+            <td><strong>A.</strong>
+              <input type="text" placeholder="Exercise name" />
+            </td>
+            <td>
+              <select class="set-weight-dropdown">
+                <option value="kg">kg</option>
+                <option value="lbs">lbs</option>
+              </select>
+            </td>
+            <!-- Set 1 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+            <!-- Set 2 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+            <!-- Set 3 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+            <!-- Set 4 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+            <!-- Set 5 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+            <!-- Set 6 -->
+            <td>
+              <input type="number" placeholder="Weight" />
+            </td>
+            <td><input type="number" placeholder="reps" /></td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
     <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
 
+    <!-- New questions under the workout table -->
     <div class="question">
       <label>Did you progress your lifts? (Yes/No)</label>
       <select>
@@ -347,58 +409,167 @@
 
     <div class="question">
       <label>Additional Workout Notes</label>
-      <textarea placeholder="Write any notes..."></textarea>
+      <textarea placeholder="Write any notes..." rows="4"></textarea>
     </div>
 
     <div class="question">
       <label>Cardio:</label>
-      <textarea placeholder="Describe your cardio workout..."></textarea>
+      <textarea placeholder="Describe your cardio workout..." rows="4"></textarea>
     </div>
 
+    <!-- Buttons for editing and deleting workouts -->
     <button id="edit-workout-btn" style="display:none;">Edit Workout</button>
     <button id="delete-workout-btn" style="display:none;">Delete Workout</button>
   </div>
 </div>
 
 <script>
-  // Username greeting
+// Username greeting
   const welcomeMessage = document.getElementById("welcome-message");
   const username = localStorage.getItem("username");
   welcomeMessage.textContent = username ? `Welcome, ${username}!` : "Welcome!";
 
-  // Logout logic
+// Handle opening and closing the workout modal
+const modal = document.getElementById('create-workout-modal');
+const addWorkoutBtn = document.getElementById('add-workout-btn');
+const closeModal = document.getElementById('close-workout-modal');
+const body = document.body; // For preventing scroll on modal open
+
+addWorkoutBtn.addEventListener('click', () => {
+  modal.style.display = 'block';
+  body.style.overflow = 'hidden';  // Disable background scrolling
+});
+
+closeModal.addEventListener('click', () => {
+  modal.style.display = 'none';
+  body.style.overflow = '';  // Re-enable background scrolling
+});
+
+// Close the modal if the user clicks outside the modal
+window.addEventListener('click', (event) => {
+  if (event.target === modal) {
+
+  const modal = document.getElementById('create-workout-modal');
+  const addWorkoutBtn = document.getElementById('add-workout-btn');
+  const closeModal = document.getElementById('close-workout-modal');
+  const body = document.body;
+  const exerciseRowsContainer = document.getElementById('exercise-rows');
+  const addExerciseRowBtn = document.getElementById('add-exercise-row-btn');
+  const saveWorkoutBtn = document.getElementById('save-workout-btn');
+
+  let isEditing = false;
+  let currentWorkoutIndex = null;
+
+  addWorkoutBtn.onclick = function() {
+    modal.style.display = 'block';
+    body.classList.add('modal-open');
+    resetForm();
+  };
+
+  closeModal.onclick = function() {
+    modal.style.display = 'none';
+    body.classList.remove('modal-open');
+  };
+
+  // Reset form and remove extra exercise rows
+  function resetForm() {
+    document.getElementById('workout-date').value = '';
+    document.getElementById('workout-name').value = '';
+    exerciseRowsContainer.innerHTML = ''; // Clear all rows
+
+    // Add initial row
+    addExerciseRow();
+    
+    document.getElementById('save-workout-btn').style.display = 'block';
+    document.getElementById('edit-workout-btn').style.display = 'none';
+    document.getElementById('delete-workout-btn').style.display = 'none';
+  }
+
+  // Add a new exercise row
+  function addExerciseRow() {
+    const index = exerciseRowsContainer.children.length;
+    const row = document.createElement('tr');
+    row.className = 'exercise-row';
+    row.setAttribute('data-index', index);
+
+    row.innerHTML = 
+      <td><strong>${String.fromCharCode(65 + index)}.</strong>
+        <input type="text" placeholder="Exercise name" />
+      </td>
+      <td>
+        <select class="set-weight-dropdown">
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
+        </select>
+      </td>
+      ${[...Array(6)].map(() => 
+        <td><input type="number" placeholder="Weight" /></td>
+        <td><input type="number" placeholder="Reps" /></td>
+      ).join('')}
+    ;
+
+    exerciseRowsContainer.appendChild(row);
+  }
+
+  addExerciseRowBtn.addEventListener('click', () => {
+    addExerciseRow();
+  });
+
+  // Save workout functionality
+  saveWorkoutBtn.addEventListener("click", () => {
+    const workoutName = document.getElementById("workout-name").value;
+    const workoutDate = document.getElementById("workout-date").value;
+
+    const exercises = [];
+    document.querySelectorAll(".exercise-row").forEach(row => {
+      const name = row.querySelector("td:first-child input").value;
+      const unit = row.querySelector(".set-weight-dropdown").value;
+
+      const sets = [];
+      const inputs = row.querySelectorAll('input[type="number"]');
+      for (let i = 0; i < inputs.length; i += 2) {
+        sets.push({
+          weight: inputs[i].value,
+          reps: inputs[i + 1].value
+        });
+      }
+
+      exercises.push({ name, unit, sets });
+    });
+
+    const workout = {
+      name: workoutName,
+      date: workoutDate,
+      exercises: exercises
+    };
+
+    // Send to backend (optional: only if you have backend setup)
+    fetch('/api/workouts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(workout)
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert("Workout saved!");
+      modal.style.display = 'none';
+      body.classList.remove('modal-open');
+    })
+    .catch(err => {
+      console.error("Save error:", err);
+      alert("Failed to save workout.");
+    });
+  });
+// Logout logic
   function logout() {
     localStorage.removeItem("username");
     window.location.href = "/login";
   }
 
-  // Add 1 row on load
-  const exerciseRowsContainer = document.getElementById('exercise-rows');
-  const addExerciseRowBtn = document.getElementById('add-exercise-row-btn');
-  function addExerciseRow() {
-    const index = exerciseRowsContainer.children.length;
-    const row = document.createElement('tr');
-    row.className = 'exercise-row';
-    row.innerHTML = `
-      <td><strong>${String.fromCharCode(65 + index)}.</strong>
-        <input type="text" placeholder="Exercise name" />
-      </td>
-      <td><select class="set-weight-dropdown"><option value="kg">kg</option><option value="lbs">lbs</option></select></td>
-      ${[...Array(6)].map(() => `
-        <td><input type="number" placeholder="Weight" /></td>
-        <td><input type="number" placeholder="Reps" /></td>`).join('')}
-    `;
-    exerciseRowsContainer.appendChild(row);
-  }
-  addExerciseRowBtn.addEventListener('click', addExerciseRow);
-  addExerciseRow(); // Add 1 on load
 </script>
 
 </body>
 </html>
-
-
-
 
 
 
