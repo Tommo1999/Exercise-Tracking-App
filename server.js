@@ -172,7 +172,7 @@ MongoClient.connect(MONGO_URI)
       try {
         const workouts = await workoutsCollection
           .find({ username })
-          .sort({ date: -1 })
+          .sort({ timestamp: -1 })
           .toArray();
         res.json(workouts);
       } catch (error) {

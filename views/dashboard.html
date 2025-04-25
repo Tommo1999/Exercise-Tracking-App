@@ -481,7 +481,7 @@ document.addEventListener("DOMContentLoaded", () => {
           noWorkoutsMessage.style.display = "none";
           recentWorkoutsList.style.display = "block";
 
-          workouts.slice(-5).reverse().forEach(w => {
+          workouts.slice(0, 5).forEach(w => {
             const li = document.createElement("li");
             li.textContent = `${w.date} - ${w.workout}`;
             li.dataset.workoutId = w.id;  // Add workout ID to the list item
