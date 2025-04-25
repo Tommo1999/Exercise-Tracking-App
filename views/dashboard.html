@@ -531,8 +531,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.style.overflow = "";
         resetWorkoutForm();
 
-        // ✅ Update recent workouts list immediately
-        loadRecentWorkouts();
+// Wait for a moment and then load the updated workouts (Delay added)
+      setTimeout(() => loadRecentWorkouts(), 500); // Delay added to ensure backend processes the data
       })
       .catch(err => {
         console.error("Failed to save workout:", err);
