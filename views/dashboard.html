@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FitTrack Dashboard</title>
   <style>
+//new code 
+.close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #aaa;
+  cursor: pointer;         /* 👈 key for mouse pointer */
+  transition: color 0.3s;
+}
+.close:hover {
+  color: #000;             /* 👈 hover effect */
+}
+//new code above this line 
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -316,7 +332,7 @@
 <!-- Workout Details Modal (Popup) -->
 <div id="workout-details-modal" class="modal">
   <div id="workout-details-content" class="modal-content"></div>
-  <button id="close-workout-details-modal">Close</button>
+  <span class="close" id="close-workout-modal">&times;</span>
 </div>
 
 <!-- Workout Modal -->
