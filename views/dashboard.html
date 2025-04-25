@@ -263,6 +263,26 @@
       gap: 10px;
     }
 
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
   </style>
 </head>
 <body>
@@ -292,6 +312,12 @@
   <div style="text-align: center; margin-top: 40px;">
     <button class="btn logout" onclick="logout()">Logout</button>
   </div>
+</div>
+
+<!-- Workout Details Modal (Popup) -->
+<div id="workout-details-modal" class="modal">
+  <div id="workout-details-content" class="modal-content"></div>
+  <button id="close-workout-details-modal">Close</button>
 </div>
 
 <!-- Workout Modal -->
@@ -438,7 +464,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const recentWorkoutsList = document.getElementById("recent-workouts-list");
   const noWorkoutsMessage = document.getElementById("no-workouts");
-  const loadWorkoutsBtn = document.getElementById("load-workouts-btn");
 
   // Fetch and display recent workouts
   function loadRecentWorkouts() {
@@ -459,6 +484,8 @@ document.addEventListener("DOMContentLoaded", () => {
           workouts.slice(-5).reverse().forEach(w => {
             const li = document.createElement("li");
             li.textContent = `${w.date} - ${w.workout}`;
+            li.dataset.workoutId = w.id;  // Add workout ID to the list item
+            li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event to show details
             recentWorkoutsList.appendChild(li);
           });
         }
@@ -468,9 +495,53 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // Load workouts on button click
-  loadWorkoutsBtn.addEventListener("click", () => {
-    loadRecentWorkouts();
+  // Show workout details in a popup modal
+  function showWorkoutDetails(workout) {
+    const workoutDetailsModal = document.getElementById("workout-details-modal");
+    const workoutDetailsContent = document.getElementById("workout-details-content");
+
+    // Clear previous content
+    workoutDetailsContent.innerHTML = "";
+
+    // Populate modal with workout details
+    const workoutDetails = `
+      <h2>${workout.workout} - ${workout.date}</h2>
+      <h3>Exercises:</h3>
+      <ul>
+        ${workout.exercises.map(exercise => `
+          <li>
+            <strong>${exercise.name}</strong>
+            <ul>
+              ${exercise.sets.map(set => `
+                <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
+              `).join("")}
+            </ul>
+          </li>
+        `).join("")}
+      </ul>
+      <h3>Progress:</h3>
+      <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
+      <p>Progress for Next Session: ${workout.progressForNextSession}</p>
+      <p>Rating: ${workout.workoutRating}</p>
+      <h3>Notes:</h3>
+      <p>${workout.additionalNotes}</p>
+      <h3>Cardio:</h3>
+      <p>${workout.cardio}</p>
+    `;
+
+    workoutDetailsContent.innerHTML = workoutDetails;
+
+    // Show the modal
+    workoutDetailsModal.style.display = "block";
+    document.body.style.overflow = "hidden";
+  }
+
+  // Close the workout details modal
+  const closeWorkoutDetailsModal = document.getElementById("close-workout-details-modal");
+  closeWorkoutDetailsModal.addEventListener("click", () => {
+    const workoutDetailsModal = document.getElementById("workout-details-modal");
+    workoutDetailsModal.style.display = "none";
+    document.body.style.overflow = "";
   });
 
   // Save workout
@@ -531,8 +602,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.style.overflow = "";
         resetWorkoutForm();
 
-// Wait for a moment and then load the updated workouts (Delay added)
-      setTimeout(() => loadRecentWorkouts(), 500); // Delay added to ensure backend processes the data
+        // Update recent workouts list immediately
+        loadRecentWorkouts();
       })
       .catch(err => {
         console.error("Failed to save workout:", err);
@@ -548,7 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const row = document.createElement("tr");
     row.className = "exercise-row";
     row.setAttribute("data-index", "0");
-    row.innerHTML = `
+    row.innerHTML = ` 
       <td><strong>A.</strong>
         <input type="text" placeholder="Exercise name" />
       </td>
@@ -564,10 +635,6 @@ document.addEventListener("DOMContentLoaded", () => {
       `).join("")}
     `;
     exerciseRowsContainer.appendChild(row);
-
-    document.querySelectorAll(".question select").forEach(select => select.value = "yes");
-    document.querySelectorAll(".question input[type='number']").forEach(input => input.value = "");
-    document.querySelectorAll(".question textarea").forEach(textarea => textarea.value = "");
   }
 
   addWorkoutBtn.addEventListener("click", () => {
@@ -616,9 +683,10 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "/login";
   });
 
-  // Optional: auto-load recent workouts on page load
+  // Auto-load recent workouts on page load
   loadRecentWorkouts();
 });
+
 </script>
 
 </body>
