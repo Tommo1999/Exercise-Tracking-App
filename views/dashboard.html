@@ -425,151 +425,161 @@
 </div>
 
 <script>
-//show username in welcome message
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   const welcomeMessage = document.getElementById("welcome-message");
   const username = localStorage.getItem("username");
+  welcomeMessage.textContent = username ? `Welcome, ${username}!` : "Welcome!";
 
-  welcomeMessage.textContent = username
-    ? `Welcome, ${username}!`
-    : "Welcome!";
-});
-
-  // Handle opening and closing the workout modal
-  const modal = document.getElementById('create-workout-modal');
-  const addWorkoutBtn = document.getElementById('add-workout-btn');
-  const closeModal = document.getElementById('close-workout-modal');
-  const body = document.body; // To toggle body scroll
-  let isEditing = false;
-  let currentWorkoutIndex = null;
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Elements
   const modal = document.getElementById("create-workout-modal");
   const addWorkoutBtn = document.getElementById("add-workout-btn");
   const closeModal = document.getElementById("close-workout-modal");
   const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
   const exerciseRowsContainer = document.getElementById("exercise-rows");
 
-document.getElementById("save-workout-btn").addEventListener("click", () => {
-  const username = localStorage.getItem("username");
-  const workout = document.getElementById("workout-name").value.trim();
-  const date = document.getElementById("workout-date").value;
-  const progressYourLifts = document.querySelectorAll(".question select")[0].value;
-  const progressForNextSession = document.querySelectorAll(".question select")[1].value;
-  const workoutRating = parseInt(document.querySelectorAll(".question input[type='number']")[0].value) || null;
-  const additionalNotes = document.querySelectorAll(".question textarea")[0].value;
-  const cardio = document.querySelectorAll(".question textarea")[1].value;
+  const recentWorkoutsList = document.getElementById("recent-workouts-list");
+  const noWorkoutsMessage = document.getElementById("no-workouts");
+  const loadWorkoutsBtn = document.getElementById("load-workouts-btn");
 
-  const exerciseRows = Array.from(document.querySelectorAll(".exercise-row"));
-  const exercises = exerciseRows.map(row => {
-    const name = row.querySelector("input[type='text']").value;
-    const weightUnit = row.querySelector("select").value;
-    const inputs = row.querySelectorAll("input[type='number']");
-    
-    const sets = [];
-    for (let i = 0; i < inputs.length; i += 2) {
-      const weight = parseFloat(inputs[i].value);
-      const reps = parseInt(inputs[i + 1].value);
+  // Fetch and display recent workouts
+  function loadRecentWorkouts() {
+    if (!username) return;
 
-      if (!isNaN(weight) && !isNaN(reps)) {
-        sets.push({ weight, reps });
-      }
-    }
+    fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
+      .then(res => res.json())
+      .then(workouts => {
+        recentWorkoutsList.innerHTML = "";
 
-    return { name, weightUnit, sets };
-  }).filter(ex => ex.sets.length > 0 && ex.name);
+        if (workouts.length === 0) {
+          noWorkoutsMessage.style.display = "block";
+          recentWorkoutsList.style.display = "none";
+        } else {
+          noWorkoutsMessage.style.display = "none";
+          recentWorkoutsList.style.display = "block";
 
-  // Validation (optional)
-  if (!username || !workout || !date || exercises.length === 0) {
-    alert("Please fill in all required fields.");
-    return;
+          workouts.slice(-5).reverse().forEach(w => {
+            const li = document.createElement("li");
+            li.textContent = `${w.date} - ${w.workout}`;
+            recentWorkoutsList.appendChild(li);
+          });
+        }
+      })
+      .catch(err => {
+        console.error("Failed to load workouts:", err);
+      });
   }
 
-  const workoutData = {
-    username,
-    workout,
-    date,
-    exercises,
-    progressYourLifts,
-    progressForNextSession,
-    workoutRating,
-    additionalNotes,
-    cardio,
-  };
+  // Load workouts on button click
+  loadWorkoutsBtn.addEventListener("click", () => {
+    loadRecentWorkouts();
+  });
 
-  // Send to backend
-  fetch("/add-workout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(workoutData)
-  })
-    .then(res => res.json())
-    .then(data => {
-      alert("Workout saved successfully!");
-      console.log("Saved workout:", data);
-      document.getElementById("create-workout-modal").style.display = "none";
-      document.body.style.overflow = "";
+  // Save workout
+  document.getElementById("save-workout-btn").addEventListener("click", () => {
+    const workout = document.getElementById("workout-name").value.trim();
+    const date = document.getElementById("workout-date").value;
+    const progressYourLifts = document.querySelectorAll(".question select")[0].value;
+    const progressForNextSession = document.querySelectorAll(".question select")[1].value;
+    const workoutRating = parseInt(document.querySelectorAll(".question input[type='number']")[0].value) || null;
+    const additionalNotes = document.querySelectorAll(".question textarea")[0].value;
+    const cardio = document.querySelectorAll(".question textarea")[1].value;
+
+    const exerciseRows = Array.from(document.querySelectorAll(".exercise-row"));
+    const exercises = exerciseRows.map(row => {
+      const name = row.querySelector("input[type='text']").value;
+      const weightUnit = row.querySelector("select").value;
+      const inputs = row.querySelectorAll("input[type='number']");
+
+      const sets = [];
+      for (let i = 0; i < inputs.length; i += 2) {
+        const weight = parseFloat(inputs[i].value);
+        const reps = parseInt(inputs[i + 1].value);
+        if (!isNaN(weight) && !isNaN(reps)) {
+          sets.push({ weight, reps });
+        }
+      }
+
+      return { name, weightUnit, sets };
+    }).filter(ex => ex.sets.length > 0 && ex.name);
+
+    if (!username || !workout || !date || exercises.length === 0) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    const workoutData = {
+      username,
+      workout,
+      date,
+      exercises,
+      progressYourLifts,
+      progressForNextSession,
+      workoutRating,
+      additionalNotes,
+      cardio,
+    };
+
+    fetch("/add-workout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(workoutData)
     })
-    .catch(err => {
-      console.error("Failed to save workout:", err);
-      alert("Error saving workout. Check console for details.");
-    });
-});
+      .then(res => res.json())
+      .then(data => {
+        alert("Workout saved successfully!");
+        console.log("Saved workout:", data);
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+        resetWorkoutForm();
 
-function resetWorkoutForm() {
-  document.getElementById("workout-name").value = "";
-  document.getElementById("workout-date").value = "";
+        // ✅ Update recent workouts list immediately
+        loadRecentWorkouts();
+      })
+      .catch(err => {
+        console.error("Failed to save workout:", err);
+        alert("Error saving workout. Check console for details.");
+      });
+  });
 
-  // Reset all exercise rows
-  const exerciseRowsContainer = document.getElementById("exercise-rows");
-  exerciseRowsContainer.innerHTML = "";
+  function resetWorkoutForm() {
+    document.getElementById("workout-name").value = "";
+    document.getElementById("workout-date").value = "";
+    exerciseRowsContainer.innerHTML = "";
 
-  // Add back the initial row (A)
-  const row = document.createElement("tr");
-  row.className = "exercise-row";
-  row.setAttribute("data-index", "0");
-  row.innerHTML = `
-    <td><strong>A.</strong>
-      <input type="text" placeholder="Exercise name" />
-    </td>
-    <td>
-      <select class="set-weight-dropdown">
-        <option value="kg">kg</option>
-        <option value="lbs">lbs</option>
-      </select>
-    </td>
-    ${[...Array(6)].map(() => `
-      <td><input type="number" placeholder="Weight" /></td>
-      <td><input type="number" placeholder="Reps" /></td>
-    `).join("")}
-  `;
-  exerciseRowsContainer.appendChild(row);
+    const row = document.createElement("tr");
+    row.className = "exercise-row";
+    row.setAttribute("data-index", "0");
+    row.innerHTML = `
+      <td><strong>A.</strong>
+        <input type="text" placeholder="Exercise name" />
+      </td>
+      <td>
+        <select class="set-weight-dropdown">
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
+        </select>
+      </td>
+      ${[...Array(6)].map(() => `
+        <td><input type="number" placeholder="Weight" /></td>
+        <td><input type="number" placeholder="Reps" /></td>
+      `).join("")}
+    `;
+    exerciseRowsContainer.appendChild(row);
 
-  // Reset selects and inputs
-  document.querySelectorAll(".question select").forEach(select => select.value = "yes");
-  document.querySelectorAll(".question input[type='number']").forEach(input => input.value = "");
-  document.querySelectorAll(".question textarea").forEach(textarea => textarea.value = "");
-}
+    document.querySelectorAll(".question select").forEach(select => select.value = "yes");
+    document.querySelectorAll(".question input[type='number']").forEach(input => input.value = "");
+    document.querySelectorAll(".question textarea").forEach(textarea => textarea.value = "");
+  }
 
-  // Show username
-  const welcomeMessage = document.getElementById("welcome-message");
-  const username = localStorage.getItem("username");
-  welcomeMessage.textContent = username ? `Welcome, ${username}!` : "Welcome!";
-
-  // Open modal
   addWorkoutBtn.addEventListener("click", () => {
     modal.style.display = "block";
     document.body.style.overflow = "hidden";
   });
 
-  // Close modal
   closeModal.addEventListener("click", () => {
     modal.style.display = "none";
     document.body.style.overflow = "";
   });
 
-  // Close modal when clicking outside of it
   window.addEventListener("click", (event) => {
     if (event.target === modal) {
       modal.style.display = "none";
@@ -577,13 +587,11 @@ function resetWorkoutForm() {
     }
   });
 
-  // Add a new exercise row
   addExerciseRowBtn.addEventListener("click", () => {
     const index = exerciseRowsContainer.children.length;
     const row = document.createElement("tr");
     row.className = "exercise-row";
     row.setAttribute("data-index", index);
-
     row.innerHTML = `
       <td><strong>${String.fromCharCode(65 + index)}.</strong>
         <input type="text" placeholder="Exercise name" />
@@ -599,18 +607,18 @@ function resetWorkoutForm() {
         <td><input type="number" placeholder="Reps" /></td>
       `).join("")}
     `;
-
     exerciseRowsContainer.appendChild(row);
   });
 
-  // Logout functionality
   const logoutBtn = document.querySelector(".logout");
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem("username");
-    window.location.href = "/login"; // or adjust to your actual login page
+    window.location.href = "/login";
   });
-});
 
+  // Optional: auto-load recent workouts on page load
+  loadRecentWorkouts();
+});
 </script>
 
 </body>
