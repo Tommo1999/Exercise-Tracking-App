@@ -33,12 +33,8 @@ MongoClient.connect(MONGO_URI)
     const workoutsCollection = db.collection('Workouts');
 
     // Serve static pages
-    app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'views', 'index.html')));
-    app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'views', 'signup.html')));
-    app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'views', 'login.html')));
     app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'views', 'dashboard.html')));
-    app.get('/forgot-password', (req, res) => res.sendFile(path.join(__dirname, 'views', 'forgot-password.html')));
-
+    
     // Signup
     app.post('/signup', async (req, res) => {
       const { username, email, password } = req.body;
