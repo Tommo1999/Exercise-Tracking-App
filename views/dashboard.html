@@ -940,7 +940,7 @@ loginForm.addEventListener("submit", async (event) => {
     const logoutBtn = document.querySelector(".logout");
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("username");
-      window.location.href = "/login";
+      window.location.href = "/dashboard";
     });
  
     // Auto-load recent workouts on page load
