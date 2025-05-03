@@ -580,118 +580,149 @@ input[type="number"] {
 
 // Auth modal logic
 const loginModal = document.getElementById("login-modal");
-  const signupModal = document.getElementById("signup-modal");
-  const loginBtn = document.querySelector(".login-btn"); // Check if this button exists in your HTML
-  const signupBtn = document.querySelector(".signup-btn"); // Check if this button exists in your HTML
-  const closeLogin = document.getElementById("close-login-modal");
-  const closeSignup = document.getElementById("close-signup-modal");
+const signupModal = document.getElementById("signup-modal");
+const loginBtn = document.querySelector(".login-btn");
+const signupBtn = document.querySelector(".signup-btn");
+const closeLogin = document.getElementById("close-login-modal");
+const closeSignup = document.getElementById("close-signup-modal");
 
-  // Open modals
-  loginBtn.addEventListener("click", () => {
-    loginModal.style.display = "block";
-    document.body.style.overflow = "hidden";
-  });
+// Open modals
+loginBtn.addEventListener("click", () => {
+  loginModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
 
-  signupBtn.addEventListener("click", () => {
-    signupModal.style.display = "block";
-    document.body.style.overflow = "hidden";
-  });
+signupBtn.addEventListener("click", () => {
+  signupModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
 
-  // Close modals
-  closeLogin.addEventListener("click", () => {
+// Close modals
+closeLogin.addEventListener("click", () => {
+  loginModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+closeSignup.addEventListener("click", () => {
+  signupModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+// Optional: Close modals by clicking outside content
+window.addEventListener("click", (e) => {
+  if (e.target === loginModal) {
     loginModal.style.display = "none";
     document.body.style.overflow = "";
-  });
-
-  closeSignup.addEventListener("click", () => {
+  }
+  if (e.target === signupModal) {
     signupModal.style.display = "none";
     document.body.style.overflow = "";
-  });
+  }
+});
 
-  // Optional: Close modals by clicking outside content
-  window.addEventListener("click", (e) => {
-    if (e.target === loginModal) {
-      loginModal.style.display = "none";
-      document.body.style.overflow = "";
+// Eye icon toggle password visibility for both password fields in signup modal
+const toggleSignupPassword = document.getElementById("toggle-signup-password");
+const passwordInput = document.getElementById("signup-password");
+const confirmPasswordInput = document.getElementById("signup-confirm-password");
+
+toggleSignupPassword.addEventListener("click", () => {
+  // Toggle visibility for both password and confirm password fields
+  const type = passwordInput.type === "password" ? "text" : "password";
+  passwordInput.type = type;
+  confirmPasswordInput.type = type; // Make confirm password field also toggle
+});
+
+// Signup form submission
+const signupForm = document.getElementById("signup-form");
+
+signupForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Prevent default form submission
+
+  const username = document.getElementById("signup-username").value;
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+  const confirmPassword = document.getElementById("signup-confirm-password").value;
+
+  // Check if password and confirm password match
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  // Make the API call to register the user
+  try {
+    const response = await fetch('/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, email, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // User successfully registered
+      alert('User registered successfully!');
+      signupModal.style.display = "none"; // Close the signup modal
+      document.body.style.overflow = ""; // Restore overflow
+    } else {
+      // Handle registration error
+      alert(data.message || 'Error registering user');
     }
-    if (e.target === signupModal) {
-      signupModal.style.display = "none";
-      document.body.style.overflow = "";
+  } catch (error) {
+    console.error('Error registering user:', error);
+    alert('There was an error. Please try again.');
+  }
+});
+
+// Eye icon toggle password visibility for login modal
+const toggleLoginPassword = document.getElementById("toggle-login-password");
+const loginPasswordInput = document.getElementById("login-password");
+
+toggleLoginPassword.addEventListener("click", () => {
+  // Toggle password visibility for the login password field
+  const type = loginPasswordInput.type === "password" ? "text" : "password";
+  loginPasswordInput.type = type;
+});
+
+// Login form submission
+const loginForm = document.getElementById("login-form");
+
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Prevent default form submission
+
+  const username = document.getElementById("login-username").value;
+  const password = document.getElementById("login-password").value;
+
+  // Make the API call to login the user
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // User successfully logged in
+      alert('Login successful!');
+      loginModal.style.display = "none"; // Close the login modal
+      document.body.style.overflow = ""; // Restore overflow
+
+      // Redirect to dashboard after successful login
+      window.location.href = '/dashboard';  // Make sure this is your correct dashboard URL
+    } else {
+      // Handle login error
+      alert(data.message || 'Invalid credentials');
     }
-  });
-
-  // Login Form Submission
-  const loginForm = document.getElementById("login-form");
-
-  loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const usernameOrEmail = document.getElementById("login-username-or-email").value;
-    const password = document.getElementById("login-password").value;
-
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ usernameOrEmail, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert('Login successful!');
-        loginModal.style.display = "none";
-        document.body.style.overflow = "";
-        window.location.href = '/dashboard';
-      } else {
-        alert(data.message || 'Invalid credentials');
-      }
-    } catch (error) {
-      console.error('Error logging in user:', error);
-      alert('There was an error. Please try again.');
-    }
-  });
-
-  // Signup Form Submission (same structure as before)
-  const signupForm = document.getElementById("signup-form");
-
-  signupForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const username = document.getElementById("signup-username").value;
-    const email = document.getElementById("signup-email").value;
-    const password = document.getElementById("signup-password").value;
-    const confirmPassword = document.getElementById("signup-confirm-password").value;
-
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    try {
-      const response = await fetch('/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert('User registered successfully!');
-        window.location.href = '/dashboard';
-      } else {
-        alert(data.message || 'Error registering user');
-      }
-    } catch (error) {
-      console.error('Error registering user:', error);
-      alert('There was an error. Please try again.');
-    }
-  });
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    alert('There was an error. Please try again.');
+  }
 });
  
     // Fetch and display recent workouts
@@ -909,7 +940,7 @@ const loginModal = document.getElementById("login-modal");
     const logoutBtn = document.querySelector(".logout");
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("username");
-      window.location.href = "/dashboard";
+      window.location.href = "/login";
     });
  
     // Auto-load recent workouts on page load
