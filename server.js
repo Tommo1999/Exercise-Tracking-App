@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
 const ExcelJS = require('exceljs');
 const bcrypt = require('bcryptjs');
@@ -9,9 +8,9 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 
+app.use(express.json()); // For JSON POST bodies
+app.use(express.urlencoded({ extended: true })); // For form submissions
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.static(path.join(__dirname, 'public')));
 
