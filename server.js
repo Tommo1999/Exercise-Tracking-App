@@ -51,7 +51,7 @@ app.get('/', (req, res) => {
         email: email.toLowerCase(),
         password: hashedPassword,
       });
-      res.redirect('/dashboard');
+      res.status(200).json({ message: 'User registered successfully' });
     });
 
     // Login

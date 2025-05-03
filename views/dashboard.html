@@ -651,7 +651,7 @@ signupForm.addEventListener("submit", async (event) => {
 
   // Make the API call to register the user
   try {
-    const response = await fetch('/api/register', {
+    const response = await fetch('/api/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -664,6 +664,7 @@ signupForm.addEventListener("submit", async (event) => {
     if (response.ok) {
       // User successfully registered
       alert('User registered successfully!');
+      window.location.href = '/dashboard';
       signupModal.style.display = "none"; // Close the signup modal
       document.body.style.overflow = ""; // Restore overflow
     } else {
