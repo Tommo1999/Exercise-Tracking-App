@@ -142,7 +142,7 @@ textarea {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: white;
+  color: black;
   font-size: 20px;
 }
 
@@ -677,15 +677,32 @@ signupForm.addEventListener("submit", async (event) => {
   }
 });
 
-// Eye icon toggle password visibility for login modal
-const toggleLoginPassword = document.getElementById("toggle-login-password");
-const loginPasswordInput = document.getElementById("login-password");
+// Get elements for both password fields and their corresponding eye icons
+const toggleSignupPassword = document.getElementById("toggle-signup-password");
+const toggleSignupConfirmPassword = document.getElementById("toggle-signup-confirm-password");
+const passwordInput = document.getElementById("signup-password");
+const confirmPasswordInput = document.getElementById("signup-confirm-password");
 
-toggleLoginPassword.addEventListener("click", () => {
-  // Toggle password visibility for the login password field
-  const type = loginPasswordInput.type === "password" ? "text" : "password";
-  loginPasswordInput.type = type;
+// Toggle password visibility (for the 'signup-password' field)
+toggleSignupPassword.addEventListener("click", () => {
+  // Toggle the type between 'password' and 'text'
+  const type = passwordInput.type === "password" ? "text" : "password";
+  passwordInput.type = type;
+
+  // Optionally, update the eye icon to indicate the state (open or closed)
+  toggleSignupPassword.innerText = type === "password" ? "👁️" : "🙈"; // 👁️ for hidden, 🙈 for visible
 });
+
+// Toggle confirm password visibility (for the 'signup-confirm-password' field)
+toggleSignupConfirmPassword.addEventListener("click", () => {
+  // Toggle the type between 'password' and 'text'
+  const type = confirmPasswordInput.type === "password" ? "text" : "password";
+  confirmPasswordInput.type = type;
+
+  // Optionally, update the eye icon for confirm password visibility
+  toggleSignupConfirmPassword.innerText = type === "password" ? "👁️" : "🙈"; // 👁️ for hidden, 🙈 for visible
+});
+
 
 // Login form submission
 const loginForm = document.getElementById("login-form");
@@ -693,7 +710,7 @@ const loginForm = document.getElementById("login-form");
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault(); // Prevent default form submission
 
-  const username = document.getElementById("login-username").value;
+  const usernameOrEmail = document.getElementById("login-username-or-email").value; // Use the combined field
   const password = document.getElementById("login-password").value;
 
   // Make the API call to login the user
@@ -703,7 +720,7 @@ loginForm.addEventListener("submit", async (event) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ usernameOrEmail, password }), // Send username/email instead of just username
     });
 
     const data = await response.json();
