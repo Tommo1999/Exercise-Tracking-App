@@ -62,7 +62,7 @@ app.get('/', (req, res) => {
       if (!user) return res.status(401).json({ success: false, message: 'Invalid username or email.' });
       const isPasswordCorrect = await bcrypt.compare(password, user.password);
       if (!isPasswordCorrect) return res.status(401).json({ success: false, message: 'Invalid password.' });
-      res.status(200).json({ success: true, username: user.username });
+      res.status(200).json({ success: true, message: 'Login successful', username: user.username });
     });
 
     // Forgot Password

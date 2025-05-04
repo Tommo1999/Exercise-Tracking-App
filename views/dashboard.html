@@ -664,7 +664,6 @@ signupForm.addEventListener("submit", async (event) => {
     if (response.ok) {
       // User successfully registered
       alert('User registered successfully!');
-     window.location.href = '/dashboard';
       signupModal.style.display = "none"; // Close the signup modal
       document.body.style.overflow = ""; // Restore overflow
     } else {
@@ -693,37 +692,32 @@ const loginForm = document.getElementById("login-form");
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault(); // Prevent default form submission
 
-  const username = document.getElementById("login-username").value;
+  const usernameOrEmail = document.getElementById("login-username").value;
   const password = document.getElementById("login-password").value;
 
-  // Make the API call to login the user
-  try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, password }),
-    });
+try {
+  const response = await fetch('/api/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ usernameOrEmail, password }),
+  });
 
-    const data = await response.json();
+  const data = await response.json();
 
-    if (response.ok) {
-      // User successfully logged in
-      alert('Login successful!');
-      loginModal.style.display = "none"; // Close the login modal
-      document.body.style.overflow = ""; // Restore overflow
-
-      // Redirect to dashboard after successful login
-      window.location.href = '/dashboard';  // Make sure this is your correct dashboard URL
-    } else {
-      // Handle login error
-      alert(data.message || 'Invalid credentials');
-    }
-  } catch (error) {
-    console.error('Error logging in user:', error);
-    alert('There was an error. Please try again.');
+  if (response.ok) {
+    alert('Login successful!');
+    loginModal.style.display = "none";
+    document.body.style.overflow = "";
+    window.location.href = '/dashboard';
+  } else {
+    alert(data.message || 'Invalid credentials');
   }
+} catch (error) {
+  console.error('Error logging in user:', error);
+  alert('There was an error. Please try again.');
+}
 });
  
     // Fetch and display recent workouts
