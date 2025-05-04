@@ -76,16 +76,14 @@ body {
   background-color: orange; /* Hover color is orange */
 }
 
-/* Auth Buttons Container */
 .auth-buttons {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 20px;           /* Positioning from top */
+  right: 20px;         /* Positioning from right */
   display: flex;
-  flex-direction: column; /* Stack vertically */
-  align-items: flex-end;  /* Align to the right if keeping it in top-right */
-  gap: 10px;                      /* Space between buttons and welcome text */
-  max-width: 400px;      /* Optional: to match other elements */
+  flex-direction: column; /* Stack vertically (buttons + welcome message) */
+  align-items: flex-start; /* Align left with the recent workouts container */
+  gap: 10px;              /* Space between the buttons and the welcome message */
 }
 
 /* Individual Button Styles */
@@ -343,7 +341,10 @@ input[type="number"] {
 <div class="auth-buttons">
   <button class="btn signup-btn">Sign Up</button>
   <button class="btn login-btn">Log In</button>
-  <div id="welcome-message" class="welcome-text"></div> 
+</div>
+
+<!-- Welcome message under the buttons -->
+  <div id="welcome-message" class="welcome-text"></div>
 </div>
 
 <!-- Login Modal -->
