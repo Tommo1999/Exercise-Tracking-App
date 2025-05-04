@@ -82,7 +82,10 @@ body {
   top: 20px;
   right: 20px;
   display: flex;
-  gap: 10px;
+  flex-direction: column; /* Stack vertically */
+  align-items: flex-end;  /* Align to the right if keeping it in top-right */
+  gap: 10px;                      /* Space between buttons and welcome text */
+  max-width: 400px;      /* Optional: to match other elements */
 }
 
 /* Individual Button Styles */
