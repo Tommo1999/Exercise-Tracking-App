@@ -349,7 +349,7 @@ input[type="number"] {
     <h2>Log In</h2>
     <form id="login-form">
       <!-- Username Input -->
-      <label for="login-username">Username:</label><br />
+      <label for="login-username">Username or Email:</label><br />
       <input type="text" id="login-username" required /><br /><br />
       
       <!-- Password Input -->
@@ -710,6 +710,10 @@ try {
     alert('Login successful!');
     loginModal.style.display = "none";
     document.body.style.overflow = "";
+
+  // Save username to localStorage for welcome message
+  localStorage.setItem("username", data.username);
+
   } else {
     alert(data.message || 'Invalid credentials');
   }
@@ -934,7 +938,6 @@ try {
     const logoutBtn = document.querySelector(".logout");
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("username");
-      window.location.href = "/login";
     });
  
     // Auto-load recent workouts on page load
