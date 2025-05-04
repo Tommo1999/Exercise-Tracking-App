@@ -717,18 +717,22 @@ try {
 
   const data = await response.json();
 
-  if (response.ok) {
-localStorage.setItem("username", data.username);
+if (response.ok) {
+  localStorage.setItem("username", data.username);
   updateWelcomeMessage(); // Update welcome message
-  loadRecentWorkouts();  // Immediately load recent workouts
-    alert('Login successful!');
-    loginModal.style.display = "none";
-    document.body.style.overflow = "";
+  
+  // Close login modal and allow for page update before loading recent workouts
+  loginModal.style.display = "none";
+  document.body.style.overflow = "";
 
-  } else {
-    alert(data.message || 'Invalid credentials');
-  }
-} catch (error) {
+  // Now load recent workouts after closing modal
+  loadRecentWorkouts();  // Immediately load recent workouts after modal is closed
+  
+  alert('Login successful!');
+} else {
+  alert(data.message || 'Invalid credentials');
+}
+ } catch (error) {
   console.error('Error logging in user:', error);
   alert('There was an error. Please try again.');
 }
