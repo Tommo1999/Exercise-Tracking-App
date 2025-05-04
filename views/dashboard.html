@@ -666,6 +666,35 @@ signupForm.addEventListener("submit", async (event) => {
       alert('User registered successfully!');
       signupModal.style.display = "none"; // Close the signup modal
       document.body.style.overflow = ""; // Restore overflow
+
+ // Automatically log the user in
+      const loginResponse = await fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }), // Send credentials for login
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (loginResponse.ok) {
+        // Store the logged-in username in localStorage for the welcome message
+        localStorage.setItem("username", loginData.username);
+
+ // Optionally, you can update any other UI elements as needed
+      } else {
+        alert('Login failed after registration: ' + (loginData.message || ''));
+      }
+    } else {
+      // Handle registration error
+      alert(data.message || 'Error registering user');
+    }
+  } catch (error) {
+    console.error('Error registering user:', error);
+    alert('There was an error. Please try again.');
+  }
+
     } else {
       // Handle registration error
       alert(data.message || 'Error registering user');
