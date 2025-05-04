@@ -954,7 +954,10 @@ if (response.ok) {
     const logoutBtn = document.querySelector(".logout");
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("username");
-      updateWelcomeMessage();
+      updateWelcomeMessage(); //reset welcome message
+   recentWorkoutsList.innerHTML = ""; // Clear the list
+   noWorkoutsMessage.style.display = "block"; // Show the "no workouts" message
+   recentWorkoutsList.style.display = "none"; // Hide the workouts list
     });
  
     // Auto-load recent workouts on page load
