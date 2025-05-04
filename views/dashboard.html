@@ -78,12 +78,20 @@ body {
 
 .auth-buttons {
   position: absolute;
-  top: 20px;           /* Positioning from top */
-  right: 20px;         /* Positioning from right */
+  top: 20px;             /* Positioning from top */
+  right: 20px;           /* Positioning from right */
   display: flex;
-  flex-direction: column; /* Stack vertically (buttons + welcome message) */
-  align-items: flex-start; /* Align left with the recent workouts container */
+  flex-direction: column; /* Stack vertically for buttons and welcome message */
+  align-items: flex-start; /* Align left within the container */
   gap: 10px;              /* Space between the buttons and the welcome message */
+  max-width: 400px;       /* Optionally limit the container width */
+}
+
+/* Login and Signup buttons */
+.auth-buttons .button-container {
+  display: flex;         /* Align buttons horizontally (side by side) */
+  gap: 10px;             /* Space between buttons */
+  width: 100%;           /* Make the button container take up the full width of the parent */
 }
 
 /* Individual Button Styles */
