@@ -565,10 +565,14 @@ input[type="number"] {
  
   <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const welcomeMessage = document.getElementById("welcome-message");
-    const username = localStorage.getItem("username");
-    welcomeMessage.textContent = username ? `Welcome, ${username}!` : "Welcome!";
- 
+
+//sets welcome message fuction
+
+    function updateWelcomeMessage() {
+  const welcomeMessage = document.getElementById("welcome-message");
+  const username = localStorage.getItem("username");
+  welcomeMessage.textContent = username ? `Welcome, ${username}!` : "Welcome!";
+}
     const modal = document.getElementById("create-workout-modal");
     const addWorkoutBtn = document.getElementById("add-workout-btn");
     const closeModal = document.getElementById("close-workout-modal");
@@ -662,6 +666,8 @@ signupForm.addEventListener("submit", async (event) => {
     const data = await response.json();
 
     if (response.ok) {
+localStorage.setItem("username", username);
+  updateWelcomeMessage();
       // User successfully registered
       alert('User registered successfully!');
       signupModal.style.display = "none"; // Close the signup modal
@@ -707,12 +713,11 @@ try {
   const data = await response.json();
 
   if (response.ok) {
+localStorage.setItem("username", data.username);
+  updateWelcomeMessage();
     alert('Login successful!');
     loginModal.style.display = "none";
     document.body.style.overflow = "";
-
-  // Save username to localStorage for welcome message
-  localStorage.setItem("username", data.username);
 
   } else {
     alert(data.message || 'Invalid credentials');
@@ -938,6 +943,7 @@ try {
     const logoutBtn = document.querySelector(".logout");
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("username");
+      updateWelcomeMessage();
     });
  
     // Auto-load recent workouts on page load
