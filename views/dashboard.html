@@ -565,6 +565,12 @@ input[type="number"] {
  
   <script>
   document.addEventListener("DOMContentLoaded", () => {
+const username = localStorage.getItem("username");
+  if (username) {
+    updateWelcomeMessage();  // Update the welcome message with username
+  } else {
+    updateWelcomeMessage();  // Show "Welcome!"
+  }
 
 //sets welcome message fuction
 
