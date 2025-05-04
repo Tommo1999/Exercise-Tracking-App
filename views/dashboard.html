@@ -340,6 +340,7 @@ input[type="number"] {
 <div class="auth-buttons">
   <button class="btn login-btn">Log In</button>
   <button class="btn signup-btn">Sign Up</button>
+  <div id="welcome-message" class="welcome-text"></div> 
 </div>
 
 <!-- Login Modal -->
@@ -403,7 +404,6 @@ input[type="number"] {
     <div class="header">
 	<img src="../images/RepDog.png" alt="RepDog Logo" width="300" height="200" />
 
-      <h1 id="welcome-message">Welcome </h1>
       <p>Track your workouts and fitness journey</p>
     </div>
  
@@ -577,7 +577,7 @@ const username = localStorage.getItem("username");
     function updateWelcomeMessage() {
   const welcomeMessage = document.getElementById("welcome-message");
   const username = localStorage.getItem("username");
-  welcomeMessage.textContent = username ? `Welcome, ${username}!` : "Welcome!";
+  welcomeMessage.textContent = username ? `Logged in as, ${username}!` : "Welcome!";
 }
     const modal = document.getElementById("create-workout-modal");
     const addWorkoutBtn = document.getElementById("add-workout-btn");
