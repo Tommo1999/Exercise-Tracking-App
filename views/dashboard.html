@@ -740,6 +740,7 @@ if (response.ok) {
  
     // Fetch and display recent workouts
     function loadRecentWorkouts() {
+    const username = localStorage.getItem("username"); // fresh value
       if (!username) return;
  
       fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
