@@ -673,9 +673,8 @@ signupForm.addEventListener("submit", async (event) => {
 
     if (response.ok) {
 localStorage.setItem("username", username);
-  updateWelcomeMessage();
-      // User successfully registered
-      alert('User registered successfully!');
+  updateWelcomeMessage();// Update welcome message
+      alert('User registered successfully!'); // User successfully registered
       signupModal.style.display = "none"; // Close the signup modal
       document.body.style.overflow = ""; // Restore overflow
     } else {
@@ -720,7 +719,8 @@ try {
 
   if (response.ok) {
 localStorage.setItem("username", data.username);
-  updateWelcomeMessage();
+  updateWelcomeMessage(); // Update welcome message
+  loadRecentWorkouts();  // Immediately load recent workouts
     alert('Login successful!');
     loginModal.style.display = "none";
     document.body.style.overflow = "";
