@@ -589,7 +589,7 @@ const username = localStorage.getItem("username");
     function updateWelcomeMessage() {
   const welcomeMessage = document.getElementById("welcome-message");
   const username = localStorage.getItem("username");
-  welcomeMessage.textContent = username ? `Logged in as: ${username}!` : "Welcome!";
+  welcomeMessage.textContent = username ? `Logged in as: ${username}` : "Welcome!";
 }
     const modal = document.getElementById("create-workout-modal");
     const addWorkoutBtn = document.getElementById("add-workout-btn");
