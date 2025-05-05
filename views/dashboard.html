@@ -40,11 +40,34 @@ body {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  flex: 1 1 calc(50% - 20px);
-  min-width: 300px;
+  flex: 1 1 calc(50% - 20px); /* Initially takes 50% minus margin */
+  min-width: 300px;  /* Ensures a minimum width */
   margin-bottom: 20px;
+  
+  /* Centering content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  /* Ensuring card is responsive */
+  width: 100%; /* Allow the card to shrink */
+  box-sizing: border-box; /* Ensure padding does not affect width */
 }
 
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .card {
+    padding: 15px; /* Slightly reduce padding */
+    flex: 1 1 calc(100% - 40px); /* Let card take 100% width on medium screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 10px; /* Further reduce padding on very small screens */
+  }
+}
 .card h2 {
   font-size: 1.5rem;
   margin-bottom: 10px;
@@ -77,21 +100,16 @@ body {
 }
 
 .auth-buttons {
-  position: absolute;
-  top: 20px;             /* Positioning from top */
-  left: 20px;           /* Positioning from left */
   display: flex;
-  flex-direction: column; /* Stack vertically for buttons and welcome message */
-  align-items: flex-start; /* Align left within the container */
-  gap: 10px;              /* Space between the buttons and the welcome message */
-  max-width: 400px;       /* Optionally limit the container width */
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-/* Login and Signup buttons */
-.auth-buttons .button-container {
-  display: flex;         /* Align buttons horizontally (side by side) */
-  gap: 10px;             /* Space between buttons */
-  width: 100%;           /* Make the button container take up the full width of the parent */
+.button-container {
+  display: flex;
+  gap: 10px;
 }
 
 /* Individual Button Styles */
@@ -345,15 +363,15 @@ input[type="number"] {
 </style>
   </head>
   <body>
-
 <div class="auth-buttons">
-  <button class="btn signup-btn">Sign Up</button>
-  <button class="btn login-btn">Log In</button>
-</div>
-
-<!-- Welcome message under the buttons -->
+  <div class="button-container">
+    <button class="btn signup-btn">Sign Up</button>
+    <button class="btn login-btn">Log In</button>
+    <button class="btn logout" onclick="logout()">Log Out</button>
+  </div>
   <div id="welcome-message" class="welcome-text"></div>
 </div>
+
 
 <!-- Login Modal -->
 <div id="login-modal" class="modal">
@@ -417,6 +435,7 @@ input[type="number"] {
 	<img src="../images/RepDog.png" alt="RepDog Logo" width="300" height="200" />
 
       <p>Track your workouts and fitness journey</p>
+<button class="btn" id="add-workout-btn">Create Workout</button>
     </div>
  
    <div class="dashboard-section">
@@ -428,15 +447,9 @@ input[type="number"] {
 
     <div class="button-row">
       <button class="btn" id="download-btn">Download as Excel</button>
-      <button class="btn" id="add-workout-btn">Create Workout</button>
     </div>
   </div>
 </div>
-
-  
-    <div style="text-align: center; margin-top: 40px;">
-      <button class="btn logout" onclick="logout()">Logout</button>
-    </div>
   </div>
  
   <!-- Workout Details Modal (Popup) -->
@@ -980,4 +993,3 @@ if (response.ok) {
  
   </body>
   </html>
- 
