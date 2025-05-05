@@ -65,7 +65,8 @@ body {
 
 @media (max-width: 480px) {
   .card {
-    padding: 10px; /* Further reduce padding on very small screens */
+    padding: 10px; /* Existing padding */
+    margin: 0 15px 20px 15px; /* Add horizontal margin on phones */
   }
 }
 .card h2 {
@@ -73,32 +74,24 @@ body {
   margin-bottom: 10px;
 }
 
-/* General Button Styles */
+/* Base Button Style */
 .btn {
-  background-color: #e74c3c;
+  background-color: #e74c3c; /* Original red */
   color: white;
-  padding: 12px 20px;
+  padding: 10px 15px;
   border: none;
   border-radius: 5px;
   font-size: 1rem;
   cursor: pointer;
-  margin-top: 15px;
   transition: background-color 0.3s;
 }
 
+/* Hover Effect - Orange */
 .btn:hover {
-  background-color: orange; /* Hover color is orange */
+  background-color: orange;
 }
 
-/* Logout Button */
-.logout {
-  background-color: #e74c3c;
-}
-
-.logout:hover {
-  background-color: orange; /* Hover color is orange */
-}
-
+/* Layout Helpers */
 .auth-buttons {
   display: flex;
   flex-direction: column;
@@ -110,21 +103,6 @@ body {
 .button-container {
   display: flex;
   gap: 10px;
-}
-
-/* Individual Button Styles */
-.auth-buttons .btn {
-  background-color: #e74c3c;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.auth-buttons .btn.login-btn:hover,
-.auth-buttons .btn.signup-btn:hover {
-  background-color: orange; /* Hover color is orange */
 }
 
 /* Input, Select, and Textarea Styles */
@@ -173,7 +151,7 @@ textarea {
   font-size: 20px;
 }
 
-/* Modal Styles */
+/* Modal Overlay */
 .modal {
   display: none;
   position: fixed;
@@ -183,22 +161,24 @@ textarea {
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  background-color: grey;
-  padding-top: 40px;
+  background-color: rgba(0, 0, 0, 0.7); /* dark semi-transparent background */
+  padding: 40px 10px; /* added horizontal padding for small screens */
 }
 
+/* Modal Content Box */
 .modal-content {
   background-color: black;
   margin: auto;
   padding: 20px;
   border-radius: 10px;
-  width: 95%;
-  max-width: 1000px;
-  overflow-x: auto;
+  width: 100%;
+  max-width: 600px;
   max-height: 90%;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
+/* Close Button */
 .modal .close {
   color: #aaa;
   float: right;
@@ -208,11 +188,23 @@ textarea {
 
 .modal .close:hover,
 .modal .close:focus {
-  color: black;
+  color: orange;
   text-decoration: none;
   cursor: pointer;
 }
 
+/* Mobile Optimizations */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 16px;
+    border-radius: 8px;
+    margin: 20px auto;
+  }
+
+  .modal {
+    padding: 20px 5px;
+  }
+}
 /* Table Styles */
 table {
   width: 100%;
