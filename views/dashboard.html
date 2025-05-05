@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>FitTrack Dashboard</title>
+    <title>Rep Dog Workout Tracker</title>
 <style>
 body {
   margin: 0;
@@ -445,9 +445,7 @@ input[type="number"] {
     <p id="no-workouts" class="empty-message">No workouts added yet.</p>
     <ul id="recent-workouts-list" style="display: none;"></ul>
 
-    <div class="button-row">
-      <button class="btn" id="download-btn">Download as Excel</button>
-    </div>
+   
   </div>
 </div>
   </div>
@@ -794,54 +792,50 @@ if (response.ok) {
         });
     }
  
-    // Show workout details in a popup modal
-    function showWorkoutDetails(workout) {
-      const workoutDetailsModal = document.getElementById("workout-details-modal");
-      const workoutDetailsContent = document.getElementById("workout-details-content");
- 
-      // Clear previous content
-      workoutDetailsContent.innerHTML = "";
- 
-      // Populate modal with workout details
-      const workoutDetails = `
-        <h2>${workout.workout} - ${workout.date}</h2>
-        <h3>Exercises:</h3>
-        <ul>
-          ${workout.exercises.map(exercise => `
-            <li>
-              <strong>${exercise.name}</strong>
-              <ul>
-                ${exercise.sets.map(set => `
-                  <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
-                `).join("")}
-              </ul>
-            </li>
-          `).join("")}
-        </ul>
-        <h3>Progress:</h3>
-        <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
-        <p>Progress for Next Session: ${workout.progressForNextSession}</p>
-        <p>Rating: ${workout.workoutRating}</p>
-        <h3>Notes:</h3>
-        <p>${workout.additionalNotes}</p>
-        <h3>Cardio:</h3>
-        <p>${workout.cardio}</p>
-      `;
- 
-      workoutDetailsContent.innerHTML = workoutDetails;
- 
-      // Show the modal
-      workoutDetailsModal.style.display = "block";
-      document.body.style.overflow = "hidden";
-    }
- 
-    // Close the workout details modal
-    const closeWorkoutDetailsModal = document.getElementById("close-workout-details-modal");
-    closeWorkoutDetailsModal.addEventListener("click", () => {
-      const workoutDetailsModal = document.getElementById("workout-details-modal");
-      workoutDetailsModal.style.display = "none";
-      document.body.style.overflow = "";
-    });
+   function showWorkoutDetails(workout) {
+  const workoutDetailsModal = document.getElementById("workout-details-modal");
+  const workoutDetailsContent = document.getElementById("workout-details-content");
+
+  // Build the modal content, starting with the close button
+  const workoutDetails = `
+    <span class="close" id="close-workout-details-modal">&times;</span>
+    <h2>${workout.workout} - ${workout.date}</h2>
+    <h3>Exercises:</h3>
+    <ul>
+      ${workout.exercises.map(exercise => `
+        <li>
+          <strong>${exercise.name}</strong>
+          <ul>
+            ${exercise.sets.map(set => `
+              <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
+            `).join("")}
+          </ul>
+        </li>
+      `).join("")}
+    </ul>
+    <h3>Progress:</h3>
+    <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
+    <p>Progress for Next Session: ${workout.progressForNextSession}</p>
+    <p>Rating: ${workout.workoutRating}</p>
+    <h3>Notes:</h3>
+    <p>${workout.additionalNotes}</p>
+    <h3>Cardio:</h3>
+    <p>${workout.cardio}</p>
+  `;
+
+  // Inject content
+  workoutDetailsContent.innerHTML = workoutDetails;
+
+  // Reattach close functionality since we injected new HTML
+  document.getElementById("close-workout-details-modal").addEventListener("click", () => {
+    workoutDetailsModal.style.display = "none";
+    document.body.style.overflow = "";
+  });
+
+  // Show the modal
+  workoutDetailsModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+}
  
     // Save workout
     document.getElementById("save-workout-btn").addEventListener("click", () => {
