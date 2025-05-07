@@ -477,6 +477,10 @@ input[type="number"] {
   <div id="workout-details-modal" class="modal">
     <div id="workout-details-content" class="modal-content"></div>
     <button id="close-workout-details-modal">Close</button>
+<div class="modal-actions">
+    <button id="edit-workout-btn">Edit</button>
+    <button id="delete-workout-btn">Delete</button>
+  </div>
   </div>
  
   <!-- Workout Modal -->
@@ -913,6 +917,20 @@ function renderWorkouts() {
   workoutDetailsModal.style.display = "block";
   document.body.style.overflow = "hidden";
 }
+
+document.getElementById("delete-workout-btn").addEventListener("click", () => {
+  const workoutId = currentWorkoutId; // Set this when opening modal
+  fetch(`/api/workouts/${workoutId}`, { method: 'DELETE' })
+    .then(() => {
+      alert("Workout deleted");
+      loadRecentWorkouts(); // Refresh list
+      document.getElementById("workout-details-modal").style.display = "none";
+    });
+});
+
+document.getElementById("edit-workout-btn").addEventListener("click", () => {
+  // Open the workout in edit mode (you could reuse the create modal and populate it with data)
+});
  
     // Save workout
     document.getElementById("save-workout-btn").addEventListener("click", () => {
