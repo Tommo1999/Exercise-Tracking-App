@@ -352,6 +352,24 @@ input[type="number"] {
   margin-left: auto;
 }
 
+.workout-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#workout-search {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#workout-count {
+  padding: 6px;
+}
+
 </style>
   </head>
   <body>
@@ -432,10 +450,23 @@ input[type="number"] {
  
    <div class="dashboard-section">
   <div class="card">
-    <h2>Recent Workouts</h2>
-<p> Click for workout details. </p>
-    <p id="no-workouts" class="empty-message">No workouts added yet.</p>
-    <ul id="recent-workouts-list" style="display: none;"></ul>
+   <h2>Recent Workouts</h2>
+<p>Click for workout details.</p>
+
+<div class="workout-controls">
+  <label for="workout-count">Show:</label>
+  <select id="workout-count">
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="all">All</option>
+  </select>
+
+  <input type="text" id="workout-search" placeholder="Search workouts...">
+</div>
+
+<p id="no-workouts" class="empty-message">No workouts added yet.</p>
+<ul id="recent-workouts-list" style="display: none;"></ul>
 
    
   </div>
@@ -578,7 +609,7 @@ input[type="number"] {
     </div>
   </div>
  
-  <script>
+<script>
   document.addEventListener("DOMContentLoaded", () => {
 const username = localStorage.getItem("username");
   if (username) {
@@ -592,7 +623,7 @@ const username = localStorage.getItem("username");
     function updateWelcomeMessage() {
   const welcomeMessage = document.getElementById("welcome-message");
   const username = localStorage.getItem("username");
-  welcomeMessage.textContent = username ? `Logged in as: ${username}` : "Welcome!";
+  welcomeMessage.textContent = username ? Logged in as: ${username} : "Welcome!";
 }
     const modal = document.getElementById("create-workout-modal");
     const addWorkoutBtn = document.getElementById("add-workout-btn");
@@ -610,6 +641,16 @@ const loginBtn = document.querySelector(".login-btn");
 const signupBtn = document.querySelector(".signup-btn");
 const closeLogin = document.getElementById("close-login-modal");
 const closeSignup = document.getElementById("close-signup-modal");
+const countSelect = document.getElementById("workout-count");
+const searchInput = document.getElementById("workout-search");
+
+if (countSelect) {
+  countSelect.addEventListener("change", renderWorkouts);
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", renderWorkouts);
+}
 
 // Open modals
 loginBtn.addEventListener("click", () => {
@@ -752,13 +793,57 @@ if (response.ok) {
   alert('There was an error. Please try again.');
 }
 });
- 
+
+let allWorkouts = []; // Store all workouts for filtering
+
+function renderWorkouts() {
+  const countSelect = document.getElementById("workout-count");
+  const searchInput = document.getElementById("workout-search");
+
+  const maxCount = countSelect?.value === "all" ? Infinity : parseInt(countSelect?.value || 5);
+  const searchTerm = searchInput?.value.toLowerCase() || "";
+
+  const filtered = allWorkouts.filter(w =>
+    w.workout.toLowerCase().includes(searchTerm) ||
+    w.date.includes(searchTerm)
+  );
+
+  const visibleWorkouts = filtered.slice(0, maxCount);
+  recentWorkoutsList.innerHTML = "";
+
+  if (visibleWorkouts.length === 0) {
+    noWorkoutsMessage.style.display = "block";
+    recentWorkoutsList.style.display = "none";
+    return;
+  }
+
+  noWorkoutsMessage.style.display = "none";
+  recentWorkoutsList.style.display = "block";
+
+  visibleWorkouts.forEach(w => {
+    const li = document.createElement("li");
+    li.textContent = `${w.date} - ${w.workout}`;
+    li.dataset.workoutId = w.id;
+    li.addEventListener("click", () => showWorkoutDetails(w));
+    recentWorkoutsList.appendChild(li);
+  });
+}
     // Fetch and display recent workouts
-    function loadRecentWorkouts() {
-    const username = localStorage.getItem("username"); // fresh value
-      if (!username) return;
- 
-      fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
+  function loadRecentWorkouts() {
+  const username = localStorage.getItem("username");
+  if (!username) return;
+
+  fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
+    .then(res => res.json())
+    .then(workouts => {
+      allWorkouts = workouts; // Save all workouts globally
+      renderWorkouts();       // Display based on filters
+    })
+    .catch(err => {
+      console.error("Failed to load workouts:", err);
+    });
+}
+      fetch(/get-workouts?username=${encodeURIComponent(username)})
         .then(res => res.json())
         .then(workouts => {
           recentWorkoutsList.innerHTML = "";
@@ -772,7 +857,7 @@ if (response.ok) {
  
             workouts.slice(0, 5).forEach(w => {
               const li = document.createElement("li");
-              li.textContent = `${w.date} - ${w.workout}`;
+              li.textContent = ${w.date} - ${w.workout};
               li.dataset.workoutId = w.id;  // Add workout ID to the list item
               li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event to show details
               recentWorkoutsList.appendChild(li);
@@ -789,21 +874,21 @@ if (response.ok) {
   const workoutDetailsContent = document.getElementById("workout-details-content");
 
   // Build the modal content, starting with the close button
-  const workoutDetails = `
+  const workoutDetails = 
     <span class="close" id="close-workout-details-modal">&times;</span>
     <h2>${workout.workout} - ${workout.date}</h2>
     <h3>Exercises:</h3>
     <ul>
-      ${workout.exercises.map(exercise => `
+      ${workout.exercises.map(exercise => 
         <li>
           <strong>${exercise.name}</strong>
           <ul>
-            ${exercise.sets.map(set => `
+            ${exercise.sets.map(set => 
               <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
-            `).join("")}
+            ).join("")}
           </ul>
         </li>
-      `).join("")}
+      ).join("")}
     </ul>
     <h3>Progress:</h3>
     <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
@@ -813,7 +898,7 @@ if (response.ok) {
     <p>${workout.additionalNotes}</p>
     <h3>Cardio:</h3>
     <p>${workout.cardio}</p>
-  `;
+  ;
 
   // Inject content
   workoutDetailsContent.innerHTML = workoutDetails;
@@ -904,7 +989,7 @@ if (response.ok) {
       const row = document.createElement("tr");
       row.className = "exercise-row";
       row.setAttribute("data-index", "0");
-      row.innerHTML = ` 
+      row.innerHTML =  
         <td><strong>A.</strong>
           <input type="text" placeholder="Exercise name" />
         </td>
@@ -914,11 +999,11 @@ if (response.ok) {
             <option value="lbs">lbs</option>
           </select>
         </td>
-        ${[...Array(6)].map(() => `
+        ${[...Array(6)].map(() => 
           <td><input type="number" placeholder="Weight" /></td>
           <td><input type="number" placeholder="Reps" /></td>
-        `).join("")}
-      `;
+        ).join("")}
+      ;
       exerciseRowsContainer.appendChild(row);
     }
  
@@ -944,7 +1029,7 @@ if (response.ok) {
       const row = document.createElement("tr");
       row.className = "exercise-row";
       row.setAttribute("data-index", index);
-      row.innerHTML = `
+      row.innerHTML = 
         <td><strong>${String.fromCharCode(65 + index)}.</strong>
           <input type="text" placeholder="Exercise name" />
         </td>
@@ -954,11 +1039,11 @@ if (response.ok) {
             <option value="lbs">lbs</option>
           </select>
         </td>
-        ${[...Array(6)].map(() => `
+        ${[...Array(6)].map(() => 
           <td><input type="number" placeholder="Weight" /></td>
           <td><input type="number" placeholder="Reps" /></td>
-        `).join("")}
-      `;
+        ).join("")}
+      ;
       exerciseRowsContainer.appendChild(row);
     });
  
