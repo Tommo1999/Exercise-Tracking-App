@@ -1,693 +1,981 @@
 <!DOCTYPE html>
- <html lang="en">
- <head>
-   <meta charset="UTF-8" />
-   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-   <title>FitTrack Dashboard</title>
-   <style>
-     body {
-       margin: 0;
-       font-family: 'Segoe UI', sans-serif;
-       background-color: #f4f6f8;
-       color: #2c3e50;
-     }
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Rep Dog Workout Tracker</title>
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: black;
+  color: white;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.dashboard-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: grey;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  flex: 1 1 calc(50% - 20px); /* Initially takes 50% minus margin */
+  min-width: 300px;  /* Ensures a minimum width */
+  margin-bottom: 20px;
+  
+  /* Centering content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  /* Ensuring card is responsive */
+  width: 100%; /* Allow the card to shrink */
+  box-sizing: border-box; /* Ensure padding does not affect width */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .card {
+    padding: 15px; /* Slightly reduce padding */
+    flex: 1 1 calc(100% - 40px); /* Let card take 100% width on medium screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 10px; /* Existing padding */
+    margin: 0 15px 20px 15px; /* Add horizontal margin on phones */
+  }
+}
+.card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+/* Base Button Style */
+.btn {
+  background-color: #e74c3c; /* Original red */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Hover Effect - Orange */
+.btn:hover {
+  background-color: orange;
+}
+
+/* Layout Helpers */
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
+}
+
+/* Input, Select, and Textarea Styles */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  max-width: 350px;
+  padding: 10px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: white;
+  color: black;
+}
+
+textarea {
+  height: 100px;
+}
+
+/* Password Eye Icon Styles */
+.password-container {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+  margin-bottom: 15px;
+}
+
+.password-container input {
+  padding-right: 35px;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: black;
+  font-size: 20px;
+}
+
+/* Modal Overlay */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.7); /* dark semi-transparent background */
+  padding: 40px 10px; /* added horizontal padding for small screens */
+}
+
+/* Modal Content Box */
+.modal-content {
+  background-color: black;
+  margin: auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Close Button */
+.modal .close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.modal .close:hover,
+.modal .close:focus {
+  color: orange;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 16px;
+    border-radius: 8px;
+    margin: 20px auto;
+  }
+
+  .modal {
+    padding: 20px 5px;
+  }
+}
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: grey;
+  color: white;
+}
+
+input[type="number"] {
+  width: 70px;
+  padding: 5px;
+  font-size: 0.9rem;
+}
+
+.set-weight-dropdown {
+  width: 80px;
+  padding: 5px;
+  font-size: 0.9rem;
+}
+
+/* Exercise Row Buttons */
+#add-exercise-row-btn,
+#save-workout-btn,
+#edit-workout-btn,
+#delete-workout-btn {
+  background-color: #e74c3c;
+}
+
+#add-exercise-row-btn:hover,
+#save-workout-btn:hover,
+#edit-workout-btn:hover,
+#delete-workout-btn:hover {
+  background-color: orange; /* Hover color is orange */
+}
+
+/* Modal Label Styles */
+.modal label {
+  display: inline-block;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.modal input[type="text"], .modal input[type="date"] {
+  padding: 8px;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.exercise-row td:first-child input[type="text"] {
+  font-size: 0.75rem;
+  width: 100%;
+  padding: 4px;
+  max-width: 130px;
+  box-sizing: border-box;
+}
+
+.exercise-row td:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.exercise-row td:first-child input[type="text"] {
+  margin-top: 5px;
+  width: 100%;
+  font-size: 0.8rem;
+  padding: 6px;
+  text-align: center;
+}
+
+/* Modal Header Styles */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header .btn-container {
+  display: flex;
+  gap: 10px;
+}
+
+/* Horizontal Scroll Styles */
+.horizontal-scroll {
+  overflow-x: auto;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.horizontal-scroll table {
+  min-width: 1000px;
+}
+
+/* Modal Question Styles */
+.modal .question {
+  margin-bottom: 20px;
+}
+
+.modal .question input {
+  padding: 8px;
+  margin-top: 10px;
+}
+
+.modal .question select {
+  padding: 8px;
+  margin-top: 10px;
+}
+
+.modal .question textarea {
+  padding: 8px;
+  margin-top: 10px;
+  width: 100%;
+  height: 100px;
+}
+
+.modal label {
+  display: block;
+  text-align: left;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+/* Button Row Styles */
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+#download-btn {
+  margin-right: auto;
+}
+
+#add-workout-btn {
+  margin-left: auto;
+}
+
+</style>
+  </head>
+  <body>
+<div class="auth-buttons">
+  <div class="button-container">
+    <button class="btn signup-btn">Sign Up</button>
+    <button class="btn login-btn">Log In</button>
+    <button class="btn logout" onclick="logout()">Log Out</button>
+  </div>
+  <div id="welcome-message" class="welcome-text"></div>
+</div>
+
+
+<!-- Login Modal -->
+<div id="login-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-login-modal">&times;</span>
+    <h2>Log In</h2>
+    <form id="login-form">
+      <!-- Username Input -->
+      <label for="login-username">Username or Email:</label><br />
+      <input type="text" id="login-username" required /><br /><br />
+      
+      <!-- Password Input -->
+      <label for="login-password">Password:</label><br />
+      <div class="password-container">
+        <input type="password" id="login-password" required placeholder="Enter your password" />
+        <span id="toggle-login-password" class="eye-icon">&#128065;</span> <!-- Eye icon for password visibility -->
+      </div><br /><br />
+      
+      <!-- Submit Button -->
+      <button type="submit" class="btn">Log In</button>
+    </form>
+  </div>
+</div>
+
+<!-- Signup Modal -->
+<div id="signup-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-signup-modal">&times;</span>
+    <h2>Sign Up</h2>
+    <form id="signup-form">
+      <!-- Username Input -->
+      <label for="signup-username">Username:</label><br />
+      <input type="text" id="signup-username" required placeholder="Enter your username" /><br /><br />
+      
+      <!-- Email Input -->
+      <label for="signup-email">Email:</label><br />
+      <input type="email" id="signup-email" required placeholder="Enter your email" /><br /><br />
+      
+      <!-- Password Input -->
+      <label for="signup-password">Password:</label><br />
+      <div class="password-container">
+        <input type="password" id="signup-password" required placeholder="Enter your password" />
+        <span id="toggle-signup-password" class="eye-icon">&#128065;</span> <!-- Eye icon to toggle visibility -->
+      </div><br />
+      
+      <!-- Confirm Password Input -->
+      <label for="signup-confirm-password">Confirm Password:</label><br />
+      <div class="password-container">
+        <input type="password" id="signup-confirm-password" required placeholder="Confirm your password" />
+        <span id="toggle-confirm-password" class="eye-icon">&#128065;</span> <!-- Eye icon to toggle visibility -->
+      </div><br />
+      
+      <!-- Submit Button -->
+      <button type="submit" class="btn">Sign Up</button>
+    </form>
+  </div>
+</div>
  
-     .container {
-       max-width: 1000px;
-       margin: 0 auto;
-       padding: 30px 20px;
-     }
- 
-     .header {
-       text-align: center;
-       margin-bottom: 40px;
-     }
- 
-     .header h1 {
-       font-size: 2.5rem;
-       margin-bottom: 10px;
-     }
- 
-     .dashboard-section {
-       display: flex;
-       flex-wrap: wrap;
-       gap: 20px;
-       margin-bottom: 30px;
-     }
- 
-     .card {
-       background: white;
-       padding: 20px;
-       border-radius: 10px;
-       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-       flex: 1 1 calc(50% - 20px);
-       min-width: 300px;
-     }
- 
-     .card h2 {
-       font-size: 1.5rem;
-       margin-bottom: 10px;
-     }
- 
-     .btn {
-       background-color: #27ae60;
-       color: white;
-       padding: 12px 20px;
-       border: none;
-       border-radius: 5px;
-       font-size: 1rem;
-       cursor: pointer;
-       margin-top: 15px;
-       transition: background-color 0.3s;
-     }
- 
-     .btn:hover {
-       background-color: #219150;
-     }
- 
-     .logout {
-       background-color: #e74c3c;
-     }
- 
-     .logout:hover {
-       background-color: #c0392b;
-     }
- 
-     .modal {
-       display: none;
-       position: fixed;
-       z-index: 1000;
-       left: 0;
-       top: 0;
-       width: 100%;
-       height: 100%;
-       overflow-y: auto;
-       background-color: rgba(0, 0, 0, 0.5);
-       padding-top: 40px;
-     }
- 
-     .modal-content {
-       background-color: white;
-       margin: auto;
-       padding: 20px;
-       border-radius: 10px;
-       width: 95%;
-       max-width: 1000px;
-       overflow-x: auto;
-       max-height: 90%;
-       overflow-y: auto;
-     }
- 
-     .modal .close {
-       color: #aaa;
-       float: right;
-       font-size: 28px;
-       font-weight: bold;
-     }
- 
-     .modal .close:hover,
-     .modal .close:focus {
-       color: black;
-       text-decoration: none;
-       cursor: pointer;
-     }
- 
-     table {
-       width: 100%;
-       border-collapse: collapse;
-       margin-bottom: 20px;
-     }
- 
-     th, td {
-       border: 1px solid #ddd;
-       padding: 8px;
-       text-align: center;
-     }
- 
-     th {
-       background-color: #27ae60;
-       color: white;
-     }
- 
-     input[type="number"] {
-       width: 70px;
-       padding: 5px;
-       font-size: 0.9rem;
-     }
- 
-     .set-weight-dropdown {
-       width: 80px;
-       padding: 5px;
-       font-size: 0.9rem;
-     }
- 
-     #add-exercise-row-btn {
-       margin-bottom: 20px;
-       background-color: #2980b9;
-     }
- 
-     #add-exercise-row-btn:hover {
-       background-color: #1c5985;
-     }
- 
-     #save-workout-btn {
-       background-color: #27ae60;
-       margin-left: 10px;
-     }
- 
-     #save-workout-btn:hover {
-       background-color: #219150;
-     }
- 
-     #edit-workout-btn {
-       background-color: #f39c12;
-     }
- 
-     #edit-workout-btn:hover {
-       background-color: #e67e22;
-     }
- 
-     #delete-workout-btn {
-       background-color: #e74c3c;
-     }
- 
-     #delete-workout-btn:hover {
-       background-color: #c0392b;
-     }
- 
-     .modal label {
-       display: inline-block;
-       margin-right: 10px;
-       font-weight: bold;
-     }
- 
-     .modal input[type="text"], .modal input[type="date"] {
-       padding: 8px;
-       font-size: 0.85rem;
-       margin-bottom: 15px;
-     }
- 
-     .exercise-row td:first-child input[type="text"] {
-       font-size: 0.75rem;
-       width: 100%;
-       padding: 4px;
-       max-width: 130px;
-       box-sizing: border-box;
-     }
- 
-     .exercise-row td:first-child {
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-     }
- 
-     .exercise-row td:first-child input[type="text"] {
-       margin-top: 5px;
-       width: 100%;
-       font-size: 0.8rem;
-       padding: 6px;
-       text-align: center;
-     }
- 
-     .modal-header {
-       display: flex;
-       justify-content: space-between;
-       align-items: center;
-     }
- 
-     .modal-header .btn-container {
-       display: flex;
-       gap: 10px;
-     }
- 
-     /* New styles for horizontal scroll */
-     .horizontal-scroll {
-       overflow-x: auto;
-       width: 100%;
-       margin-bottom: 20px;
-     }
- 
-     .horizontal-scroll table {
-       min-width: 1000px;
-     }
- 
-     .modal .question {
-       margin-bottom: 20px;
-     }
- 
-     .modal .question input {
-       padding: 8px;
-       margin-top: 10px;
-     }
- 
-     .modal .question select {
-       padding: 8px;
-       margin-top: 10px;
-     }
- 
-     .modal .question textarea {
-       padding: 8px;
-       margin-top: 10px;
-       width: 100%;
-       height: 100px;
-     }
- 
-     .modal-header {
-       display: flex;
-       justify-content: space-between;
-       align-items: center;
-     }
- 
-     .modal-header .btn-container {
-       display: flex;
-       gap: 10px;
-     }
- 
- .modal {
-   display: none;
-   position: fixed;
-   z-index: 1;
-   left: 0;
-   top: 0;
-   width: 100%;
-   height: 100%;
-   overflow: auto;
-   background-color: rgba(0, 0, 0, 0.5);
- }
- 
- .modal-content {
-   background-color: white;
-   margin: 15% auto;
-   padding: 20px;
-   border: 1px solid #888;
-   width: 80%;
- }
- 
-   </style>
- </head>
- <body>
- 
- <div class="container">
-   <div class="header">
-     <h1 id="welcome-message">Welcome!</h1>
-     <p>Track your workouts and fitness journey</p>
-   </div>
+  <div class="container">
+    <div class="header">
+	<img src="../images/RepDog.png" alt="RepDog Logo" width="300" height="200" />
+
+      <p>Track your workouts and fitness journey</p>
+<button class="btn" id="add-workout-btn">Create Workout</button>
+    </div>
  
    <div class="dashboard-section">
-     <div class="card">
-       <h2>Recent Workouts</h2>
-       <p id="no-workouts" class="empty-message">No workouts added yet.</p>
-       <ul id="recent-workouts-list" style="display: none;"></ul>
-       <button class="btn" id="add-workout-btn">Create Workout</button>
-     </div>
- 
-     <div class="card">
-       <h2>Download Workouts</h2>
-       <p>Download your workouts as a spreadsheet.</p>
-       <button class="btn" id="download-btn">Download as Excel</button>
-     </div>
-   </div>
- 
-   <div style="text-align: center; margin-top: 40px;">
-     <button class="btn logout" onclick="logout()">Logout</button>
-   </div>
- </div>
- 
- <!-- Workout Details Modal (Popup) -->
- <div id="workout-details-modal" class="modal">
-   <div id="workout-details-content" class="modal-content"></div>
-   <button id="close-workout-details-modal">Close</button>
- </div>
- 
- <!-- Workout Modal -->
- <div id="create-workout-modal" class="modal">
-   <div class="modal-content">
-     <span class="close" id="close-workout-modal">&times;</span>
- 
-     <div class="modal-header">
-       <div>
-         <label for="workout-name">Workout:</label>
-         <input type="text" id="workout-name" placeholder="e.g. Upper Body" />
-       </div>
-       <div class="btn-container">
-         <button id="save-workout-btn">Save Workout</button>
-       </div>
-     </div>
- 
-     <label for="workout-date">Date:</label>
-     <input type="date" id="workout-date" />
- 
-    <!-- Horizontal scroll container for the table -->
- <div class="horizontal-scroll">
-   <table>
-     <thead>
-       <tr>
-         <th>Exercise</th>
-         <th>Unit</th>
-         <th colspan="2">Set 1</th>
-         <th colspan="2">Set 2</th>
-         <th colspan="2">Set 3</th>
-         <th colspan="2">Set 4</th>
-         <th colspan="2">Set 5</th>
-         <th colspan="2">Set 6</th>
-       </tr>
-       <tr>
-         <th></th>
-         <th>Weight Unit</th>
-         <th>Weight</th><th>Reps</th>
-         <th>Weight</th><th>Reps</th>
-         <th>Weight</th><th>Reps</th>
-         <th>Weight</th><th>Reps</th>
-         <th>Weight</th><th>Reps</th>
-         <th>Weight</th><th>Reps</th>
-       </tr>
-     </thead>
-     <tbody id="exercise-rows">
-       <!-- Row A is initially present -->
-       <tr class="exercise-row" data-index="0">
-         <td><strong>A.</strong>
-           <input type="text" placeholder="Exercise name" />
-         </td>
-         <td>
-           <select class="set-weight-dropdown">
-             <option value="kg">kg</option>
-             <option value="lbs">lbs</option>
-           </select>
-         </td>
-         <!-- Set 1 -->
-         <td>
-           <input type="number" placeholder="Weight" />
-         </td>
-         <td><input type="number" placeholder="reps" /></td>
-         <!-- Set 2 -->
-         <td>
-           <input type="number" placeholder="Weight" />
-         </td>
-         <td><input type="number" placeholder="reps" /></td>
-         <!-- Set 3 -->
-         <td>
-           <input type="number" placeholder="Weight" />
-         </td>
-         <td><input type="number" placeholder="reps" /></td>
-         <!-- Set 4 -->
-         <td>
-           <input type="number" placeholder="Weight" />
-         </td>
-         <td><input type="number" placeholder="reps" /></td>
-         <!-- Set 5 -->
-         <td>
-           <input type="number" placeholder="Weight" />
-         </td>
-         <td><input type="number" placeholder="reps" /></td>
-         <!-- Set 6 -->
-         <td>
-           <input type="number" placeholder="Weight" />
-         </td>
-         <td><input type="number" placeholder="reps" /></td>
-       </tr>
-     </tbody>
-   </table>
- </div>
- 
- <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
- 
-     <!-- New questions under the workout table -->
-     <div class="question">
-       <label>Did you progress your lifts? (Yes/No)</label>
-       <select>
-         <option value="yes">Yes</option>
-         <option value="no">No</option>
-       </select>
-     </div>
- 
-     <div class="question">
-       <label>Have you marked the exercise where you are to progress next session? (Yes/No)</label>
-       <select>
-         <option value="yes">Yes</option>
-         <option value="no">No</option>
-       </select>
-     </div>
- 
-     <div class="question">
-       <label>How do you feel the workout went? (1-10)</label>
-       <input type="number" min="1" max="10" />
-     </div>
- 
-     <div class="question">
-       <label>Additional Workout Notes</label>
-       <textarea placeholder="Write any notes..." rows="4"></textarea>
-     </div>
- 
-     <div class="question">
-       <label>Cardio:</label>
-       <textarea placeholder="Describe your cardio workout..." rows="4"></textarea>
-     </div>
- 
-     <!-- Buttons for editing and deleting workouts -->
-     <button id="edit-workout-btn" style="display:none;">Edit Workout</button>
-     <button id="delete-workout-btn" style="display:none;">Delete Workout</button>
-   </div>
- </div>
- 
- <script>
- document.addEventListener("DOMContentLoaded", () => {
-   const welcomeMessage = document.getElementById("welcome-message");
-   const username = localStorage.getItem("username");
-   welcomeMessage.textContent = username ? `Welcome, ${username}!` : "Welcome!";
- 
-   const modal = document.getElementById("create-workout-modal");
-   const addWorkoutBtn = document.getElementById("add-workout-btn");
-   const closeModal = document.getElementById("close-workout-modal");
-   const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
-   const exerciseRowsContainer = document.getElementById("exercise-rows");
- 
-   const recentWorkoutsList = document.getElementById("recent-workouts-list");
-   const noWorkoutsMessage = document.getElementById("no-workouts");
- 
-   // Fetch and display recent workouts
-   function loadRecentWorkouts() {
-     if (!username) return;
- 
-     fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
-       .then(res => res.json())
-       .then(workouts => {
-         recentWorkoutsList.innerHTML = "";
- 
-         if (workouts.length === 0) {
-           noWorkoutsMessage.style.display = "block";
-           recentWorkoutsList.style.display = "none";
-         } else {
-           noWorkoutsMessage.style.display = "none";
-           recentWorkoutsList.style.display = "block";
- 
-           workouts.slice(0, 5).forEach(w => {
-             const li = document.createElement("li");
-             li.textContent = `${w.date} - ${w.workout}`;
-             li.dataset.workoutId = w.id;  // Add workout ID to the list item
-             li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event to show details
-             recentWorkoutsList.appendChild(li);
-           });
-         }
-       })
-       .catch(err => {
-         console.error("Failed to load workouts:", err);
-       });
-   }
- 
-   // Show workout details in a popup modal
-   function showWorkoutDetails(workout) {
-     const workoutDetailsModal = document.getElementById("workout-details-modal");
-     const workoutDetailsContent = document.getElementById("workout-details-content");
- 
-     // Clear previous content
-     workoutDetailsContent.innerHTML = "";
- 
-     // Populate modal with workout details
-     const workoutDetails = `
-       <h2>${workout.workout} - ${workout.date}</h2>
-       <h3>Exercises:</h3>
-       <ul>
-         ${workout.exercises.map(exercise => `
-           <li>
-             <strong>${exercise.name}</strong>
-             <ul>
-               ${exercise.sets.map(set => `
-                 <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
-               `).join("")}
-             </ul>
-           </li>
-         `).join("")}
-       </ul>
-       <h3>Progress:</h3>
-       <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
-       <p>Progress for Next Session: ${workout.progressForNextSession}</p>
-       <p>Rating: ${workout.workoutRating}</p>
-       <h3>Notes:</h3>
-       <p>${workout.additionalNotes}</p>
-       <h3>Cardio:</h3>
-       <p>${workout.cardio}</p>
-     `;
- 
-     workoutDetailsContent.innerHTML = workoutDetails;
- 
-     // Show the modal
-     workoutDetailsModal.style.display = "block";
-     document.body.style.overflow = "hidden";
-   }
- 
-   // Close the workout details modal
-   const closeWorkoutDetailsModal = document.getElementById("close-workout-details-modal");
-   closeWorkoutDetailsModal.addEventListener("click", () => {
-     const workoutDetailsModal = document.getElementById("workout-details-modal");
-     workoutDetailsModal.style.display = "none";
-     document.body.style.overflow = "";
-   });
- 
-   // Save workout
-   document.getElementById("save-workout-btn").addEventListener("click", () => {
-     const workout = document.getElementById("workout-name").value.trim();
-     const date = document.getElementById("workout-date").value;
-     const progressYourLifts = document.querySelectorAll(".question select")[0].value;
-     const progressForNextSession = document.querySelectorAll(".question select")[1].value;
-     const workoutRating = parseInt(document.querySelectorAll(".question input[type='number']")[0].value) || null;
-     const additionalNotes = document.querySelectorAll(".question textarea")[0].value;
-     const cardio = document.querySelectorAll(".question textarea")[1].value;
- 
-     const exerciseRows = Array.from(document.querySelectorAll(".exercise-row"));
-     const exercises = exerciseRows.map(row => {
-       const name = row.querySelector("input[type='text']").value;
-       const weightUnit = row.querySelector("select").value;
-       const inputs = row.querySelectorAll("input[type='number']");
- 
-       const sets = [];
-       for (let i = 0; i < inputs.length; i += 2) {
-         const weight = parseFloat(inputs[i].value);
-         const reps = parseInt(inputs[i + 1].value);
-         if (!isNaN(weight) && !isNaN(reps)) {
-           sets.push({ weight, reps });
-         }
-       }
- 
-       return { name, weightUnit, sets };
-     }).filter(ex => ex.sets.length > 0 && ex.name);
- 
-     if (!username || !workout || !date || exercises.length === 0) {
-       alert("Please fill in all required fields.");
-       return;
-     }
- 
-     const workoutData = {
-       username,
-       workout,
-       date,
-       exercises,
-       progressYourLifts,
-       progressForNextSession,
-       workoutRating,
-       additionalNotes,
-       cardio,
-     };
- 
-     fetch("/add-workout", {
-       method: "POST",
-       headers: { "Content-Type": "application/json" },
-       body: JSON.stringify(workoutData)
-     })
-       .then(res => res.json())
-       .then(data => {
-         alert("Workout saved successfully!");
-         console.log("Saved workout:", data);
-         modal.style.display = "none";
-         document.body.style.overflow = "";
-         resetWorkoutForm();
- 
-         // Update recent workouts list immediately
-         loadRecentWorkouts();
-       })
-       .catch(err => {
-         console.error("Failed to save workout:", err);
-         alert("Error saving workout. Check console for details.");
-       });
-   });
- 
-   function resetWorkoutForm() {
-     document.getElementById("workout-name").value = "";
-     document.getElementById("workout-date").value = "";
-     exerciseRowsContainer.innerHTML = "";
- 
-     const row = document.createElement("tr");
-     row.className = "exercise-row";
-     row.setAttribute("data-index", "0");
-     row.innerHTML = ` 
-       <td><strong>A.</strong>
-         <input type="text" placeholder="Exercise name" />
-       </td>
-       <td>
-         <select class="set-weight-dropdown">
-           <option value="kg">kg</option>
-           <option value="lbs">lbs</option>
-         </select>
-       </td>
-       ${[...Array(6)].map(() => `
-         <td><input type="number" placeholder="Weight" /></td>
-         <td><input type="number" placeholder="Reps" /></td>
-       `).join("")}
-     `;
-     exerciseRowsContainer.appendChild(row);
-   }
- 
-   addWorkoutBtn.addEventListener("click", () => {
-     modal.style.display = "block";
-     document.body.style.overflow = "hidden";
-   });
- 
-   closeModal.addEventListener("click", () => {
-     modal.style.display = "none";
-     document.body.style.overflow = "";
-   });
- 
-   window.addEventListener("click", (event) => {
-     if (event.target === modal) {
-       modal.style.display = "none";
-       document.body.style.overflow = "";
-     }
-   });
- 
-   addExerciseRowBtn.addEventListener("click", () => {
-     const index = exerciseRowsContainer.children.length;
-     const row = document.createElement("tr");
-     row.className = "exercise-row";
-     row.setAttribute("data-index", index);
-     row.innerHTML = `
-       <td><strong>${String.fromCharCode(65 + index)}.</strong>
-         <input type="text" placeholder="Exercise name" />
-       </td>
-       <td>
-         <select class="set-weight-dropdown">
-           <option value="kg">kg</option>
-           <option value="lbs">lbs</option>
-         </select>
-       </td>
-       ${[...Array(6)].map(() => `
-         <td><input type="number" placeholder="Weight" /></td>
-         <td><input type="number" placeholder="Reps" /></td>
-       `).join("")}
-     `;
-     exerciseRowsContainer.appendChild(row);
-   });
- 
-   const logoutBtn = document.querySelector(".logout");
-   logoutBtn.addEventListener("click", () => {
-     localStorage.removeItem("username");
-     window.location.href = "/login";
-   });
- 
-   // Auto-load recent workouts on page load
-   loadRecentWorkouts();
- });
- 
- </script>
- 
- </body>
- </html>
+  <div class="card">
+    <h2>Recent Workouts</h2>
+<p> Click for workout details. </p>
+    <p id="no-workouts" class="empty-message">No workouts added yet.</p>
+    <ul id="recent-workouts-list" style="display: none;"></ul>
 
+   
+  </div>
+</div>
+  </div>
+ 
+  <!-- Workout Details Modal (Popup) -->
+  <div id="workout-details-modal" class="modal">
+    <div id="workout-details-content" class="modal-content"></div>
+    <button id="close-workout-details-modal">Close</button>
+  </div>
+ 
+  <!-- Workout Modal -->
+  <div id="create-workout-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-workout-modal">&times;</span>
+ 
+      <div class="modal-header">
+        <div>
+          <label for="workout-name">Workout:</label>
+          <input type="text" id="workout-name" placeholder="e.g. Upper Body" />
+        </div>
+        <div class="btn-container">
+          <button id="save-workout-btn">Save Workout</button>
+        </div>
+      </div>
+ 
+      <label for="workout-date">Date:</label>
+      <input type="date" id="workout-date" />
+ 
+     <!-- Horizontal scroll container for the table -->
+  <div class="horizontal-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Exercise</th>
+          <th>Unit</th>
+          <th colspan="2">Set 1</th>
+          <th colspan="2">Set 2</th>
+          <th colspan="2">Set 3</th>
+          <th colspan="2">Set 4</th>
+          <th colspan="2">Set 5</th>
+          <th colspan="2">Set 6</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th>Weight Unit</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+        </tr>
+      </thead>
+      <tbody id="exercise-rows">
+        <!-- Row A is initially present -->
+        <tr class="exercise-row" data-index="0">
+          <td><strong>A.</strong>
+            <input type="text" placeholder="Exercise name" />
+          </td>
+          <td>
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
+          </td>
+          <!-- Set 1 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 2 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 3 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 4 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 5 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 6 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+ 
+  <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
+ 
+      <!-- New questions under the workout table -->
+      <div class="question">
+        <label>Did you progress your lifts? (Yes/No)</label>
+        <select>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+ 
+      <div class="question">
+        <label>Have you marked the exercise where you are to progress next session? (Yes/No)</label>
+        <select>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+ 
+      <div class="question">
+        <label>How do you feel the workout went? (1-10)</label>
+        <input type="number" min="1" max="10" />
+      </div>
+ 
+      <div class="question">
+        <label>Additional Workout Notes</label>
+        <textarea placeholder="Write any notes..." rows="4"></textarea>
+      </div>
+ 
+      <div class="question">
+        <label>Cardio:</label>
+        <textarea placeholder="Describe your cardio workout..." rows="4"></textarea>
+      </div>
+ 
+      <!-- Buttons for editing and deleting workouts -->
+      <button id="edit-workout-btn" style="display:none;">Edit Workout</button>
+      <button id="delete-workout-btn" style="display:none;">Delete Workout</button>
+    </div>
+  </div>
+ 
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+const username = localStorage.getItem("username");
+  if (username) {
+    updateWelcomeMessage();  // Update the welcome message with username
+  } else {
+    updateWelcomeMessage();  // Show "Welcome!"
+  }
+
+//sets welcome message fuction
+
+    function updateWelcomeMessage() {
+  const welcomeMessage = document.getElementById("welcome-message");
+  const username = localStorage.getItem("username");
+  welcomeMessage.textContent = username ? `Logged in as: ${username}` : "Welcome!";
+}
+    const modal = document.getElementById("create-workout-modal");
+    const addWorkoutBtn = document.getElementById("add-workout-btn");
+    const closeModal = document.getElementById("close-workout-modal");
+    const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
+    const exerciseRowsContainer = document.getElementById("exercise-rows");
+ 
+    const recentWorkoutsList = document.getElementById("recent-workouts-list");
+    const noWorkoutsMessage = document.getElementById("no-workouts");
+
+// Auth modal logic
+const loginModal = document.getElementById("login-modal");
+const signupModal = document.getElementById("signup-modal");
+const loginBtn = document.querySelector(".login-btn");
+const signupBtn = document.querySelector(".signup-btn");
+const closeLogin = document.getElementById("close-login-modal");
+const closeSignup = document.getElementById("close-signup-modal");
+
+// Open modals
+loginBtn.addEventListener("click", () => {
+  loginModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
+
+signupBtn.addEventListener("click", () => {
+  signupModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
+
+// Close modals
+closeLogin.addEventListener("click", () => {
+  loginModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+closeSignup.addEventListener("click", () => {
+  signupModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+// Optional: Close modals by clicking outside content
+window.addEventListener("click", (e) => {
+  if (e.target === loginModal) {
+    loginModal.style.display = "none";
+    document.body.style.overflow = "";
+  }
+  if (e.target === signupModal) {
+    signupModal.style.display = "none";
+    document.body.style.overflow = "";
+  }
+});
+
+// Eye icon toggle password visibility for both password fields in signup modal
+const toggleSignupPassword = document.getElementById("toggle-signup-password");
+const passwordInput = document.getElementById("signup-password");
+const confirmPasswordInput = document.getElementById("signup-confirm-password");
+
+toggleSignupPassword.addEventListener("click", () => {
+  // Toggle visibility for both password and confirm password fields
+  const type = passwordInput.type === "password" ? "text" : "password";
+  passwordInput.type = type;
+  confirmPasswordInput.type = type; // Make confirm password field also toggle
+});
+
+// Signup form submission
+const signupForm = document.getElementById("signup-form");
+
+signupForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Prevent default form submission
+
+  const username = document.getElementById("signup-username").value;
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+  const confirmPassword = document.getElementById("signup-confirm-password").value;
+
+  // Check if password and confirm password match
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  // Make the API call to register the user
+  try {
+    const response = await fetch('/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, email, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+localStorage.setItem("username", username);
+  updateWelcomeMessage();// Update welcome message
+      alert('User registered successfully!'); // User successfully registered
+      signupModal.style.display = "none"; // Close the signup modal
+      document.body.style.overflow = ""; // Restore overflow
+    } else {
+      // Handle registration error
+      alert(data.message || 'Error registering user');
+    }
+  } catch (error) {
+    console.error('Error registering user:', error);
+    alert('There was an error. Please try again.');
+  }
+});
+
+// Eye icon toggle password visibility for login modal
+const toggleLoginPassword = document.getElementById("toggle-login-password");
+const loginPasswordInput = document.getElementById("login-password");
+
+toggleLoginPassword.addEventListener("click", () => {
+  // Toggle password visibility for the login password field
+  const type = loginPasswordInput.type === "password" ? "text" : "password";
+  loginPasswordInput.type = type;
+});
+
+// Login form submission
+const loginForm = document.getElementById("login-form");
+
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Prevent default form submission
+
+  const usernameOrEmail = document.getElementById("login-username").value;
+  const password = document.getElementById("login-password").value;
+
+try {
+  const response = await fetch('/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ usernameOrEmail, password }),
+  });
+
+  const data = await response.json();
+
+if (response.ok) {
+  localStorage.setItem("username", data.username);
+  updateWelcomeMessage(); // Update welcome message
+  
+  // Close login modal and allow for page update before loading recent workouts
+  loginModal.style.display = "none";
+  document.body.style.overflow = "";
+
+  // Now load recent workouts after closing modal
+  loadRecentWorkouts();  // Immediately load recent workouts after modal is closed
+  
+  alert('Login successful!');
+} else {
+  alert(data.message || 'Invalid credentials');
+}
+ } catch (error) {
+  console.error('Error logging in user:', error);
+  alert('There was an error. Please try again.');
+}
+});
+ 
+    // Fetch and display recent workouts
+    function loadRecentWorkouts() {
+    const username = localStorage.getItem("username"); // fresh value
+      if (!username) return;
+ 
+      fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
+        .then(res => res.json())
+        .then(workouts => {
+          recentWorkoutsList.innerHTML = "";
+ 
+          if (workouts.length === 0) {
+            noWorkoutsMessage.style.display = "block";
+            recentWorkoutsList.style.display = "none";
+          } else {
+            noWorkoutsMessage.style.display = "none";
+            recentWorkoutsList.style.display = "block";
+ 
+            workouts.slice(0, 5).forEach(w => {
+              const li = document.createElement("li");
+              li.textContent = `${w.date} - ${w.workout}`;
+              li.dataset.workoutId = w.id;  // Add workout ID to the list item
+              li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event to show details
+              recentWorkoutsList.appendChild(li);
+            });
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load workouts:", err);
+        });
+    }
+ 
+   function showWorkoutDetails(workout) {
+  const workoutDetailsModal = document.getElementById("workout-details-modal");
+  const workoutDetailsContent = document.getElementById("workout-details-content");
+
+  // Build the modal content, starting with the close button
+  const workoutDetails = `
+    <span class="close" id="close-workout-details-modal">&times;</span>
+    <h2>${workout.workout} - ${workout.date}</h2>
+    <h3>Exercises:</h3>
+    <ul>
+      ${workout.exercises.map(exercise => `
+        <li>
+          <strong>${exercise.name}</strong>
+          <ul>
+            ${exercise.sets.map(set => `
+              <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
+            `).join("")}
+          </ul>
+        </li>
+      `).join("")}
+    </ul>
+    <h3>Progress:</h3>
+    <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
+    <p>Progress for Next Session: ${workout.progressForNextSession}</p>
+    <p>Rating: ${workout.workoutRating}</p>
+    <h3>Notes:</h3>
+    <p>${workout.additionalNotes}</p>
+    <h3>Cardio:</h3>
+    <p>${workout.cardio}</p>
+  `;
+
+  // Inject content
+  workoutDetailsContent.innerHTML = workoutDetails;
+
+  // Reattach close functionality since we injected new HTML
+  document.getElementById("close-workout-details-modal").addEventListener("click", () => {
+    workoutDetailsModal.style.display = "none";
+    document.body.style.overflow = "";
+  });
+
+  // Show the modal
+  workoutDetailsModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+}
+ 
+    // Save workout
+    document.getElementById("save-workout-btn").addEventListener("click", () => {
+      const workout = document.getElementById("workout-name").value.trim();
+      const date = document.getElementById("workout-date").value;
+      const progressYourLifts = document.querySelectorAll(".question select")[0].value;
+      const progressForNextSession = document.querySelectorAll(".question select")[1].value;
+      const workoutRating = parseInt(document.querySelectorAll(".question input[type='number']")[0].value) || null;
+      const additionalNotes = document.querySelectorAll(".question textarea")[0].value;
+      const cardio = document.querySelectorAll(".question textarea")[1].value;
+ 
+      const exerciseRows = Array.from(document.querySelectorAll(".exercise-row"));
+      const exercises = exerciseRows.map(row => {
+        const name = row.querySelector("input[type='text']").value;
+        const weightUnit = row.querySelector("select").value;
+        const inputs = row.querySelectorAll("input[type='number']");
+ 
+        const sets = [];
+        for (let i = 0; i < inputs.length; i += 2) {
+          const weight = parseFloat(inputs[i].value);
+          const reps = parseInt(inputs[i + 1].value);
+          if (!isNaN(weight) && !isNaN(reps)) {
+            sets.push({ weight, reps });
+          }
+        }
+ 
+        return { name, weightUnit, sets };
+      }).filter(ex => ex.sets.length > 0 && ex.name);
+ 
+      if (!username || !workout || !date || exercises.length === 0) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+ 
+      const workoutData = {
+        username,
+        workout,
+        date,
+        exercises,
+        progressYourLifts,
+        progressForNextSession,
+        workoutRating,
+        additionalNotes,
+        cardio,
+      };
+ 
+      fetch("/add-workout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(workoutData)
+      })
+        .then(res => res.json())
+        .then(data => {
+          alert("Workout saved successfully!");
+          console.log("Saved workout:", data);
+          modal.style.display = "none";
+          document.body.style.overflow = "";
+          resetWorkoutForm();
+ 
+          // Update recent workouts list immediately
+          loadRecentWorkouts();
+        })
+        .catch(err => {
+          console.error("Failed to save workout:", err);
+          alert("Error saving workout. Check console for details.");
+        });
+    });
+ 
+    function resetWorkoutForm() {
+      document.getElementById("workout-name").value = "";
+      document.getElementById("workout-date").value = "";
+      exerciseRowsContainer.innerHTML = "";
+ 
+      const row = document.createElement("tr");
+      row.className = "exercise-row";
+      row.setAttribute("data-index", "0");
+      row.innerHTML = ` 
+        <td><strong>A.</strong>
+          <input type="text" placeholder="Exercise name" />
+        </td>
+        <td>
+          <select class="set-weight-dropdown">
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+          </select>
+        </td>
+        ${[...Array(6)].map(() => `
+          <td><input type="number" placeholder="Weight" /></td>
+          <td><input type="number" placeholder="Reps" /></td>
+        `).join("")}
+      `;
+      exerciseRowsContainer.appendChild(row);
+    }
+ 
+    addWorkoutBtn.addEventListener("click", () => {
+      modal.style.display = "block";
+      document.body.style.overflow = "hidden";
+    });
+ 
+    closeModal.addEventListener("click", () => {
+      modal.style.display = "none";
+      document.body.style.overflow = "";
+    });
+ 
+    window.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+      }
+    });
+ 
+    addExerciseRowBtn.addEventListener("click", () => {
+      const index = exerciseRowsContainer.children.length;
+      const row = document.createElement("tr");
+      row.className = "exercise-row";
+      row.setAttribute("data-index", index);
+      row.innerHTML = `
+        <td><strong>${String.fromCharCode(65 + index)}.</strong>
+          <input type="text" placeholder="Exercise name" />
+        </td>
+        <td>
+          <select class="set-weight-dropdown">
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+          </select>
+        </td>
+        ${[...Array(6)].map(() => `
+          <td><input type="number" placeholder="Weight" /></td>
+          <td><input type="number" placeholder="Reps" /></td>
+        `).join("")}
+      `;
+      exerciseRowsContainer.appendChild(row);
+    });
+ 
+    const logoutBtn = document.querySelector(".logout");
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("username");
+      updateWelcomeMessage(); //reset welcome message
+   recentWorkoutsList.innerHTML = ""; // Clear the list
+   noWorkoutsMessage.style.display = "block"; // Show the "no workouts" message
+   recentWorkoutsList.style.display = "none"; // Hide the workouts list
+    });
+ 
+    // Auto-load recent workouts on page load
+    loadRecentWorkouts();
+  });
+
+  </script>
+ 
+  </body>
+  </html>
