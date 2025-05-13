@@ -994,6 +994,32 @@ function searchWorkouts() {
   });
 }
 
+
+let currentWorkoutId = null;
+
+function openViewWorkoutModal(workoutId) {
+  currentWorkoutId = workoutId;
+  const workout = workouts.find(w => w.id === workoutId);
+  if (!workout) return;
+  document.getElementById("workout-details").innerHTML = formatWorkoutDetails(workout);
+  document.getElementById("viewWorkoutModal").style.display = "block";
+}
+
+function editCurrentWorkout() {
+  if (!currentWorkoutId) return;
+  openEditWorkoutModal(currentWorkoutId);
+}
+
+function deleteCurrentWorkout() {
+  if (!currentWorkoutId) return;
+  if (confirm("Are you sure you want to delete this workout?")) {
+    workouts = workouts.filter(w => w.id !== currentWorkoutId);
+    saveWorkouts();
+    renderWorkouts();
+    closeViewWorkoutModal();
+  }
+}
+
 </script>
  
   </body>
