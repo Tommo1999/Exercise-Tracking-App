@@ -430,16 +430,26 @@ input[type="number"] {
 <button class="btn" id="add-workout-btn">Create Workout</button>
     </div>
  
-   <div class="dashboard-section">
+   
+<div class="dashboard-section">
   <div class="card">
     <h2>Recent Workouts</h2>
-<p> Click for workout details. </p>
+    <p>Click for workout details.</p>
+
+    <!-- 🔍 Search bar -->
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search workouts..."
+      onkeyup="searchWorkouts()"
+      style="margin-bottom: 10px; width: 100%; padding: 6px;"
+    />
+
     <p id="no-workouts" class="empty-message">No workouts added yet.</p>
     <ul id="recent-workouts-list" style="display: none;"></ul>
-
-   
   </div>
 </div>
+
   </div>
  
   <!-- Workout Details Modal (Popup) -->
@@ -975,7 +985,16 @@ if (response.ok) {
     loadRecentWorkouts();
   });
 
-  </script>
+  
+function searchWorkouts() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const rows = document.querySelectorAll("#recent-workouts-list li");
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(input) ? "" : "none";
+  });
+}
+
+</script>
  
   </body>
   </html>
