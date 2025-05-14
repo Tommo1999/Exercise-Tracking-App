@@ -776,7 +776,15 @@ if (response.ok) {
  
             workouts.slice(0, 5).forEach(w => {
               const li = document.createElement("li");
-              li.textContent = `${w.date} - ${w.workout}`;
+
+// Convert date string to UK format
+          const date = new Date(w.date);
+          const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          }).format(date);
+              li.textContent = `${ukFormattedDate} - ${w.workout}`;
               li.dataset.workoutId = w.id;  // Add workout ID to the list item
               li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event to show details
               recentWorkoutsList.appendChild(li);
