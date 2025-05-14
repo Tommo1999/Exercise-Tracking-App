@@ -607,6 +607,16 @@ const username = localStorage.getItem("username");
     const recentWorkoutsList = document.getElementById("recent-workouts-list");
     const noWorkoutsMessage = document.getElementById("no-workouts");
 
+    const editWorkoutBtn = document.getElementById("edit-workout-btn");
+    const deleteWorkoutBtn = document.getElementById("delete-workout-btn");
+
+      editWorkoutBtn.addEventListener("click", () => {
+      });
+
+      deleteWorkoutBtn.addEventListener("click", () => {
+        // Delete workout logic here...
+      });
+
 // Auth modal logic
 const loginModal = document.getElementById("login-modal");
 const signupModal = document.getElementById("signup-modal");
@@ -787,6 +797,63 @@ if (response.ok) {
           console.error("Failed to load workouts:", err);
         });
     }
+
+function editWorkout(workout) {
+      // Pre-fill the form with workout data for editing
+      const workoutName = document.getElementById("workout-name");
+      const workoutDate = document.getElementById("workout-date");
+      workoutName.value = workout.workout;
+      workoutDate.value = workout.date;
+
+      // Populate exercise rows (assuming format matches)
+      exerciseRowsContainer.innerHTML = "";
+      workout.exercises.forEach((exercise, index) => {
+        const row = document.createElement("tr");
+        row.className = "exercise-row";
+        row.setAttribute("data-index", index);
+        row.innerHTML = `
+          <td><strong>${String.fromCharCode(65 + index)}.</strong>
+            <input type="text" value="${exercise.name}" placeholder="Exercise name" />
+          </td>
+          <td>
+            <select class="set-weight-dropdown">
+              <option value="kg" ${exercise.weightUnit === 'kg' ? 'selected' : ''}>kg</option>
+              <option value="lbs" ${exercise.weightUnit === 'lbs' ? 'selected' : ''}>lbs</option>
+            </select>
+          </td>
+          ${exercise.sets.map((set, i) => `
+            <td><input type="number" value="${set.weight}" placeholder="Weight" /></td>
+            <td><input type="number" value="${set.reps}" placeholder="Reps" /></td>
+          `).join("")}
+        `;
+        exerciseRowsContainer.appendChild(row);
+      });
+
+      // Store the workout ID in the save button for later use
+      document.getElementById("save-workout-btn").dataset.editingId = workout.id;
+      modal.style.display = "block";
+      document.body.style.overflow = "hidden";
+    }
+
+    function deleteWorkout(workoutId, workoutElement) {
+      const confirmDelete = confirm("Are you sure you want to delete this workout?");
+      if (!confirmDelete) return;
+
+      fetch(`/delete-workout?id=${workoutId}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert("Workout deleted successfully!");
+            workoutElement.remove(); // Remove the workout from the UI
+          } else {
+            alert("Failed to delete workout.");
+          }
+        })
+        .catch(err => {
+          console.error("Error deleting workout:", err);
+          alert("There was an error deleting the workout.");
+        });
+    }
  
    function showWorkoutDetails(workout) {
   const workoutDetailsModal = document.getElementById("workout-details-modal");
@@ -879,8 +946,16 @@ if (response.ok) {
         cardio,
       };
  
-      fetch("/add-workout", {
-        method: "POST",
+     const editingId = document.getElementById("save-workout-btn").dataset.editingId;
+      const url = editingId ? "/update-workout" : "/add-workout";
+      const method = editingId ? "PUT" : "POST";
+
+      if (editingId) {
+        workoutData.id = editingId;
+      }
+
+      fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(workoutData)
       })
