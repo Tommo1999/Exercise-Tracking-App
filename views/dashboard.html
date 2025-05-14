@@ -352,6 +352,30 @@ input[type="number"] {
   margin-left: auto;
 }
 
+/* Style for recent workouts list */
+#recentWorkoutsList {
+  list-style: none;       /* Remove bullet points */
+  padding: 0;
+  margin: 0;
+}
+
+/* List items: date aligned left, vertically centered */
+#recentWorkoutsList li {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align text to the left */
+  padding: 10px;
+  border-bottom: 1px solid #444; /* Optional: for visual separation */
+  cursor: pointer;
+}
+
+/* Optional: style the date separately for layout control */
+#recentWorkoutsList li .date {
+  min-width: 130px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
 </style>
   </head>
   <body>
@@ -784,7 +808,7 @@ if (response.ok) {
             month: 'long',
             year: 'numeric',
           }).format(date);
-              li.textContent = `${ukFormattedDate} - ${w.workout}`;
+              li.innerHTML = `<span class="date">${ukFormattedDate}</span><span class="workout">${w.workout}</span>`;
               li.dataset.workoutId = w.id;  // Add workout ID to the list item
               li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event to show details
               recentWorkoutsList.appendChild(li);
