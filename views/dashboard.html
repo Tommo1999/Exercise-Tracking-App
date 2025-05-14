@@ -822,7 +822,7 @@ if (response.ok) {
   `;
 
   // Inject content
-  document.getElementById("workout-details-body").innerHTML = workoutDetails;
+  workoutDetailsContent.innerHTML = workoutDetails;
 
   // Reattach close functionality since we injected new HTML
   document.getElementById("close-workout-details-modal").addEventListener("click", () => {
