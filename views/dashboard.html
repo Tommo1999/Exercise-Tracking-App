@@ -811,7 +811,7 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
    function showWorkoutDetails(workout) {
 
 // Convert date string to UK format
-          const date = new Date(w.date);
+          const date = new Date(workout.date);
           const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
             day: '2-digit',
             month: 'long',
