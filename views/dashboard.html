@@ -430,26 +430,16 @@ input[type="number"] {
 <button class="btn" id="add-workout-btn">Create Workout</button>
     </div>
  
-   
-<div class="dashboard-section">
+   <div class="dashboard-section">
   <div class="card">
     <h2>Recent Workouts</h2>
-    <p>Click for workout details.</p>
-
-    <!-- 🔍 Search bar -->
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Search workouts..."
-      onkeyup="searchWorkouts()"
-      style="margin-bottom: 10px; width: 100%; padding: 6px;"
-    />
-
+<p> Click for workout details. </p>
     <p id="no-workouts" class="empty-message">No workouts added yet.</p>
     <ul id="recent-workouts-list" style="display: none;"></ul>
+
+   
   </div>
 </div>
-
   </div>
  
   <!-- Workout Details Modal (Popup) -->
@@ -489,7 +479,7 @@ input[type="number"] {
           <th colspan="2">Set 4</th>
           <th colspan="2">Set 5</th>
           <th colspan="2">Set 6</th>
-        <th>Progress?</th></tr>
+        </tr>
         <tr>
           <th></th>
           <th>Weight Unit</th>
@@ -542,14 +532,8 @@ input[type="number"] {
           <td>
             <input type="number" placeholder="Weight" />
           </td>
-          <td><input type="number" placeholder="reps" />
-    </td>
-    <td class="progress-toggle">
-      <label><input type="radio" name="progress-0" value="yes"> Yes</label>
-      <label><input type="radio" name="progress-0" value="no" checked> No</label>
-    </td></td>
+          <td><input type="number" placeholder="reps" /></td>
         </tr>
-    
       </tbody>
     </table>
   </div>
@@ -991,120 +975,7 @@ if (response.ok) {
     loadRecentWorkouts();
   });
 
-  
-function searchWorkouts() {
-  const input = document.getElementById("searchInput").value.toLowerCase();
-  const rows = document.querySelectorAll("#recent-workouts-list li");
-  rows.forEach(row => {
-    row.style.display = row.textContent.toLowerCase().includes(input) ? "" : "none";
-  });
-}
-
-
-let currentWorkoutId = null;
-
-function openViewWorkoutModal(workoutId) {
-  currentWorkoutId = workoutId;
-  const workout = workouts.find(w => w.id === workoutId);
-  if (!workout) return;
-  document.getElementById("workout-details").innerHTML = formatWorkoutDetails(workout);
-  document.getElementById("viewWorkoutModal").style.display = "block";
-}
-
-function editCurrentWorkout() {
-  if (!currentWorkoutId) return;
-  openEditWorkoutModal(currentWorkoutId);
-}
-
-function deleteCurrentWorkout() {
-  if (!currentWorkoutId) return;
-  if (confirm("Are you sure you want to delete this workout?")) {
-    workouts = workouts.filter(w => w.id !== currentWorkoutId);
-    saveWorkouts();
-    renderWorkouts();
-    closeViewWorkoutModal();
-  }
-}
-
-
-function openEditWorkoutModal(workoutId) {
-  const workout = workouts.find(w => w.id === workoutId);
-  if (!workout) return;
-
-  currentWorkoutId = workoutId;
-  document.getElementById("editWorkoutName").value = workout.name;
-  document.getElementById("editWorkoutDate").value = workout.date;
-
-  document.getElementById("editWorkoutModal").style.display = "block";
-}
-
-function closeEditWorkoutModal() {
-  document.getElementById("editWorkoutModal").style.display = "none";
-}
-
-function saveEditedWorkout(event) {
-  event.preventDefault();
-  const name = document.getElementById("editWorkoutName").value;
-  const date = document.getElementById("editWorkoutDate").value;
-
-  const index = workouts.findIndex(w => w.id === currentWorkoutId);
-  if (index !== -1) {
-    workouts[index].name = name;
-    workouts[index].date = date;
-    saveWorkouts();
-    renderWorkouts();
-    closeEditWorkoutModal();
-    closeViewWorkoutModal();
-  }
-}
-
-
-document.getElementById("add-exercise-row-btn").addEventListener("click", function () {
-  const table = document.getElementById("exercise-rows");
-  const newIndex = table.children.length;
-  const newRow = document.createElement("tr");
-  newRow.classList.add("exercise-row");
-  newRow.setAttribute("data-index", newIndex);
-  newRow.innerHTML = `
-    <td><strong>${String.fromCharCode(65 + newIndex)}.</strong>
-      <input type="text" placeholder="Exercise name" />
-    </td>
-    <td>
-      <select class="set-weight-dropdown">
-        <option value="kg">kg</option>
-        <option value="lbs">lbs</option>
-      </select>
-    </td>
-    ${Array.from({ length: 6 }).map(() => `
-      <td><input type="number" placeholder="Weight" /></td>
-      <td><input type="number" placeholder="reps" /></td>
-    `).join('')}
-    <td class="progress-toggle">
-      <label><input type="radio" name="progress-${newIndex}" value="yes"> Yes</label>
-      <label><input type="radio" name="progress-${newIndex}" value="no" checked> No</label>
-    </td>
-  `;
-  table.appendChild(newRow);
-});
-
-</script>
+  </script>
  
-  
-<div id="editWorkoutModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeEditWorkoutModal()">&times;</span>
-    <h2>Edit Workout</h2>
-    <form id="editWorkoutForm" onsubmit="saveEditedWorkout(event)">
-      <label for="editWorkoutName">Workout Name:</label>
-      <input type="text" id="editWorkoutName" required />
-
-      <label for="editWorkoutDate">Date:</label>
-      <input type="date" id="editWorkoutDate" required />
-
-      <button type="submit">Save Changes</button>
-    </form>
-  </div>
-</div>
-
-</body>
+  </body>
   </html>
