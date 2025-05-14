@@ -356,7 +356,7 @@ input[type="number"] {
 #recent-workouts-list {
 list-style-type: none; /* Remove bullet points */
 padding: 0; /* Remove default padding */
-text-align: center; /* Center align text */
+text-align: left; /* left align text */
 }
 #recent-workouts-list li {
 margin: 5px 0;
@@ -794,7 +794,7 @@ if (response.ok) {
             month: 'long',
             year: 'numeric',
           }).format(date);
-              li.innerHTML = `<span class="date">${ukFormattedDate}</span><span class="workout">${w.workout}</span>`;
+              li.textContent = `${ukFormattedDate} :  ${w.workout}`;
               li.dataset.workoutId = w.id;  // Add workout ID to the list item
               li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event to show details
               recentWorkoutsList.appendChild(li);
