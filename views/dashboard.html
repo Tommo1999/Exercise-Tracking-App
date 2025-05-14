@@ -784,7 +784,9 @@ if (response.ok) {
             noWorkoutsMessage.style.display = "none";
             recentWorkoutsList.style.display = "block";
  
-            workouts.slice(0, 5).forEach(w => {
+            //sort workouts in order 
+workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
+              workouts.slice(0, 5).forEach(w => {
               const li = document.createElement("li");
 
 // Convert date string to UK format
