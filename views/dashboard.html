@@ -785,11 +785,34 @@ if (response.ok) {
             recentWorkoutsList.style.display = "block";
  
             workouts.slice(0, 5).forEach(w => {
-              const li = document.createElement("li");
-              li.textContent = `${w.date} - ${w.workout}`;
-              li.dataset.workoutId = w.id;  // Add workout ID to the list item
-              li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event to show details
-              recentWorkoutsList.appendChild(li);
+            const li = document.createElement("li");
+li.innerHTML = `
+  ${w.date} - ${w.workout}
+  <button class="edit-btn">Edit</button>
+  <button class="delete-btn">Delete</button>
+`;
+li.dataset.workoutId = w.id;
+
+// Show details on list item click (optional if you still want this)
+  li.addEventListener("click", (e) => {
+  if (!e.target.classList.contains('edit-btn') && !e.target.classList.contains('delete-btn')) {
+    showWorkoutDetails(w);
+  }
+});
+
+  const editBtn = li.querySelector(".edit-btn");
+  editBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // prevent list item click
+  editWorkout(w);
+});
+
+  const deleteBtn = li.querySelector(".delete-btn");
+  deleteBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // prevent list item click
+  deleteWorkout(w.id, li);
+});
+
+                 recentWorkoutsList.appendChild(li);
             });
           }
         })
