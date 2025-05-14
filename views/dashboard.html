@@ -43,7 +43,7 @@ body {
   flex: 1 1 calc(50% - 20px); /* Initially takes 50% minus margin */
   min-width: 300px;  /* Ensures a minimum width */
   margin-bottom: 20px;
-
+  
   /* Centering content */
   display: flex;
   flex-direction: column;
@@ -374,14 +374,14 @@ input[type="number"] {
       <!-- Username Input -->
       <label for="login-username">Username or Email:</label><br />
       <input type="text" id="login-username" required /><br /><br />
-
+      
       <!-- Password Input -->
       <label for="login-password">Password:</label><br />
       <div class="password-container">
         <input type="password" id="login-password" required placeholder="Enter your password" />
         <span id="toggle-login-password" class="eye-icon">&#128065;</span> <!-- Eye icon for password visibility -->
       </div><br /><br />
-
+      
       <!-- Submit Button -->
       <button type="submit" class="btn">Log In</button>
     </form>
@@ -397,31 +397,31 @@ input[type="number"] {
       <!-- Username Input -->
       <label for="signup-username">Username:</label><br />
       <input type="text" id="signup-username" required placeholder="Enter your username" /><br /><br />
-
+      
       <!-- Email Input -->
       <label for="signup-email">Email:</label><br />
       <input type="email" id="signup-email" required placeholder="Enter your email" /><br /><br />
-
+      
       <!-- Password Input -->
       <label for="signup-password">Password:</label><br />
       <div class="password-container">
         <input type="password" id="signup-password" required placeholder="Enter your password" />
         <span id="toggle-signup-password" class="eye-icon">&#128065;</span> <!-- Eye icon to toggle visibility -->
       </div><br />
-
+      
       <!-- Confirm Password Input -->
       <label for="signup-confirm-password">Confirm Password:</label><br />
       <div class="password-container">
         <input type="password" id="signup-confirm-password" required placeholder="Confirm your password" />
         <span id="toggle-confirm-password" class="eye-icon">&#128065;</span> <!-- Eye icon to toggle visibility -->
       </div><br />
-
+      
       <!-- Submit Button -->
       <button type="submit" class="btn">Sign Up</button>
     </form>
   </div>
 </div>
-
+ 
   <div class="container">
     <div class="header">
 	<img src="../images/RepDog.png" alt="RepDog Logo" width="300" height="200" />
@@ -429,7 +429,7 @@ input[type="number"] {
       <p>Track your workouts and fitness journey</p>
 <button class="btn" id="add-workout-btn">Create Workout</button>
     </div>
-
+ 
    <div class="dashboard-section">
   <div class="card">
     <h2>Recent Workouts</h2>
@@ -437,37 +437,392 @@ input[type="number"] {
     <p id="no-workouts" class="empty-message">No workouts added yet.</p>
     <ul id="recent-workouts-list" style="display: none;"></ul>
 
-
+   
   </div>
 </div>
   </div>
-
+ 
   <!-- Workout Details Modal (Popup) -->
   <div id="workout-details-modal" class="modal">
     <div id="workout-details-content" class="modal-content"></div>
     <button id="close-workout-details-modal">Close</button>
-    <button id="edit-workout-btn" class="btn">Edit Workout</button>
-    <button id="delete-workout-btn" class="btn">Delete Workout</button>
-<div id="workout-details-modal" class="modal">
-  <div id="workout-details-content" class="modal-content">
-    <button class="close" id="close-workout-details-modal">&times;</button>
-    <div id="workout-details-body"><!-- content injected via JS --></div>
 
-    <div class="button-row">
+<div class="button-row">
       <button id="edit-workout-btn" class="btn btn-small">Edit Workout</button>
       <button id="delete-workout-btn" class="btn btn-small">Delete Workout</button>
     </div>
+   </div>
   </div>
-</div>
-
+ 
   <!-- Workout Modal -->
   <div id="create-workout-modal" class="modal">
-@@ -818,165 +822,165 @@
+    <div class="modal-content">
+      <span class="close" id="close-workout-modal">&times;</span>
+ 
+      <div class="modal-header">
+        <div>
+          <label for="workout-name">Workout:</label>
+          <input type="text" id="workout-name" placeholder="e.g. Upper Body" />
+        </div>
+        <div class="btn-container">
+          <button id="save-workout-btn">Save Workout</button>
+        </div>
+      </div>
+ 
+      <label for="workout-date">Date:</label>
+      <input type="date" id="workout-date" />
+ 
+     <!-- Horizontal scroll container for the table -->
+  <div class="horizontal-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Exercise</th>
+          <th>Unit</th>
+          <th colspan="2">Set 1</th>
+          <th colspan="2">Set 2</th>
+          <th colspan="2">Set 3</th>
+          <th colspan="2">Set 4</th>
+          <th colspan="2">Set 5</th>
+          <th colspan="2">Set 6</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th>Weight Unit</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+          <th>Weight</th><th>Reps</th>
+        </tr>
+      </thead>
+      <tbody id="exercise-rows">
+        <!-- Row A is initially present -->
+        <tr class="exercise-row" data-index="0">
+          <td><strong>A.</strong>
+            <input type="text" placeholder="Exercise name" />
+          </td>
+          <td>
+            <select class="set-weight-dropdown">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
+          </td>
+          <!-- Set 1 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 2 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 3 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 4 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 5 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+          <!-- Set 6 -->
+          <td>
+            <input type="number" placeholder="Weight" />
+          </td>
+          <td><input type="number" placeholder="reps" /></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+ 
+  <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
+ 
+      <!-- New questions under the workout table -->
+      <div class="question">
+        <label>Did you progress your lifts? (Yes/No)</label>
+        <select>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+ 
+      <div class="question">
+        <label>Have you marked the exercise where you are to progress next session? (Yes/No)</label>
+        <select>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+ 
+      <div class="question">
+        <label>How do you feel the workout went? (1-10)</label>
+        <input type="number" min="1" max="10" />
+      </div>
+ 
+      <div class="question">
+        <label>Additional Workout Notes</label>
+        <textarea placeholder="Write any notes..." rows="4"></textarea>
+      </div>
+ 
+      <div class="question">
+        <label>Cardio:</label>
+        <textarea placeholder="Describe your cardio workout..." rows="4"></textarea>
+      </div>
+ 
+      <!-- Buttons for editing and deleting workouts -->
+      <button id="edit-workout-btn" style="display:none;">Edit Workout</button>
+      <button id="delete-workout-btn" style="display:none;">Delete Workout</button>
+    </div>
+  </div>
+ 
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+const username = localStorage.getItem("username");
+  if (username) {
+    updateWelcomeMessage();  // Update the welcome message with username
+  } else {
+    updateWelcomeMessage();  // Show "Welcome!"
+  }
+
+//sets welcome message fuction
+
+    function updateWelcomeMessage() {
+  const welcomeMessage = document.getElementById("welcome-message");
+  const username = localStorage.getItem("username");
+  welcomeMessage.textContent = username ? `Logged in as: ${username}` : "Welcome!";
+}
+    const modal = document.getElementById("create-workout-modal");
+    const addWorkoutBtn = document.getElementById("add-workout-btn");
+    const closeModal = document.getElementById("close-workout-modal");
+    const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
+    const exerciseRowsContainer = document.getElementById("exercise-rows");
+ 
+    const recentWorkoutsList = document.getElementById("recent-workouts-list");
+    const noWorkoutsMessage = document.getElementById("no-workouts");
+
+// Auth modal logic
+const loginModal = document.getElementById("login-modal");
+const signupModal = document.getElementById("signup-modal");
+const loginBtn = document.querySelector(".login-btn");
+const signupBtn = document.querySelector(".signup-btn");
+const closeLogin = document.getElementById("close-login-modal");
+const closeSignup = document.getElementById("close-signup-modal");
+
+// Open modals
+loginBtn.addEventListener("click", () => {
+  loginModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
+
+signupBtn.addEventListener("click", () => {
+  signupModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
+
+// Close modals
+closeLogin.addEventListener("click", () => {
+  loginModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+closeSignup.addEventListener("click", () => {
+  signupModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+// Optional: Close modals by clicking outside content
+window.addEventListener("click", (e) => {
+  if (e.target === loginModal) {
+    loginModal.style.display = "none";
+    document.body.style.overflow = "";
+  }
+  if (e.target === signupModal) {
+    signupModal.style.display = "none";
+    document.body.style.overflow = "";
+  }
+});
+
+// Eye icon toggle password visibility for both password fields in signup modal
+const toggleSignupPassword = document.getElementById("toggle-signup-password");
+const passwordInput = document.getElementById("signup-password");
+const confirmPasswordInput = document.getElementById("signup-confirm-password");
+
+toggleSignupPassword.addEventListener("click", () => {
+  // Toggle visibility for both password and confirm password fields
+  const type = passwordInput.type === "password" ? "text" : "password";
+  passwordInput.type = type;
+  confirmPasswordInput.type = type; // Make confirm password field also toggle
+});
+
+// Signup form submission
+const signupForm = document.getElementById("signup-form");
+
+signupForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Prevent default form submission
+
+  const username = document.getElementById("signup-username").value;
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+  const confirmPassword = document.getElementById("signup-confirm-password").value;
+
+  // Check if password and confirm password match
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  // Make the API call to register the user
+  try {
+    const response = await fetch('/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, email, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+localStorage.setItem("username", username);
+  updateWelcomeMessage();// Update welcome message
+      alert('User registered successfully!'); // User successfully registered
+      signupModal.style.display = "none"; // Close the signup modal
+      document.body.style.overflow = ""; // Restore overflow
+    } else {
+      // Handle registration error
+      alert(data.message || 'Error registering user');
+    }
+  } catch (error) {
+    console.error('Error registering user:', error);
+    alert('There was an error. Please try again.');
+  }
+});
+
+// Eye icon toggle password visibility for login modal
+const toggleLoginPassword = document.getElementById("toggle-login-password");
+const loginPasswordInput = document.getElementById("login-password");
+
+toggleLoginPassword.addEventListener("click", () => {
+  // Toggle password visibility for the login password field
+  const type = loginPasswordInput.type === "password" ? "text" : "password";
+  loginPasswordInput.type = type;
+});
+
+// Login form submission
+const loginForm = document.getElementById("login-form");
+
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Prevent default form submission
+
+  const usernameOrEmail = document.getElementById("login-username").value;
+  const password = document.getElementById("login-password").value;
+
+try {
+  const response = await fetch('/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ usernameOrEmail, password }),
+  });
+
+  const data = await response.json();
+
+if (response.ok) {
+  localStorage.setItem("username", data.username);
+  updateWelcomeMessage(); // Update welcome message
+  
+  // Close login modal and allow for page update before loading recent workouts
+  loginModal.style.display = "none";
+  document.body.style.overflow = "";
+
+  // Now load recent workouts after closing modal
+  loadRecentWorkouts();  // Immediately load recent workouts after modal is closed
+  
+  alert('Login successful!');
+} else {
+  alert(data.message || 'Invalid credentials');
+}
+ } catch (error) {
+  console.error('Error logging in user:', error);
+  alert('There was an error. Please try again.');
+}
+});
+ 
+    // Fetch and display recent workouts
+    function loadRecentWorkouts() {
+    const username = localStorage.getItem("username"); // fresh value
+      if (!username) return;
+ 
+      fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
+        .then(res => res.json())
+        .then(workouts => {
+          recentWorkoutsList.innerHTML = "";
+ 
+          if (workouts.length === 0) {
+            noWorkoutsMessage.style.display = "block";
+            recentWorkoutsList.style.display = "none";
+          } else {
+            noWorkoutsMessage.style.display = "none";
+            recentWorkoutsList.style.display = "block";
+ 
+            workouts.slice(0, 5).forEach(w => {
+              const li = document.createElement("li");
+              li.textContent = `${w.date} - ${w.workout}`;
+              li.dataset.workoutId = w.id;  // Add workout ID to the list item
+              li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event to show details
+              recentWorkoutsList.appendChild(li);
+            });
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load workouts:", err);
+        });
+    }
+ 
+   function showWorkoutDetails(workout) {
+  const workoutDetailsModal = document.getElementById("workout-details-modal");
+  const workoutDetailsContent = document.getElementById("workout-details-content");
+
+  // Build the modal content, starting with the close button
+  const workoutDetails = `
+    <span class="close" id="close-workout-details-modal">&times;</span>
+    <h2>${workout.workout} - ${workout.date}</h2>
+    <h3>Exercises:</h3>
+    <ul>
+      ${workout.exercises.map(exercise => `
+        <li>
+          <strong>${exercise.name}</strong>
+          <ul>
+            ${exercise.sets.map(set => `
+              <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
+            `).join("")}
+          </ul>
+        </li>
+      `).join("")}
+    </ul>
+    <h3>Progress:</h3>
+    <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
+    <p>Progress for Next Session: ${workout.progressForNextSession}</p>
+    <p>Rating: ${workout.workoutRating}</p>
+    <h3>Notes:</h3>
+    <p>${workout.additionalNotes}</p>
+    <h3>Cardio:</h3>
+    <p>${workout.cardio}</p>
   `;
 
   // Inject content
   workoutDetailsContent.innerHTML = workoutDetails;
-  document.getElementById("workout-details-body").innerHTML = workoutDetails;
 
   // Reattach close functionality since we injected new HTML
   document.getElementById("close-workout-details-modal").addEventListener("click", () => {
@@ -479,7 +834,7 @@ input[type="number"] {
   workoutDetailsModal.style.display = "block";
   document.body.style.overflow = "hidden";
 }
-
+ 
     // Save workout
     document.getElementById("save-workout-btn").addEventListener("click", () => {
       const workout = document.getElementById("workout-name").value.trim();
@@ -489,13 +844,13 @@ input[type="number"] {
       const workoutRating = parseInt(document.querySelectorAll(".question input[type='number']")[0].value) || null;
       const additionalNotes = document.querySelectorAll(".question textarea")[0].value;
       const cardio = document.querySelectorAll(".question textarea")[1].value;
-
+ 
       const exerciseRows = Array.from(document.querySelectorAll(".exercise-row"));
       const exercises = exerciseRows.map(row => {
         const name = row.querySelector("input[type='text']").value;
         const weightUnit = row.querySelector("select").value;
         const inputs = row.querySelectorAll("input[type='number']");
-
+ 
         const sets = [];
         for (let i = 0; i < inputs.length; i += 2) {
           const weight = parseFloat(inputs[i].value);
@@ -504,15 +859,15 @@ input[type="number"] {
             sets.push({ weight, reps });
           }
         }
-
+ 
         return { name, weightUnit, sets };
       }).filter(ex => ex.sets.length > 0 && ex.name);
-
+ 
       if (!username || !workout || !date || exercises.length === 0) {
         alert("Please fill in all required fields.");
         return;
       }
-
+ 
       const workoutData = {
         username,
         workout,
@@ -524,7 +879,7 @@ input[type="number"] {
         additionalNotes,
         cardio,
       };
-
+ 
       fetch("/add-workout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -537,7 +892,7 @@ input[type="number"] {
           modal.style.display = "none";
           document.body.style.overflow = "";
           resetWorkoutForm();
-
+ 
           // Update recent workouts list immediately
           loadRecentWorkouts();
         })
@@ -546,12 +901,12 @@ input[type="number"] {
           alert("Error saving workout. Check console for details.");
         });
     });
-
+ 
     function resetWorkoutForm() {
       document.getElementById("workout-name").value = "";
       document.getElementById("workout-date").value = "";
       exerciseRowsContainer.innerHTML = "";
-
+ 
       const row = document.createElement("tr");
       row.className = "exercise-row";
       row.setAttribute("data-index", "0");
@@ -572,24 +927,24 @@ input[type="number"] {
       `;
       exerciseRowsContainer.appendChild(row);
     }
-
+ 
     addWorkoutBtn.addEventListener("click", () => {
       modal.style.display = "block";
       document.body.style.overflow = "hidden";
     });
-
+ 
     closeModal.addEventListener("click", () => {
       modal.style.display = "none";
       document.body.style.overflow = "";
     });
-
+ 
     window.addEventListener("click", (event) => {
       if (event.target === modal) {
         modal.style.display = "none";
         document.body.style.overflow = "";
       }
     });
-
+ 
     addExerciseRowBtn.addEventListener("click", () => {
       const index = exerciseRowsContainer.children.length;
       const row = document.createElement("tr");
@@ -612,7 +967,7 @@ input[type="number"] {
       `;
       exerciseRowsContainer.appendChild(row);
     });
-
+ 
     const logoutBtn = document.querySelector(".logout");
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("username");
@@ -621,11 +976,12 @@ input[type="number"] {
    noWorkoutsMessage.style.display = "block"; // Show the "no workouts" message
    recentWorkoutsList.style.display = "none"; // Hide the workouts list
     });
-
+ 
     // Auto-load recent workouts on page load
     loadRecentWorkouts();
   });
 
   </script>
-
+ 
   </body>
+  </html>
