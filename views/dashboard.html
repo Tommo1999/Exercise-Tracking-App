@@ -815,7 +815,16 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
   // Build the modal content, starting with the close button
   const workoutDetails = `
     <span class="close" id="close-workout-details-modal">&times;</span>
-    <h2>${workout.workout} - ${workout.date}</h2>
+
+// Convert date string to UK format
+          const date = new Date(w.date);
+          const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          }).format(date);
+
+    <h2>${workout.workout} - ${ukFormattedDate}</h2>
     <h3>Exercises:</h3>
     <ul>
       ${workout.exercises.map(exercise => `
