@@ -787,7 +787,8 @@ if (response.ok) {
             workouts.slice(0, 5).forEach(w => {
             const li = document.createElement("li");
 
-li.textContent = `${w.date} - ${w.workout}`;
+li.innerHTML = `
+  ${w.date} - ${w.workout}`;
 
 li.dataset.workoutId = w.id;
 
