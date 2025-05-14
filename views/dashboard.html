@@ -442,11 +442,14 @@ input[type="number"] {
 </div>
   </div>
  
-  <div id="workout-details-modal" class="modal">
-  <div id="workout-details-content" class="modal-content">
-    <button class="close" id="close-workout-details-modal">&times;</button>
-    <div id="workout-details-body"><!-- content injected via JS --></div>
+ <div id="workout-details-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-workout-details-modal">&times;</span>
 
+    <!-- Workout details go here -->
+    <div id="workout-details-body"></div>
+
+    <!-- Buttons -->
     <div class="button-row">
       <button id="edit-workout-btn" class="btn btn-small">Edit Workout</button>
       <button id="delete-workout-btn" class="btn btn-small">Delete Workout</button>
@@ -822,7 +825,8 @@ if (response.ok) {
   `;
 
   // Inject content
-  workoutDetailsContent.innerHTML = workoutDetails;
+  document.getElementById("workout-details-body").innerHTML = workoutDetails;
+
 
   // Reattach close functionality since we injected new HTML
   document.getElementById("close-workout-details-modal").addEventListener("click", () => {
