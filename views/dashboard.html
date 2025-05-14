@@ -786,10 +786,8 @@ if (response.ok) {
  
             workouts.slice(0, 5).forEach(w => {
             const li = document.createElement("li");
-li.innerHTML = `
-  ${w.date} - ${w.workout}
-  <button class="edit-btn">Edit</button>
-  <button class="delete-btn">Delete</button>
+
+li.textContent = `${w.date} - ${w.workout}`;
 `;
 li.dataset.workoutId = w.id;
 
