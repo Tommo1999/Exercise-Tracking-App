@@ -767,36 +767,41 @@ if (response.ok) {
 }
 });
  
-    // Fetch and display recent workouts
-    function loadRecentWorkouts() {
-    const username = localStorage.getItem("username"); // fresh value
-      if (!username) return;
- 
-      fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
-        .then(res => res.json())
-        .then(workouts => {
-          recentWorkoutsList.innerHTML = "";
- 
-          if (workouts.length === 0) {
-            noWorkoutsMessage.style.display = "block";
-            recentWorkoutsList.style.display = "none";
-          } else {
-            noWorkoutsMessage.style.display = "none";
-            recentWorkoutsList.style.display = "block";
- 
-            workouts.slice(0, 5).forEach(w => {
-            const li = document.createElement("li");
+   function loadRecentWorkouts() {
+  const username = localStorage.getItem("username");
+  if (!username) return;
 
-li.textContent = `${w.date} - ${w.workout}`;
+  fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
+    .then(res => res.json())
+    .then(workouts => {
+      recentWorkoutsList.innerHTML = "";
 
-li.dataset.workoutId = w.id;
+      if (workouts.length === 0) {
+        noWorkoutsMessage.style.display = "block";
+        recentWorkoutsList.style.display = "none";
+      } else {
+        noWorkoutsMessage.style.display = "none";
+        recentWorkoutsList.style.display = "block";
 
-// Show details on list item click (optional if you still want this)
-  li.addEventListener("click", (e) => {
-  if (!e.target.classList.contains('edit-btn') && !e.target.classList.contains('delete-btn')) {
-    showWorkoutDetails(w);
-  }
-});
+        workouts.slice(0, 5).forEach(w => {
+          const li = document.createElement("li");
+          li.textContent = `${w.date} - ${w.workout}`;
+          li.dataset.workoutId = w.id;
+
+          // Click to show workout details (where buttons should appear)
+          li.addEventListener("click", () => {
+            showWorkoutDetails(w);
+          });
+
+          recentWorkoutsList.appendChild(li);
+        });
+      }
+    })
+    .catch(err => {
+      console.error("Failed to load workouts:", err);
+    });
+}
+
 
   const editBtn = li.querySelector(".edit-btn");
   editBtn.addEventListener("click", (e) => {
