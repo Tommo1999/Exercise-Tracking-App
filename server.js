@@ -32,11 +32,11 @@ MongoClient.connect(MONGO_URI)
     const workoutsCollection = db.collection('Workouts');
 
     // Serve static pages
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
-});
+    app.get('/', (req, res) => {
+      res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
+    });
 
-// Signup
+    // Signup (POST)
     app.post('/signup', async (req, res) => {
       const { username, email, password } = req.body;
       if (!username || !email || !password) return res.status(400).send('All fields are required.');
@@ -53,7 +53,7 @@ app.get('/', (req, res) => {
       res.status(200).json({ message: 'User registered successfully' });
     });
 
-    // Login
+    // Login (POST)
     app.post('/login', async (req, res) => {
       const { usernameOrEmail, password } = req.body;
       const user = await usersCollection.findOne({
@@ -65,7 +65,7 @@ app.get('/', (req, res) => {
       res.status(200).json({ success: true, message: 'Login successful', username: user.username });
     });
 
-    // Forgot Password
+    // Forgot Password (POST)
     app.post('/forgot-password', async (req, res) => {
       const { usernameOrEmail } = req.body;
       const user = await usersCollection.findOne({
@@ -88,6 +88,7 @@ app.get('/', (req, res) => {
       res.send('Password reset link has been sent');
     });
 
+    // Reset Password (POST)
     app.post('/reset-password/:token', async (req, res) => {
       const { token } = req.params;
       const { password } = req.body;
@@ -104,65 +105,66 @@ app.get('/', (req, res) => {
       res.send('Password reset successfully');
     });
 
-  app.post('/add-workout', async (req, res) => {
-  const {
-    username,
-    workout,
-    date,
-    exercises,
-    progressYourLifts,
-    progressForNextSession,
-    workoutRating,
-    additionalNotes,
-    cardio
-  } = req.body;
+    // Add Workout (POST)
+    app.post('/add-workout', async (req, res) => {
+      const {
+        username,
+        workout,
+        date,
+        exercises,
+        progressYourLifts,
+        progressForNextSession,
+        workoutRating,
+        additionalNotes,
+        cardio
+      } = req.body;
 
-  if (!username || !workout || !date || !Array.isArray(exercises) || exercises.length === 0) {
-    return res.status(400).json({ message: 'Invalid workout data' });
-  }
-
-  for (let ex of exercises) {
-    if (!ex.name || !Array.isArray(ex.sets) || ex.sets.length === 0) {
-      return res.status(400).json({ message: 'Invalid exercise data' });
-    }
-
-    for (let set of ex.sets) {
-      if (isNaN(set.weight) || isNaN(set.reps)) {
-        return res.status(400).json({ message: 'Invalid set data (weight/reps)' });
+      if (!username || !workout || !date || !Array.isArray(exercises) || exercises.length === 0) {
+        return res.status(400).json({ message: 'Invalid workout data' });
       }
-    }
-  }
 
-  try {
-    const workoutDoc = {
-      username,
-      workout,
-      date,
-      exercises: exercises.map(ex => ({
-        name: ex.name,
-        weightUnit: ex.weightUnit || 'kg',
-        sets: ex.sets.map(set => ({
-          weight: Number(set.weight),
-          reps: Number(set.reps)
-        }))
-      })),
-      progressYourLifts,
-      progressForNextSession,
-      workoutRating,
-      additionalNotes,
-      cardio,
-      timestamp: new Date()
-    };
+      for (let ex of exercises) {
+        if (!ex.name || !Array.isArray(ex.sets) || ex.sets.length === 0) {
+          return res.status(400).json({ message: 'Invalid exercise data' });
+        }
 
-    await workoutsCollection.insertOne(workoutDoc);
-    res.status(200).json({ message: 'Workout saved successfully!' });
-  } catch (error) {
-    console.error('Error saving workout:', error);
-    res.status(500).json({ message: 'Error saving workout' });
-  }
-});
+        for (let set of ex.sets) {
+          if (isNaN(set.weight) || isNaN(set.reps)) {
+            return res.status(400).json({ message: 'Invalid set data (weight/reps)' });
+          }
+        }
+      }
 
-    // Get workouts
+      try {
+        const workoutDoc = {
+          username,
+          workout,
+          date,
+          exercises: exercises.map(ex => ({
+            name: ex.name,
+            weightUnit: ex.weightUnit || 'kg',
+            sets: ex.sets.map(set => ({
+              weight: Number(set.weight),
+              reps: Number(set.reps)
+            }))
+          })),
+          progressYourLifts,
+          progressForNextSession,
+          workoutRating,
+          additionalNotes,
+          cardio,
+          timestamp: new Date()
+        };
+
+        await workoutsCollection.insertOne(workoutDoc);
+        res.status(200).json({ message: 'Workout saved successfully!' });
+      } catch (error) {
+        console.error('Error saving workout:', error);
+        res.status(500).json({ message: 'Error saving workout' });
+      }
+    });
+
+    // Get Workouts (GET)
     app.get('/get-workouts', async (req, res) => {
       const { username } = req.query;
       if (!username) return res.status(400).json({ message: "Username is required" });
@@ -178,7 +180,82 @@ app.get('/', (req, res) => {
       }
     });
 
-    // Export workouts to Excel
+    // Update Workout (PUT)
+    app.put('/update-workout/:id', async (req, res) => {
+      const { id } = req.params;
+      const { workout, date, exercises, progressYourLifts, progressForNextSession, workoutRating, additionalNotes, cardio } = req.body;
+
+      if (!workout || !date || !Array.isArray(exercises) || exercises.length === 0) {
+        return res.status(400).json({ message: 'Invalid workout data' });
+      }
+
+      // Validate exercises
+      for (let ex of exercises) {
+        if (!ex.name || !Array.isArray(ex.sets) || ex.sets.length === 0) {
+          return res.status(400).json({ message: 'Invalid exercise data' });
+        }
+        for (let set of ex.sets) {
+          if (isNaN(set.weight) || isNaN(set.reps)) {
+            return res.status(400).json({ message: 'Invalid set data (weight/reps)' });
+          }
+        }
+      }
+
+      try {
+        const workoutDoc = {
+          workout,
+          date,
+          exercises: exercises.map(ex => ({
+            name: ex.name,
+            weightUnit: ex.weightUnit || 'kg',
+            sets: ex.sets.map(set => ({
+              weight: Number(set.weight),
+              reps: Number(set.reps)
+            }))
+          })),
+          progressYourLifts,
+          progressForNextSession,
+          workoutRating,
+          additionalNotes,
+          cardio,
+          timestamp: new Date()
+        };
+
+        const result = await workoutsCollection.updateOne(
+          { _id: new MongoClient.ObjectId(id) }, 
+          { $set: workoutDoc }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ message: 'Workout not found or no changes made' });
+        }
+        
+        res.status(200).json({ message: 'Workout updated successfully!' });
+      } catch (error) {
+        console.error('Error updating workout:', error);
+        res.status(500).json({ message: 'Error updating workout' });
+      }
+    });
+
+    // Delete Workout (DELETE)
+    app.delete('/delete-workout/:id', async (req, res) => {
+      const { id } = req.params;
+
+      try {
+        const result = await workoutsCollection.deleteOne({ _id: new MongoClient.ObjectId(id) });
+
+        if (result.deletedCount === 0) {
+          return res.status(404).json({ message: 'Workout not found' });
+        }
+
+        res.status(200).json({ message: 'Workout deleted successfully' });
+      } catch (error) {
+        console.error('Error deleting workout:', error);
+        res.status(500).json({ message: 'Error deleting workout' });
+      }
+    });
+
+    // Export Workouts to Excel (GET)
     app.get('/export-workouts', async (req, res) => {
       const { username } = req.query;
       if (!username) return res.status(400).json({ message: "Username is required" });
