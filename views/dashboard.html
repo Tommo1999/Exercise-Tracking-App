@@ -352,28 +352,14 @@ input[type="number"] {
   margin-left: auto;
 }
 
-/* Style for recent workouts list */
-#recentWorkouts {
-  list-style: none;       /* Remove bullet points */
-  padding: 0;
-  margin: 0;
+/* Recent Workouts Styling */
+#recent-workouts-list {
+list-style-type: none; /* Remove bullet points */
+padding: 0; /* Remove default padding */
+text-align: center; /* Center align text */
 }
-
-/* List items: date aligned left, vertically centered */
-#recentWorkouts li {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start; /* Align text to the left */
-  padding: 10px;
-  border-bottom: 1px solid #444; /* Optional: for visual separation */
-  cursor: pointer;
-}
-
-/* Optional: style the date separately for layout control */
-#recentWorkouts li .date {
-  min-width: 130px;
-  font-weight: bold;
-  margin-right: 10px;
+#recent-workouts-list li {
+margin: 5px 0;
 }
 
 </style>
