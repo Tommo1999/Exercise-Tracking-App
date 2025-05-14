@@ -809,12 +809,6 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
  
    function showWorkoutDetails(workout) {
-  const workoutDetailsModal = document.getElementById("workout-details-modal");
-  const workoutDetailsContent = document.getElementById("workout-details-content");
-
-  // Build the modal content, starting with the close button
-  const workoutDetails = `
-    <span class="close" id="close-workout-details-modal">&times;</span>
 
 // Convert date string to UK format
           const date = new Date(w.date);
@@ -824,6 +818,13 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
             year: 'numeric',
           }).format(date);
 
+
+  const workoutDetailsModal = document.getElementById("workout-details-modal");
+  const workoutDetailsContent = document.getElementById("workout-details-content");
+
+  // Build the modal content, starting with the close button
+  const workoutDetails = `
+    <span class="close" id="close-workout-details-modal">&times;</span>
     <h2>${workout.workout} - ${ukFormattedDate}</h2>
     <h3>Exercises:</h3>
     <ul>
