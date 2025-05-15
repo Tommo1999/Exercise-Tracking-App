@@ -308,6 +308,14 @@ input[type="number"] {
   min-width: 1000px;
 }
 
+/* Target the specific header column by nth-child */
+thead tr:first-child th:nth-child(2) {
+  white-space: normal;  /* Allow wrapping */
+  width: 100px;         /* Optional: set a max width */
+  padding: 8px;         /* Add some padding for readability */
+  word-wrap: break-word; /* Ensure long words break */
+}
+
 /* Modal Question Styles */
 .modal .question {
   margin-bottom: 20px;
@@ -472,9 +480,7 @@ margin: 5px 0;
           <label for="workout-name">Workout:</label>
           <input type="text" id="workout-name" placeholder="e.g. Upper Body" />
         </div>
-        <div class="btn-container">
-          <button id="save-workout-btn">Save Workout</button>
-        </div>
+        
       </div>
  
       <label for="workout-date">Date:</label>
@@ -482,78 +488,49 @@ margin: 5px 0;
  
      <!-- Horizontal scroll container for the table -->
   <div class="horizontal-scroll">
-    <table>
-      <thead>
-        <tr>
-          <th>Exercise</th>
-          <th>Unit</th>
-          <th colspan="2">Set 1</th>
-          <th colspan="2">Set 2</th>
-          <th colspan="2">Set 3</th>
-          <th colspan="2">Set 4</th>
-          <th colspan="2">Set 5</th>
-          <th colspan="2">Set 6</th>
-        </tr>
-        <tr>
-          <th></th>
-          <th>Weight Unit</th>
-          <th>Weight</th><th>Reps</th>
-          <th>Weight</th><th>Reps</th>
-          <th>Weight</th><th>Reps</th>
-          <th>Weight</th><th>Reps</th>
-          <th>Weight</th><th>Reps</th>
-          <th>Weight</th><th>Reps</th>
-        </tr>
-      </thead>
-      <tbody id="exercise-rows">
-        <!-- Row A is initially present -->
-        <tr class="exercise-row" data-index="0">
-          <td><strong>A.</strong>
-            <input type="text" placeholder="Exercise name" />
-          </td>
-          <td>
-            <select class="set-weight-dropdown">
-              <option value="kg">kg</option>
-              <option value="lbs">lbs</option>
-            </select>
-          </td>
-          <!-- Set 1 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-          <!-- Set 2 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-          <!-- Set 3 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-          <!-- Set 4 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-          <!-- Set 5 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-          <!-- Set 6 -->
-          <td>
-            <input type="number" placeholder="Weight" />
-          </td>
-          <td><input type="number" placeholder="reps" /></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Exercise</th>
+        <th>Progress Next Workout</th>
+        <th>Unit</th>
+        <th colspan="2">Set 1</th>
+        <th colspan="2">Set 2</th>
+        <th colspan="2">Set 3</th>
+      </tr>
+    </thead>
+    <tbody id="exercise-rows">
+      <tr class="exercise-row" data-index="0">
+        <td><input type="text" placeholder="Exercise name" /></td>
+        <td><input type="checkbox" class="progress-checkbox"></td>
+        <td>
+          <select class="set-weight-dropdown">
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+          </select>
+        </td>
+        <!-- Set 1 -->
+        <td><input type="number" placeholder="Weight" /></td>
+        <td><input type="number" placeholder="Reps" /></td>
+        <!-- Set 2 -->
+        <td><input type="number" placeholder="Weight" /></td>
+        <td><input type="number" placeholder="Reps" /></td>
+        <!-- Set 3 -->
+        <td><input type="number" placeholder="Weight" /></td>
+        <td><input type="number" placeholder="Reps" /></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
  
-  <button id="add-exercise-row-btn" type="button">Add Another Exercise</button>
- 
+  <div class="button-container">
+  <button id="add-set-btn" class="btn dashboard-btn">Add Set</button>
+  <button id="add-exercise-row-btn" class="btn">Add Exercise</button>
+  <button id="reset-form-btn" class="btn">Reset Form</button>
+  <button id="save-workout-btn" class="btn">Save Workout</button>
+</div>
+
+
       <!-- New questions under the workout table -->
       <div class="question">
         <label>Did you progress your lifts? (Yes/No)</label>
@@ -562,15 +539,9 @@ margin: 5px 0;
           <option value="no">No</option>
         </select>
       </div>
+
  
-      <div class="question">
-        <label>Have you marked the exercise where you are to progress next session? (Yes/No)</label>
-        <select>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-      </div>
- 
+    
       <div class="question">
         <label>How do you feel the workout went? (1-10)</label>
         <input type="number" min="1" max="10" />
@@ -875,21 +846,22 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
  
       const exerciseRows = Array.from(document.querySelectorAll(".exercise-row"));
       const exercises = exerciseRows.map(row => {
-        const name = row.querySelector("input[type='text']").value;
-        const weightUnit = row.querySelector("select").value;
-        const inputs = row.querySelectorAll("input[type='number']");
- 
-        const sets = [];
-        for (let i = 0; i < inputs.length; i += 2) {
-          const weight = parseFloat(inputs[i].value);
-          const reps = parseInt(inputs[i + 1].value);
-          if (!isNaN(weight) && !isNaN(reps)) {
-            sets.push({ weight, reps });
-          }
-        }
- 
-        return { name, weightUnit, sets };
-      }).filter(ex => ex.sets.length > 0 && ex.name);
+      const name = row.querySelector("input[type='text']").value;
+      const weightUnit = row.querySelector("select").value;
+      const progressNextWorkout = row.querySelector(".progress-checkbox").checked; // ✅ Check if the box is ticked
+      const inputs = row.querySelectorAll("input[type='number']");
+
+      const sets = [];
+      for (let i = 0; i < inputs.length; i += 2) {
+      const weight = parseFloat(inputs[i].value);
+      const reps = parseInt(inputs[i + 1].value);
+      if (!isNaN(weight) && !isNaN(reps)) {
+      sets.push({ weight, reps });
+    }
+  }
+
+  return { name, weightUnit, progressNextWorkout, sets }; // ✅ Include progress in the returned object
+}).filter(ex => ex.sets.length > 0 && ex.name);
  
       if (!username || !workout || !date || exercises.length === 0) {
         alert("Please fill in all required fields.");
@@ -973,28 +945,31 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
       }
     });
  
-    addExerciseRowBtn.addEventListener("click", () => {
-      const index = exerciseRowsContainer.children.length;
-      const row = document.createElement("tr");
-      row.className = "exercise-row";
-      row.setAttribute("data-index", index);
-      row.innerHTML = `
-        <td><strong>${String.fromCharCode(65 + index)}.</strong>
-          <input type="text" placeholder="Exercise name" />
-        </td>
-        <td>
-          <select class="set-weight-dropdown">
-            <option value="kg">kg</option>
-            <option value="lbs">lbs</option>
-          </select>
-        </td>
-        ${[...Array(6)].map(() => `
-          <td><input type="number" placeholder="Weight" /></td>
-          <td><input type="number" placeholder="Reps" /></td>
-        `).join("")}
-      `;
-      exerciseRowsContainer.appendChild(row);
-    });
+ addExerciseRowBtn.addEventListener("click", () => {
+  const index = exerciseRowsContainer.children.length;
+  const row = document.createElement("tr");
+  row.className = "exercise-row";
+  row.setAttribute("data-index", index);
+  row.innerHTML = `
+    <td>
+      <input type="text" placeholder="Exercise name" />
+    </td>
+    <td>
+      <input type="checkbox" class="progress-checkbox"> <!-- Checkbox for progress -->
+    </td>
+    <td>
+      <select class="set-weight-dropdown">
+        <option value="kg">kg</option>
+        <option value="lbs">lbs</option>
+      </select>
+    </td>
+    ${[...Array(6)].map(() => `
+      <td><input type="number" placeholder="Weight" /></td>
+      <td><input type="number" placeholder="Reps" /></td>
+    `).join("")}
+  `;
+  exerciseRowsContainer.appendChild(row);
+});
  
     const logoutBtn = document.querySelector(".logout");
     logoutBtn.addEventListener("click", () => {
@@ -1008,6 +983,114 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
     // Auto-load recent workouts on page load
     loadRecentWorkouts();
   });
+
+
+// Adds in extra sets up to a maximum of 6 
+
+     document.getElementById("add-set-btn").addEventListener("click", () => {
+  const exerciseRows = document.querySelectorAll(".exercise-row");
+  const headerRow = document.querySelector("thead tr:first-child"); // First header row with Set labels
+  const subHeaderRow = document.querySelector("thead tr:nth-child(2)"); // Second header row with Weight/Reps
+  const addSetBtn = document.getElementById("add-set-btn");
+
+  // Calculate how many sets exist globally based on header columns (floored)
+  let maxSets = Math.floor((headerRow.children.length - 3) / 2);
+
+  // If max sets reached, disable button and exit early
+  if (maxSets >= 6) {
+    addSetBtn.disabled = true;
+    addSetBtn.style.opacity = 0.5;
+    return;
+  }
+
+  // Add a new set for each exercise row if not already at max
+  exerciseRows.forEach(row => {
+    const setsInRow = Math.floor(row.querySelectorAll("input[type='number']").length / 2);
+
+    if (setsInRow < 6) {
+      const newSetNumber = setsInRow + 1;
+
+      // Create Weight input cell
+      const weightCell = document.createElement("td");
+      const weightInput = document.createElement("input");
+      weightInput.type = "number";
+      weightInput.placeholder = "Weight";
+      weightCell.appendChild(weightInput);
+
+      // Create Reps input cell
+      const repsCell = document.createElement("td");
+      const repsInput = document.createElement("input");
+      repsInput.type = "number";
+      repsInput.placeholder = "Reps";
+      repsCell.appendChild(repsInput);
+
+      row.appendChild(weightCell);
+      row.appendChild(repsCell);
+
+      // If this new set number is higher than global maxSets, update headers
+      if (newSetNumber > maxSets) {
+        maxSets = newSetNumber;
+
+        const setHeader = document.createElement("th");
+        setHeader.colSpan = 2;
+        setHeader.textContent = `Set ${newSetNumber}`;
+        headerRow.appendChild(setHeader);
+
+        const weightHeader = document.createElement("th");
+        weightHeader.textContent = "Weight";
+        const repsHeader = document.createElement("th");
+        repsHeader.textContent = "Reps";
+        subHeaderRow.appendChild(weightHeader);
+        subHeaderRow.appendChild(repsHeader);
+      }
+    }
+  });
+
+  // Disable the button if max sets reached after adding
+  if (maxSets >= 6) {
+    addSetBtn.disabled = true;
+    addSetBtn.style.opacity = 0.5;
+  }
+});
+
+
+
+// Add event listener to the Reset button
+document.getElementById("reset-form-btn").addEventListener("click", () => {
+  // Get the exercise rows container
+  const exerciseRows = document.getElementById("exercise-rows");
+
+  // Remove all rows except the first one
+  while (exerciseRows.children.length > 1) {
+    exerciseRows.removeChild(exerciseRows.lastChild);
+  }
+
+  // Get the first exercise row and reset its inputs
+  const firstRow = exerciseRows.querySelector(".exercise-row");
+  firstRow.querySelector("input[type='text']").value = "";
+  firstRow.querySelector("select").value = "kg";  // Default weight unit
+  firstRow.querySelector("input[type='checkbox']").checked = false;
+
+  // Remove extra sets (leave only 3)
+  const numberInputs = firstRow.querySelectorAll("input[type='number']");
+  numberInputs.forEach((input, index) => {
+    input.value = ""; // Clear existing value
+    if (index >= 6) { // Keep only the first 6 inputs (3 sets)
+      input.parentElement.remove();
+    }
+  });
+
+  // Reset headers to show only 3 sets
+  const headerRow = document.querySelector("thead tr:first-child");
+  const subHeaderRow = document.querySelector("thead tr:nth-child(2)");
+  while (headerRow.children.length > 5) { // 3 sets + Exercise + Progress + Unit
+    headerRow.removeChild(headerRow.lastChild);
+    subHeaderRow.removeChild(subHeaderRow.lastChild);
+    subHeaderRow.removeChild(subHeaderRow.lastChild);
+  }
+
+  alert("Form has been reset to the initial state!");
+});
 
   </script>
  
