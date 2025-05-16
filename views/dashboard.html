@@ -897,11 +897,9 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
  
 // Save workout
 document.getElementById("save-workout-btn").addEventListener("click", () => {
-  const modal = document.getElementById("create-workout-modal"); // ✅ Fix: Ensure modal is defined
-  const username = localStorage.getItem("username");
   const workout = document.getElementById("workout-name").value.trim();
   const date = document.getElementById("workout-date").value;
-  const progressYourLifts = document.querySelectorAll(".question select").value;
+  const progressYourLifts = document.querySelectorAll(".question select")[0].value;
   const workoutRating = parseInt(document.querySelectorAll(".question input[type='number']")[0].value) || null;
   const additionalNotes = document.querySelectorAll(".question textarea")[0].value;
   const cardio = document.querySelectorAll(".question textarea")[1].value;
@@ -936,16 +934,12 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
     date,
     exercises,
     progressYourLifts,
-    progressForNextSession,
     workoutRating,
     additionalNotes,
     cardio,
   };
 
-  // Debug logging
-  console.log("Saving workout...");
-  console.log("Workout Data:", workoutData);
-
+  
   fetch("/add-workout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -958,8 +952,10 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
       modal.style.display = "none";
       document.body.style.overflow = "";
       resetWorkoutForm();
+
       loadRecentWorkouts(); // Refresh recent workouts
     })
+
     .catch(err => {
       console.error("Failed to save workout:", err);
       alert("Error saving workout. Check console for details.");
