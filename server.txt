@@ -142,6 +142,7 @@ MongoClient.connect(MONGO_URI)
           exercises: exercises.map(ex => ({
             name: ex.name,
             weightUnit: ex.weightUnit || 'kg',
+            progressNextWorkout: !!ex.progressNextWorkout,
             sets: ex.sets.map(set => ({
               weight: Number(set.weight),
               reps: Number(set.reps)
