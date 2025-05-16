@@ -836,6 +836,7 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
  
     // Save workout
     document.getElementById("save-workout-btn").addEventListener("click", () => {
+      const username = localStorage.getItem("username");
       const workout = document.getElementById("workout-name").value.trim();
       const date = document.getElementById("workout-date").value;
       const progressYourLifts = document.querySelectorAll(".question select")[0].value;
