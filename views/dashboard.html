@@ -397,12 +397,28 @@ margin: 5px 0;
       <label for="login-password">Password:</label><br />
       <div class="password-container">
         <input type="password" id="login-password" required placeholder="Enter your password" />
-        <span id="toggle-login-password" class="eye-icon">&#128065;</span> <!-- Eye icon for password visibility -->
-      </div><br /><br />
-      
+        <span id="toggle-login-password" class="eye-icon">&#128065;</span>
+      </div>
+
+      <!-- Forgot Password Link -->
+      <p style="margin-top: 5px; text-align: right;">
+        <a href="#" id="forgot-password-link" style="color: orange;">Forgot Password?</a>
+      </p>
+
       <!-- Submit Button -->
       <button type="submit" class="btn">Log In</button>
     </form>
+  </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="forgot-password-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-forgot-password-modal">&times;</span>
+    <h2>Forgot Password</h2>
+    <p>Enter your email or username, and we'll send you a password reset link.</p>
+    <input type="text" id="forgot-identifier" placeholder="Email or Username" required />
+    <button id="submit-forgot-password" class="btn">Send Reset Link</button>
   </div>
 </div>
 
@@ -595,6 +611,10 @@ const loginBtn = document.querySelector(".login-btn");
 const signupBtn = document.querySelector(".signup-btn");
 const closeLogin = document.getElementById("close-login-modal");
 const closeSignup = document.getElementById("close-signup-modal");
+const forgotPasswordLink = document.getElementById("forgot-password-link");
+const forgotPasswordModal = document.getElementById("forgot-password-modal");
+const closeForgotPasswordModal = document.getElementById("close-forgot-password-modal");
+const submitForgotPassword = document.getElementById("submit-forgot-password");
 
 // Open modals
 loginBtn.addEventListener("click", () => {
@@ -736,6 +756,47 @@ if (response.ok) {
   console.error('Error logging in user:', error);
   alert('There was an error. Please try again.');
 }
+});
+
+// Show Forgot Password modal
+forgotPasswordLink.addEventListener("click", () => {
+  loginModal.style.display = "none"; // hide login modal
+  forgotPasswordModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
+
+// Close modal
+closeForgotPasswordModal.addEventListener("click", () => {
+  forgotPasswordModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+// Handle submit
+submitForgotPassword.addEventListener("click", async () => {
+  const usernameOrEmail = document.getElementById("forgot-identifier").value.trim();
+
+  if (!usernameOrEmail) {
+    alert("Please enter your username or email.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ usernameOrEmail }),
+    });
+
+    const resultText = await response.text();
+    alert(resultText);
+    forgotPasswordModal.style.display = "none";
+    document.body.style.overflow = "";
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    alert("There was an error. Please try again.");
+  }
 });
  
     // Fetch and display recent workouts
