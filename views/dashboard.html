@@ -901,7 +901,7 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
   const username = localStorage.getItem("username");
   const workout = document.getElementById("workout-name").value.trim();
   const date = document.getElementById("workout-date").value;
-  const progressForNextSession = document.querySelectorAll(".question select").value;
+  const progressYourLifts = document.querySelectorAll(".question select").value;
   const workoutRating = parseInt(document.querySelectorAll(".question input[type='number']")[0].value) || null;
   const additionalNotes = document.querySelectorAll(".question textarea")[0].value;
   const cardio = document.querySelectorAll(".question textarea")[1].value;
