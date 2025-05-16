@@ -863,6 +863,7 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
       ${workout.exercises.map(exercise => `
         <li>
           <strong>${exercise.name}</strong>
+          <p> Progress Next Workout: ${exercise.progressNextWorkout ? 'Yes' : 'No'}</p>
           <ul>
             ${exercise.sets.map(set => `
               <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
@@ -871,9 +872,7 @@ workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
         </li>
       `).join("")}
     </ul>
-    <h3>Progress:</h3>
     <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
-    <p>Progress for Next Session: ${workout.progressForNextSession}</p>
     <p>Rating: ${workout.workoutRating}</p>
     <h3>Notes:</h3>
     <p>${workout.additionalNotes}</p>
