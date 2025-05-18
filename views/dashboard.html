@@ -1069,17 +1069,12 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
   const exerciseRowsContainer = document.getElementById("exercise-rows");
   exerciseRowsContainer.innerHTML = "";
 
-  // ✅ Clear any previous editing ID from the modal
-  const modal = document.getElementById("workout-modal");
-  modal.removeAttribute("data-editingWorkoutId");
-
-  // ✅ Add a new blank exercise row using your existing function
+   // ✅ Add a new blank exercise row using your existing function
   exerciseRowsContainer.appendChild(createExerciseBlock(0));
 }
 
 
- 
-addWorkoutBtn.addEventListener("click", () => {
+ addWorkoutBtn.addEventListener("click", () => {
     // Clear any previous workout data from the form
     resetWorkoutForm();
 
@@ -1092,7 +1087,6 @@ addWorkoutBtn.addEventListener("click", () => {
 });
 
 
- 
     closeModal.addEventListener("click", () => {
       modal.style.display = "none";
       document.body.style.overflow = "";
