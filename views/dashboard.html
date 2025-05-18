@@ -951,37 +951,32 @@ function openEditWorkoutModal(workout) {
     // Clear current exercise rows
     exerciseRowsContainer.innerHTML = "";
 
-// Populate exercises dynamically
-workout.exercises.forEach((exercise, index) => {
-    const exerciseBlock = createExerciseBlock(index);
-    exerciseBlock.querySelector(".exercise-name").value = exercise.name;
-    exerciseBlock.querySelector(".unit-select").value = exercise.weightUnit;
-    exerciseBlock.querySelector(".progress-checkbox").checked = exercise.progressNextWorkout;
+    // Populate exercises dynamically
+    workout.exercises.forEach((exercise, index) => {
+        const exerciseBlock = createExerciseBlock(index);
+        exerciseBlock.querySelector(".exercise-name").value = exercise.name;
+        exerciseBlock.querySelector(".unit-select").value = exercise.weightUnit;
+        exerciseBlock.querySelector(".progress-checkbox").checked = exercise.progressNextWorkout;
 
-    const setsContainer = exerciseBlock.querySelector(".sets-container");
+        const setsContainer = exerciseBlock.querySelector(".sets-container");
+        exercise.sets.forEach(set => {
+            const setDiv = document.createElement("div");
+            setDiv.className = "set";
+            setDiv.innerHTML = `
+                <input type="number" placeholder="Weight" class="weight" value="${set.weight}" />
+                <input type="number" placeholder="Reps" class="reps" value="${set.reps}" />
+                <button class="remove-set-btn">Remove Set</button>
+            `;
+            setsContainer.appendChild(setDiv);
 
-    // Clear any existing sets before populating
-    setsContainer.innerHTML = "";
-
-    // Add sets from the workout data
-    exercise.sets.forEach(set => {
-        const setDiv = document.createElement("div");
-        setDiv.className = "set";
-        setDiv.innerHTML = `
-            <input type="number" placeholder="Weight" class="weight" value="${set.weight}" />
-            <input type="number" placeholder="Reps" class="reps" value="${set.reps}" />
-            <button class="remove-set-btn">Remove Set</button>
-        `;
-        setsContainer.appendChild(setDiv);
-
-        setDiv.querySelector(".remove-set-btn").addEventListener("click", () => {
-            setDiv.remove();
+            setDiv.querySelector(".remove-set-btn").addEventListener("click", () => {
+                setDiv.remove();
+            });
         });
+
+        exerciseRowsContainer.appendChild(exerciseBlock);
     });
-
-    exerciseRowsContainer.appendChild(exerciseBlock);
-});
-
+}
 
   // Show the modal
   workoutDetailsModal.style.display = "block";
@@ -1076,18 +1071,11 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
 }
 
  
-addWorkoutBtn.addEventListener("click", () => {
-  // Clear previous data
-  resetWorkoutForm();
-
-  // Make sure we are not in edit mode
-  modal.removeAttribute("data-editingWorkoutId");
-
-  // Show the modal
-  modal.style.display = "block";
-  document.body.style.overflow = "hidden";
+  addWorkoutBtn.addEventListener("click", () => {
+    modal.dataset.editingWorkoutId = ""; // Clear editing ID for new workout
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
 });
-
 
  
     closeModal.addEventListener("click", () => {
