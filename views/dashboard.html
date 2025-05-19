@@ -986,9 +986,7 @@ function openEditWorkoutModal(workout) {
 
 // Save workout
 document.getElementById("save-workout-btn").addEventListener("click", () => {
-
-
-    const workoutId = modal.dataset.editingWorkoutId || null; // Check if editing an existing workout
+    const workoutId = modal.dataset.editingWorkoutId || null;
     const username = localStorage.getItem("username");
     const workout = document.getElementById("workout-name").value.trim();
     const date = document.getElementById("workout-date").value;
@@ -1028,17 +1026,17 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
         cardio,
     };
 
-    // Include ID if editing
-    if (workoutId) {
-        workoutData.id = workoutId;
-    }
+    const endpoint = workoutId ? `/update-workout/${workoutId}` : "/add-workout";
+    const method = workoutId ? "PUT" : "POST";
 
-    const endpoint = workoutId ? "/update-workout" : "/add-workout";
-    
     fetch(endpoint, {
-        method: "POST",
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(workoutData)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
     })
     .then(data => {
         alert("Workout saved successfully!");
