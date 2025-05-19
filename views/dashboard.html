@@ -944,6 +944,9 @@ function openEditWorkoutModal(workout) {
     modal.style.display = "block";
     document.body.style.overflow = "hidden";
 
+console.log("Editing workout object:", workout);
+console.log("Workout ID:", workout.id);
+
     // Set the editing workout ID
     modal.dataset.editingWorkoutId = workout.id;
 
