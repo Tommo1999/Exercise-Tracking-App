@@ -856,8 +856,7 @@ function loadRecentWorkouts() {
       } else {
         noWorkoutsMessage.style.display = "none";
         recentWorkoutsList.style.display = "block";
-        renderRecentWorkouts(normalizedWorkouts); // use normalized workouts
-
+       
         // Sort workouts by date descending
         workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
