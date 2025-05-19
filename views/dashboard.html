@@ -842,16 +842,22 @@ submitForgotPassword.addEventListener("click", async () => {
  
       fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
         .then(res => res.json())
-        .then(workouts => {
-          recentWorkoutsList.innerHTML = "";
- 
-          if (workouts.length === 0) {
-            noWorkoutsMessage.style.display = "block";
-            recentWorkoutsList.style.display = "none";
-          } else {
-            noWorkoutsMessage.style.display = "none";
-            recentWorkoutsList.style.display = "block";
- 
+       .then(workouts => {
+  const normalizedWorkouts = workouts.map(w => ({
+    ...w,
+    id: w._id
+  }));
+  recentWorkoutsList.innerHTML = "";
+  if (normalizedWorkouts.length === 0) {
+    noWorkoutsMessage.style.display = "block";
+    recentWorkoutsList.style.display = "none";
+  } else {
+    noWorkoutsMessage.style.display = "none";
+    recentWorkoutsList.style.display = "block";
+    renderRecentWorkouts(normalizedWorkouts); // use normalized workouts
+  }
+});
+
             //sort workouts in order 
 workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
               workouts.slice(0, 5).forEach(w => {
