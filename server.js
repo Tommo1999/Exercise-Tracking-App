@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb'); // ✅ FIXED HERE
 const ExcelJS = require('exceljs');
 const bcrypt = require('bcryptjs');
 const path = require('path');
@@ -9,8 +9,8 @@ const crypto = require('crypto');
 
 const app = express();
 
-app.use(express.json()); // For JSON POST bodies
-app.use(express.urlencoded({ extended: true })); // For form submissions
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -31,12 +31,10 @@ MongoClient.connect(MONGO_URI)
     const usersCollection = db.collection('Users');
     const workoutsCollection = db.collection('Workouts');
 
-    // Serve static pages
     app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
     });
 
-    // Signup (POST)
     app.post('/signup', async (req, res) => {
       const { username, email, password } = req.body;
       if (!username || !email || !password) return res.status(400).send('All fields are required.');
@@ -53,7 +51,6 @@ MongoClient.connect(MONGO_URI)
       res.status(200).json({ message: 'User registered successfully' });
     });
 
-    // Login (POST)
     app.post('/login', async (req, res) => {
       const { usernameOrEmail, password } = req.body;
       const user = await usersCollection.findOne({
@@ -65,7 +62,6 @@ MongoClient.connect(MONGO_URI)
       res.status(200).json({ success: true, message: 'Login successful', username: user.username });
     });
 
-    // Forgot Password (POST)
     app.post('/forgot-password', async (req, res) => {
       const { usernameOrEmail } = req.body;
       const user = await usersCollection.findOne({
@@ -88,7 +84,6 @@ MongoClient.connect(MONGO_URI)
       res.send('Password reset link has been sent');
     });
 
-    // Reset Password (POST)
     app.post('/reset-password/:token', async (req, res) => {
       const { token } = req.params;
       const { password } = req.body;
@@ -105,7 +100,6 @@ MongoClient.connect(MONGO_URI)
       res.send('Password reset successfully');
     });
 
-    // Add Workout (POST)
     app.post('/add-workout', async (req, res) => {
       const {
         username,
@@ -126,7 +120,6 @@ MongoClient.connect(MONGO_URI)
         if (!ex.name || !Array.isArray(ex.sets) || ex.sets.length === 0) {
           return res.status(400).json({ message: 'Invalid exercise data' });
         }
-
         for (let set of ex.sets) {
           if (isNaN(set.weight) || isNaN(set.reps)) {
             return res.status(400).json({ message: 'Invalid set data (weight/reps)' });
@@ -162,7 +155,6 @@ MongoClient.connect(MONGO_URI)
       }
     });
 
-    // Get Workouts (GET)
     app.get('/get-workouts', async (req, res) => {
       const { username } = req.query;
       if (!username) return res.status(400).json({ message: "Username is required" });
@@ -178,7 +170,6 @@ MongoClient.connect(MONGO_URI)
       }
     });
 
-    // Update Workout (PUT)
     app.put('/update-workout/:id', async (req, res) => {
       const { id } = req.params;
       const { workout, date, exercises, progressYourLifts, workoutRating, additionalNotes, cardio } = req.body;
@@ -187,7 +178,6 @@ MongoClient.connect(MONGO_URI)
         return res.status(400).json({ message: 'Invalid workout data' });
       }
 
-      // Validate exercises
       for (let ex of exercises) {
         if (!ex.name || !Array.isArray(ex.sets) || ex.sets.length === 0) {
           return res.status(400).json({ message: 'Invalid exercise data' });
@@ -219,14 +209,14 @@ MongoClient.connect(MONGO_URI)
         };
 
         const result = await workoutsCollection.updateOne(
-          { _id: new MongoClient.ObjectId(id) }, 
+          { _id: new ObjectId(id) }, // ✅ FIXED HERE
           { $set: workoutDoc }
         );
 
         if (result.modifiedCount === 0) {
           return res.status(404).json({ message: 'Workout not found or no changes made' });
         }
-        
+
         res.status(200).json({ message: 'Workout updated successfully!' });
       } catch (error) {
         console.error('Error updating workout:', error);
@@ -234,17 +224,13 @@ MongoClient.connect(MONGO_URI)
       }
     });
 
-    // Delete Workout (DELETE)
     app.delete('/delete-workout/:id', async (req, res) => {
       const { id } = req.params;
-
       try {
-        const result = await workoutsCollection.deleteOne({ _id: new MongoClient.ObjectId(id) });
-
+        const result = await workoutsCollection.deleteOne({ _id: new ObjectId(id) }); // ✅ FIXED HERE
         if (result.deletedCount === 0) {
           return res.status(404).json({ message: 'Workout not found' });
         }
-
         res.status(200).json({ message: 'Workout deleted successfully' });
       } catch (error) {
         console.error('Error deleting workout:', error);
@@ -252,7 +238,6 @@ MongoClient.connect(MONGO_URI)
       }
     });
 
-    // Export Workouts to Excel (GET)
     app.get('/export-workouts', async (req, res) => {
       const { username } = req.query;
       if (!username) return res.status(400).json({ message: "Username is required" });
