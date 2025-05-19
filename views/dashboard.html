@@ -948,7 +948,7 @@ console.log("Editing workout object:", workout);
 console.log("Workout ID:", workout.id);
 
     // Set the editing workout ID
-    modal.dataset.editingWorkoutId = workout.id;
+    modal.dataset.editingWorkoutId = workout.id || workout._id;
 
     // Populate basic workout info
     document.getElementById("workout-name").value = workout.workout;
