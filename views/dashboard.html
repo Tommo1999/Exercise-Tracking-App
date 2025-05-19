@@ -963,7 +963,7 @@ console.log("Workout ID:", workout.id);
 
     // Populate exercises dynamically
     workout.exercises.forEach((exercise, index) => {
-        const exerciseBlock = createExerciseBlock(index);
+        const exerciseBlock = createExerciseBlock(index, true);
         exerciseBlock.querySelector(".exercise-name").value = exercise.name;
         exerciseBlock.querySelector(".unit-select").value = exercise.weightUnit;
         exerciseBlock.querySelector(".progress-checkbox").checked = exercise.progressNextWorkout;
@@ -1127,7 +1127,7 @@ const exerciseRowsContainer = document.getElementById("exercise-rows");
 const addExerciseBtn = document.getElementById("add-exercise-btn");
 const resetFormBtn = document.getElementById("reset-form-btn");
 
-function createExerciseBlock(index) {
+function createExerciseBlock(index, skipDefaultSet = false) {
   const div = document.createElement("div");
   div.className = "exercise-row";
   div.setAttribute("data-index", index);
@@ -1141,19 +1141,26 @@ function createExerciseBlock(index) {
       <option value="lbs">lbs</option>
     </select>
     <div class="sets-container">
-      <!-- Sets inputs go here -->
-      <div class="set">
-        <input type="number" placeholder="Weight" class="weight" />
-        <input type="number" placeholder="Reps" class="reps" />
-      </div>
+      <!-- Removed default set here to avoid extra set on edit -->
     </div>
     <button class="add-set-btn">Add Set</button>
     <button class="remove-exercise-btn">Remove Exercise</button>
   `;
 
-  // Add event listeners for add-set and remove-exercise buttons inside this block
+  const setsContainer = div.querySelector(".sets-container");
+
+  // Add default set ONLY if skipDefaultSet is false (new)
+  if (!skipDefaultSet) {
+    const defaultSet = document.createElement("div");
+    defaultSet.className = "set";
+    defaultSet.innerHTML = `
+      <input type="number" placeholder="Weight" class="weight" />
+      <input type="number" placeholder="Reps" class="reps" />
+    `;
+    setsContainer.appendChild(defaultSet);
+  }
+
   div.querySelector(".add-set-btn").addEventListener("click", () => {
-    const setsContainer = div.querySelector(".sets-container");
     const newSet = document.createElement("div");
     newSet.className = "set";
     newSet.innerHTML = `
@@ -1174,6 +1181,7 @@ function createExerciseBlock(index) {
 
   return div;
 }
+
 
 addExerciseBtn.addEventListener("click", () => {
   const index = exerciseRowsContainer.children.length;
