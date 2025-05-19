@@ -835,51 +835,54 @@ submitForgotPassword.addEventListener("click", async () => {
   }
 });
  
-    // Fetch and display recent workouts
-    function loadRecentWorkouts() {
-    const username = localStorage.getItem("username"); // fresh value
-      if (!username) return;
- 
-      fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
-        .then(res => res.json())
-       .then(workouts => {
-  const normalizedWorkouts = workouts.map(w => ({
-    ...w,
-    id: w._id
-  }));
-  recentWorkoutsList.innerHTML = "";
-  if (normalizedWorkouts.length === 0) {
-    noWorkoutsMessage.style.display = "block";
-    recentWorkoutsList.style.display = "none";
-  } else {
-    noWorkoutsMessage.style.display = "none";
-    recentWorkoutsList.style.display = "block";
-    renderRecentWorkouts(normalizedWorkouts); // use normalized workouts
-  }
+// Fetch and display recent workouts
+function loadRecentWorkouts() {
+  const username = localStorage.getItem("username"); // fresh value
+  if (!username) return;
 
- //sort workouts in order 
-workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
-              workouts.slice(0, 5).forEach(w => {
-              const li = document.createElement("li");
+  fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
+    .then(res => res.json())
+    .then(workouts => {
+      const normalizedWorkouts = workouts.map(w => ({
+        ...w,
+        id: w._id
+      }));
 
-// Convert date string to UK format
+      recentWorkoutsList.innerHTML = "";
+
+      if (normalizedWorkouts.length === 0) {
+        noWorkoutsMessage.style.display = "block";
+        recentWorkoutsList.style.display = "none";
+      } else {
+        noWorkoutsMessage.style.display = "none";
+        recentWorkoutsList.style.display = "block";
+        renderRecentWorkouts(normalizedWorkouts); // use normalized workouts
+
+        // Sort workouts by date descending
+        workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        workouts.slice(0, 5).forEach(w => {
+          const li = document.createElement("li");
+
+          // Convert date string to UK format
           const date = new Date(w.date);
           const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
             day: '2-digit',
             month: 'long',
             year: 'numeric',
           }).format(date);
-              li.textContent = `${ukFormattedDate} :  ${w.workout}`;
-              li.dataset.workoutId = w.id;  // Add workout ID to the list item
-              li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event to show details
-              recentWorkoutsList.appendChild(li);
-            });
-          }
-        })
-        .catch(err => {
-          console.error("Failed to load workouts:", err);
+
+          li.textContent = `${ukFormattedDate} :  ${w.workout}`;
+          li.dataset.workoutId = w.id; // Add workout ID to the list item
+          li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event
+          recentWorkoutsList.appendChild(li);
         });
-    }
+      }
+    })
+    .catch(err => {
+      console.error("Failed to load workouts:", err);
+    });
+}
  
    function showWorkoutDetails(workout) {
 
