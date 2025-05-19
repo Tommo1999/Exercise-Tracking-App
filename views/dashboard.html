@@ -856,9 +856,8 @@ submitForgotPassword.addEventListener("click", async () => {
     recentWorkoutsList.style.display = "block";
     renderRecentWorkouts(normalizedWorkouts); // use normalized workouts
   }
-});
 
-            //sort workouts in order 
+ //sort workouts in order 
 workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
               workouts.slice(0, 5).forEach(w => {
               const li = document.createElement("li");
