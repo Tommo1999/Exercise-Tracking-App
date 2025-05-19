@@ -1012,6 +1012,8 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
         const weightUnit = row.querySelector(".unit-select").value;
         const progressNextWorkout = row.querySelector(".progress-checkbox").checked;
 
+       console.log("Exercise:" , workout, "Progress Next Workout:", progressNextWorkout);
+
         const sets = Array.from(row.querySelectorAll(".sets-container .set")).map(setDiv => {
             const weight = parseFloat(setDiv.querySelector(".weight").value);
             const reps = parseInt(setDiv.querySelector(".reps").value);
