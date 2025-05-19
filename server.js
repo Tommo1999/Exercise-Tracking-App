@@ -100,6 +100,9 @@ MongoClient.connect(MONGO_URI)
       res.send('Password reset successfully');
     });
 
+
+// add workout data to Mongo
+ 
     app.post('/add-workout', async (req, res) => {
       const {
         username,
@@ -134,6 +137,7 @@ MongoClient.connect(MONGO_URI)
           date,
           exercises: exercises.map(ex => ({
             name: ex.name,
+            progressNextWorkout: ex.progressNextWorkout,
             weightUnit: ex.weightUnit || 'kg',
             sets: ex.sets.map(set => ({
               weight: Number(set.weight),
@@ -155,6 +159,8 @@ MongoClient.connect(MONGO_URI)
       }
     });
 
+//get workouts from Mongo 
+
     app.get('/get-workouts', async (req, res) => {
       const { username } = req.query;
       if (!username) return res.status(400).json({ message: "Username is required" });
@@ -170,6 +176,8 @@ MongoClient.connect(MONGO_URI)
       }
     });
 
+// add updated workouts to Mongo
+ 
     app.put('/update-workout/:id', async (req, res) => {
       const { id } = req.params;
       const { workout, date, exercises, progressYourLifts, workoutRating, additionalNotes, cardio } = req.body;
@@ -195,6 +203,7 @@ MongoClient.connect(MONGO_URI)
           date,
           exercises: exercises.map(ex => ({
             name: ex.name,
+            progressNextWorkout: ex.progressNextWorkout,
             weightUnit: ex.weightUnit || 'kg',
             sets: ex.sets.map(set => ({
               weight: Number(set.weight),
@@ -224,6 +233,9 @@ MongoClient.connect(MONGO_URI)
       }
     });
 
+
+//delete workout from Mongo
+
     app.delete('/delete-workout/:id', async (req, res) => {
       const { id } = req.params;
       try {
@@ -237,6 +249,8 @@ MongoClient.connect(MONGO_URI)
         res.status(500).json({ message: 'Error deleting workout' });
       }
     });
+
+// export workouts to Excel format
 
     app.get('/export-workouts', async (req, res) => {
       const { username } = req.query;
