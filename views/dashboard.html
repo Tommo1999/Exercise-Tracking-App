@@ -997,6 +997,7 @@ console.log("Workout ID:", workout.id);
 // Save workout
 document.getElementById("save-workout-btn").addEventListener("click", () => {
     const workoutId = modal.dataset.editingWorkoutId || null;
+    console.log("Saving workout ID:", workoutId);
     const username = localStorage.getItem("username");
     const workout = document.getElementById("workout-name").value.trim();
     const date = document.getElementById("workout-date").value;
