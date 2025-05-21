@@ -659,6 +659,7 @@ const submitForgotPassword = document.getElementById("submit-forgot-password");
 const logoutBtn = document.querySelector(".logout");
 
 // Check login state from localStorage
+
 function updateNavbar() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
@@ -672,6 +673,8 @@ function updateNavbar() {
     logoutBtn.style.display = "none";
   }
 }
+
+updateNavbar();
 
 logoutBtn.addEventListener("click", (e) => {
   e.preventDefault();
