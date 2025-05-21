@@ -615,7 +615,7 @@ margin: 5px 0;
     </div>
   </div>
  
- <script>
+  <script>
   document.addEventListener("DOMContentLoaded", () => {
 const username = localStorage.getItem("username");
   if (username) {
@@ -629,7 +629,7 @@ const username = localStorage.getItem("username");
     function updateWelcomeMessage() {
   const welcomeMessage = document.getElementById("welcome-message");
   const username = localStorage.getItem("username");
-  welcomeMessage.textContent = username ? Logged in as: ${username} : "Welcome!";
+  welcomeMessage.textContent = username ? `Logged in as: ${username}` : "Welcome!";
 }
     const modal = document.getElementById("create-workout-modal");
     const addWorkoutBtn = document.getElementById("add-workout-btn");
@@ -840,7 +840,7 @@ function loadRecentWorkouts() {
   const username = localStorage.getItem("username"); // fresh value
   if (!username) return;
 
-  fetch(/get-workouts?username=${encodeURIComponent(username)})
+  fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
     .then(res => res.json())
     .then(workouts => {
       const normalizedWorkouts = workouts.map(w => ({
@@ -871,7 +871,7 @@ function loadRecentWorkouts() {
             year: 'numeric',
           }).format(date);
 
-          li.textContent = ${ukFormattedDate} :  ${w.workout};
+          li.textContent = `${ukFormattedDate} :  ${w.workout}`;
           li.dataset.workoutId = w.id; // Add workout ID to the list item
           li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event
           recentWorkoutsList.appendChild(li);
@@ -898,22 +898,22 @@ function loadRecentWorkouts() {
   const workoutDetailsContent = document.getElementById("workout-details-content");
 
   // Build the modal content, starting with the close button
-  const workoutDetails = 
+  const workoutDetails = `
     <span class="close" id="close-workout-details-modal">&times;</span>
     <h2> ${ukFormattedDate}: ${workout.workout}</h2>
     <h3>Exercises:</h3>
     <ul>
-      ${workout.exercises.map(exercise => 
+      ${workout.exercises.map(exercise => `
         <li>
           <strong>${exercise.name}</strong>
           <p> Progress Next Workout: ${exercise.progressNextWorkout ? 'Yes' : 'No'}</p>
           <ul>
-            ${exercise.sets.map(set => 
+            ${exercise.sets.map(set => `
               <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
-            ).join("")}
+            `).join("")}
           </ul>
         </li>
-      ).join("")}
+      `).join("")}
     </ul>
     <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
     <p>Rating: ${workout.workoutRating}</p>
@@ -921,7 +921,7 @@ function loadRecentWorkouts() {
     <p>${workout.additionalNotes}</p>
     <h3>Cardio:</h3>
     <p>${workout.cardio}</p>
-  ;
+  `;
 
   // Inject content
   document.getElementById("workout-details-body").innerHTML = workoutDetails;
@@ -963,7 +963,7 @@ console.log("Workout ID:", workout.id);
 
     // Populate exercises dynamically
     workout.exercises.forEach((exercise, index) => {
-        const exerciseBlock = createExerciseBlock(index, true);
+        const exerciseBlock = createExerciseBlock(index);
         exerciseBlock.querySelector(".exercise-name").value = exercise.name;
         exerciseBlock.querySelector(".unit-select").value = exercise.weightUnit;
         exerciseBlock.querySelector(".progress-checkbox").checked = exercise.progressNextWorkout;
@@ -972,11 +972,11 @@ console.log("Workout ID:", workout.id);
         exercise.sets.forEach(set => {
             const setDiv = document.createElement("div");
             setDiv.className = "set";
-            setDiv.innerHTML = 
+            setDiv.innerHTML = `
                 <input type="number" placeholder="Weight" class="weight" value="${set.weight}" />
                 <input type="number" placeholder="Reps" class="reps" value="${set.reps}" />
                 <button class="remove-set-btn">Remove Set</button>
-            ;
+            `;
             setsContainer.appendChild(setDiv);
 
             setDiv.querySelector(".remove-set-btn").addEventListener("click", () => {
@@ -1012,8 +1012,6 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
         const weightUnit = row.querySelector(".unit-select").value;
         const progressNextWorkout = row.querySelector(".progress-checkbox").checked;
 
-       console.log("Exercise:" , workout, "Progress Next Workout:", progressNextWorkout);
-
         const sets = Array.from(row.querySelectorAll(".sets-container .set")).map(setDiv => {
             const weight = parseFloat(setDiv.querySelector(".weight").value);
             const reps = parseInt(setDiv.querySelector(".reps").value);
@@ -1039,7 +1037,7 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
         cardio,
     };
 
-    const endpoint = workoutId ? /update-workout/${workoutId} : "/add-workout";
+    const endpoint = workoutId ? `/update-workout/${workoutId}` : "/add-workout";
     const method = workoutId ? "PUT" : "POST";
 
     fetch(endpoint, {
@@ -1129,11 +1127,11 @@ const exerciseRowsContainer = document.getElementById("exercise-rows");
 const addExerciseBtn = document.getElementById("add-exercise-btn");
 const resetFormBtn = document.getElementById("reset-form-btn");
 
-function createExerciseBlock(index, skipDefaultSet = false) {
+function createExerciseBlock(index) {
   const div = document.createElement("div");
   div.className = "exercise-row";
   div.setAttribute("data-index", index);
-  div.innerHTML = 
+  div.innerHTML = `
     <input type="text" placeholder="Exercise name" class="exercise-name" />
     <label>
       <input type="checkbox" class="progress-checkbox" /> Progress Next Workout?
@@ -1143,33 +1141,26 @@ function createExerciseBlock(index, skipDefaultSet = false) {
       <option value="lbs">lbs</option>
     </select>
     <div class="sets-container">
-      <!-- Removed default set here to avoid extra set on edit -->
+      <!-- Sets inputs go here -->
+      <div class="set">
+        <input type="number" placeholder="Weight" class="weight" />
+        <input type="number" placeholder="Reps" class="reps" />
+      </div>
     </div>
     <button class="add-set-btn">Add Set</button>
     <button class="remove-exercise-btn">Remove Exercise</button>
-  ;
+  `;
 
-  const setsContainer = div.querySelector(".sets-container");
-
-  // Add default set ONLY if skipDefaultSet is false (new)
-  if (!skipDefaultSet) {
-    const defaultSet = document.createElement("div");
-    defaultSet.className = "set";
-    defaultSet.innerHTML = 
-      <input type="number" placeholder="Weight" class="weight" />
-      <input type="number" placeholder="Reps" class="reps" />
-    ;
-    setsContainer.appendChild(defaultSet);
-  }
-
+  // Add event listeners for add-set and remove-exercise buttons inside this block
   div.querySelector(".add-set-btn").addEventListener("click", () => {
+    const setsContainer = div.querySelector(".sets-container");
     const newSet = document.createElement("div");
     newSet.className = "set";
-    newSet.innerHTML = 
+    newSet.innerHTML = `
       <input type="number" placeholder="Weight" class="weight" />
       <input type="number" placeholder="Reps" class="reps" />
       <button class="remove-set-btn">Remove Set</button>
-    ;
+    `;
     setsContainer.appendChild(newSet);
 
     newSet.querySelector(".remove-set-btn").addEventListener("click", () => {
@@ -1197,10 +1188,10 @@ resetFormBtn.addEventListener("click", () => {
 // Initialize form with one exercise
 resetFormBtn.click();
 
-});
 
- </script>
 
+
+  </script>
  
   </body>
   </html>
