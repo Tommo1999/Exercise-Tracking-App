@@ -651,6 +651,42 @@ const forgotPasswordLink = document.getElementById("forgot-password-link");
 const forgotPasswordModal = document.getElementById("forgot-password-modal");
 const closeForgotPasswordModal = document.getElementById("close-forgot-password-modal");
 const submitForgotPassword = document.getElementById("submit-forgot-password");
+const logoutBtn = document.querySelector(".logout");
+
+// Check login state from localStorage
+function updateNavbar() {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+  if (isLoggedIn) {
+    loginBtn.style.display = "none";
+    signupBtn.style.display = "none";
+    logoutBtn.style.display = "inline-block";
+  } else {
+    loginBtn.style.display = "inline-block";
+    signupBtn.style.display = "inline-block";
+    logoutBtn.style.display = "none";
+  }
+}
+
+logoutBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  // Clear user data
+  localStorage.removeItem("username");
+  localStorage.setItem("isLoggedIn", "false");
+
+  // Update UI
+  updateWelcomeMessage(); // Reset welcome message
+  updateNavbar(); // Update button visibility
+
+  // Clear workout data
+  recentWorkoutsList.innerHTML = "";
+  noWorkoutsMessage.style.display = "block";
+  recentWorkoutsList.style.display = "none";
+
+  // Notify user
+  alert("Logged out");
+});
 
 // Open modals
 loginBtn.addEventListener("click", () => {
@@ -1106,17 +1142,6 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
         modal.style.display = "none";
         document.body.style.overflow = "";
       }
-    });
- 
- 
-// LogOut 
-    const logoutBtn = document.querySelector(".logout");
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("username");
-      updateWelcomeMessage(); //reset welcome message
-   recentWorkoutsList.innerHTML = ""; // Clear the list
-   noWorkoutsMessage.style.display = "block"; // Show the "no workouts" message
-   recentWorkoutsList.style.display = "none"; // Hide the workouts list
     });
  
     // Auto-load recent workouts on page load
