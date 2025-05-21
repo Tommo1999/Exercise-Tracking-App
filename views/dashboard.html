@@ -621,6 +621,7 @@ margin: 5px 0;
  
   <script>
   document.addEventListener("DOMContentLoaded", () => {
+
 const username = localStorage.getItem("username");
   if (username) {
     updateWelcomeMessage();  // Update the welcome message with username
@@ -658,6 +659,7 @@ const submitForgotPassword = document.getElementById("submit-forgot-password");
 const logoutBtn = document.querySelector(".logout");
 
 // Check login state from localStorage
+
 function updateNavbar() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
@@ -671,6 +673,8 @@ function updateNavbar() {
     logoutBtn.style.display = "none";
   }
 }
+
+updateNavbar();
 
 logoutBtn.addEventListener("click", (e) => {
   e.preventDefault();
