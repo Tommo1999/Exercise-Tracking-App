@@ -34,22 +34,32 @@ MongoClient.connect(MONGO_URI)
     app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
     });
+//signup logic
+app.post('/signup', async (req, res) => {
+  const { username, email, password, marketingConsent } = req.body;
+  if (!username || !email || !password)
+    return res.status(400).send('All fields are required.');
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const existingUser = await usersCollection.findOne({
+    $or: [
+      { email: email.toLowerCase() },
+      { username: username.toLowerCase() },
+    ],
+  });
 
-    app.post('/signup', async (req, res) => {
-      const { username, email, password } = req.body;
-      if (!username || !email || !password) return res.status(400).send('All fields are required.');
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const existingUser = await usersCollection.findOne({
-        $or: [{ email: email.toLowerCase() }, { username: username.toLowerCase() }],
-      });
-      if (existingUser) return res.status(400).send('Username or email already in use.');
-      await usersCollection.insertOne({
-        username: username.toLowerCase(),
-        email: email.toLowerCase(),
-        password: hashedPassword,
-      });
-      res.status(200).json({ message: 'User registered successfully' });
-    });
+  if (existingUser)
+    return res.status(400).send('Username or email already in use.');
+
+  await usersCollection.insertOne({
+    username: username.toLowerCase(),
+    email: email.toLowerCase(),
+    password: hashedPassword,
+    marketingConsent: !!marketingConsent, // ✅ store as boolean
+  });
+  res.status(200).json({ message: 'User registered successfully' });
+});
+
+//login logic
 
     app.post('/login', async (req, res) => {
       const { usernameOrEmail, password } = req.body;
@@ -61,6 +71,9 @@ MongoClient.connect(MONGO_URI)
       if (!isPasswordCorrect) return res.status(401).json({ success: false, message: 'Invalid password.' });
       res.status(200).json({ success: true, message: 'Login successful', username: user.username });
     });
+
+
+//forgot passsword logic
 
     app.post('/forgot-password', async (req, res) => {
       const { usernameOrEmail } = req.body;

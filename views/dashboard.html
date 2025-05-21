@@ -63,7 +63,7 @@ body {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 375px) {
   .card {
     padding: 10px; /* Existing padding */
     margin: 0 15px 20px 15px; /* Add horizontal margin on phones */
@@ -111,12 +111,13 @@ body {
 .add-set-btn {
   background-color: #e74c3c; /* same red */
   color: white;
-  padding: 5px 8px;          /* smaller padding */
-  border: none;
+  padding: 10px 15px;          /* smaller padding */
+  border: 5px;
   border-radius: 5px;
-  font-size: 0.75rem;        /* smaller font size */
+  font-size: 1rem;        /* smaller font size */
   cursor: pointer;
   transition: background-color 0.3s;
+  margin: 5px 5px 5px 0;
 }
 
 .add-set-btn:hover {
@@ -127,12 +128,13 @@ body {
 .remove-exercise-btn {
   background-color: #e74c3c; /* same red */
   color: white;
-  padding: 5px 8px;          /* smaller padding */
-  border: none;
+  padding: 10px 15px;          /* smaller padding */
+  border: 5px;
   border-radius: 5px;
-  font-size: 0.75rem;        /* smaller font size */
+  font-size: 1rem;        /* smaller font size */
   cursor: pointer;
   transition: background-color 0.3s;
+  margin: 5px 5px 5px 0;
 }
 
 .remove-exercise-btn:hover {
@@ -154,9 +156,6 @@ body {
 .remove-set-btn:hover {
   background-color: orange;  /* same hover effect */
 }
-
-
-
 
 /* Layout Helpers */
 .auth-buttons {
@@ -490,6 +489,7 @@ margin: 5px 0;
 </div>
 
 <!-- Signup Modal -->
+
 <div id="signup-modal" class="modal">
   <div class="modal-content">
     <span class="close" id="close-signup-modal">&times;</span>
@@ -498,25 +498,29 @@ margin: 5px 0;
       <!-- Username Input -->
       <label for="signup-username">Username:</label><br />
       <input type="text" id="signup-username" required placeholder="Enter your username" /><br /><br />
-      
       <!-- Email Input -->
       <label for="signup-email">Email:</label><br />
       <input type="email" id="signup-email" required placeholder="Enter your email" /><br /><br />
-      
       <!-- Password Input -->
       <label for="signup-password">Password:</label><br />
       <div class="password-container">
         <input type="password" id="signup-password" required placeholder="Enter your password" />
-        <span id="toggle-signup-password" class="eye-icon">&#128065;</span> <!-- Eye icon to toggle visibility -->
+        <span id="toggle-signup-password" class="eye-icon">&#128065;</span>
       </div><br />
-      
       <!-- Confirm Password Input -->
       <label for="signup-confirm-password">Confirm Password:</label><br />
       <div class="password-container">
         <input type="password" id="signup-confirm-password" required placeholder="Confirm your password" />
-        <span id="toggle-confirm-password" class="eye-icon">&#128065;</span> <!-- Eye icon to toggle visibility -->
+        <span id="toggle-confirm-password" class="eye-icon">&#128065;</span>
       </div><br />
-      
+      <!-- Marketing Consent Checkbox -->
+      <div class="checkbox-container">
+        <input type="checkbox" id="marketing-consent" name="marketing-consent" />
+        <label for="marketing-consent" style="display: inline;">
+          I agree to receive promotional emails from Rep Dog. You can unsubscribe at any time. See our
+          <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
+        </label>
+      </div><br />
       <!-- Submit Button -->
       <button type="submit" class="btn">Sign Up</button>
     </form>
@@ -534,7 +538,7 @@ margin: 5px 0;
    <div class="dashboard-section">
   <div class="card">
     <h2>Recent Workouts</h2>
-<p> Click for workout details. </p>
+<p> Tap a workout to view or edit. </p>
     <p id="no-workouts" class="empty-message">No workouts added yet.</p>
     <ul id="recent-workouts-list" style="display: none;"></ul>
 
@@ -547,8 +551,8 @@ margin: 5px 0;
   <div class="modal-content">
     <div id="workout-details-body"><!-- Injected content goes here --></div>
     <div class="button-row">
-      <button id="edit-workout-btn" class="btn btn-small">Edit Workout</button>
-      <button id="delete-workout-btn" class="btn btn-small">Delete Workout</button>
+      <button id="edit-workout-btn" class="btn">Edit Workout</button>
+      <button id="delete-workout-btn" class="btn">Delete Workout</button>
     </div>
   </div>
 </div>
@@ -572,8 +576,8 @@ margin: 5px 0;
      <!-- Horizontal scroll container for the table -->
   <div class="horizontal-scroll">
   <div id="exercise-rows"></div>
-<button type="button" id="add-exercise-btn" class="btn btn-small">Add Exercise</button>
-<button type="button" id="reset-form-btn" class="btn btn-small">Reset Form</button>
+<button type="button" id="add-exercise-btn" class="btn">Add Exercise</button>
+<button type="button" id="reset-form-btn" class="btn">Reset Form</button>
 
 </div>
  
@@ -585,7 +589,7 @@ margin: 5px 0;
 
       <!-- New questions under the workout table -->
       <div class="question">
-        <label>Did you progress your lifts? (Yes/No)</label>
+        <label>Progress since last session? (Yes/No)</label>
         <select>
           <option value="yes">Yes</option>
           <option value="no">No</option>
@@ -600,7 +604,7 @@ margin: 5px 0;
       </div>
  
       <div class="question">
-        <label>Additional Workout Notes</label>
+        <label>Additional workout notes</label>
         <textarea placeholder="Write any notes..." rows="4"></textarea>
       </div>
  
@@ -651,6 +655,42 @@ const forgotPasswordLink = document.getElementById("forgot-password-link");
 const forgotPasswordModal = document.getElementById("forgot-password-modal");
 const closeForgotPasswordModal = document.getElementById("close-forgot-password-modal");
 const submitForgotPassword = document.getElementById("submit-forgot-password");
+const logoutBtn = document.querySelector(".logout");
+
+// Check login state from localStorage
+function updateNavbar() {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+  if (isLoggedIn) {
+    loginBtn.style.display = "none";
+    signupBtn.style.display = "none";
+    logoutBtn.style.display = "inline-block";
+  } else {
+    loginBtn.style.display = "inline-block";
+    signupBtn.style.display = "inline-block";
+    logoutBtn.style.display = "none";
+  }
+}
+
+logoutBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  // Clear user data
+  localStorage.removeItem("username");
+  localStorage.setItem("isLoggedIn", "false");
+
+  // Update UI
+  updateWelcomeMessage(); // Reset welcome message
+  updateNavbar(); // Update button visibility
+
+  // Clear workout data
+  recentWorkoutsList.innerHTML = "";
+  noWorkoutsMessage.style.display = "block";
+  recentWorkoutsList.style.display = "none";
+
+  // Notify user
+  alert("Logged out");
+});
 
 // Open modals
 loginBtn.addEventListener("click", () => {
@@ -702,39 +742,43 @@ toggleSignupPassword.addEventListener("click", () => {
 const signupForm = document.getElementById("signup-form");
 
 signupForm.addEventListener("submit", async (event) => {
-  event.preventDefault(); // Prevent default form submission
+  event.preventDefault();
 
   const username = document.getElementById("signup-username").value;
   const email = document.getElementById("signup-email").value;
   const password = document.getElementById("signup-password").value;
   const confirmPassword = document.getElementById("signup-confirm-password").value;
+  const marketingConsent = document.getElementById("marketing-consent").checked; // ✅ get checkbox value
 
-  // Check if password and confirm password match
   if (password !== confirmPassword) {
     alert("Passwords do not match!");
     return;
   }
 
-  // Make the API call to register the user
   try {
     const response = await fetch('/signup', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, email, password }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+        marketingConsent, // ✅ include checkbox in request
+      }),
     });
 
     const data = await response.json();
 
     if (response.ok) {
-localStorage.setItem("username", username);
-  updateWelcomeMessage();// Update welcome message
-      alert('User registered successfully!'); // User successfully registered
-      signupModal.style.display = "none"; // Close the signup modal
-      document.body.style.overflow = ""; // Restore overflow
+      localStorage.setItem("username", username);
+      localStorage.setItem("isLoggedIn", "true");
+      updateWelcomeMessage();
+      updateNavbar();
+
+      alert('User registered successfully!');
+      signupModal.style.display = "none";
+      document.body.style.overflow = "";
     } else {
-      // Handle registration error
       alert(data.message || 'Error registering user');
     }
   } catch (error) {
@@ -743,55 +787,50 @@ localStorage.setItem("username", username);
   }
 });
 
-// Eye icon toggle password visibility for login modal
+// Toggle login password visibility
 const toggleLoginPassword = document.getElementById("toggle-login-password");
 const loginPasswordInput = document.getElementById("login-password");
 
 toggleLoginPassword.addEventListener("click", () => {
-  // Toggle password visibility for the login password field
-  const type = loginPasswordInput.type === "password" ? "text" : "password";
-  loginPasswordInput.type = type;
+  loginPasswordInput.type = loginPasswordInput.type === "password" ? "text" : "password";
 });
 
 // Login form submission
 const loginForm = document.getElementById("login-form");
 
 loginForm.addEventListener("submit", async (event) => {
-  event.preventDefault(); // Prevent default form submission
+  event.preventDefault();
 
   const usernameOrEmail = document.getElementById("login-username").value;
   const password = document.getElementById("login-password").value;
 
-try {
-  const response = await fetch('/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ usernameOrEmail, password }),
-  });
+  try {
+    const response = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usernameOrEmail, password }),
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-if (response.ok) {
-  localStorage.setItem("username", data.username);
-  updateWelcomeMessage(); // Update welcome message
-  
-  // Close login modal and allow for page update before loading recent workouts
-  loginModal.style.display = "none";
-  document.body.style.overflow = "";
+    if (response.ok) {
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("isLoggedIn", "true");
+      updateWelcomeMessage();
+      updateNavbar();
 
-  // Now load recent workouts after closing modal
-  loadRecentWorkouts();  // Immediately load recent workouts after modal is closed
-  
-  alert('Login successful!');
-} else {
-  alert(data.message || 'Invalid credentials');
-}
- } catch (error) {
-  console.error('Error logging in user:', error);
-  alert('There was an error. Please try again.');
-}
+      loginModal.style.display = "none";
+      document.body.style.overflow = "";
+      loadRecentWorkouts();
+
+      alert('Login successful!');
+    } else {
+      alert(data.message || 'Invalid credentials');
+    }
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    alert('There was an error. Please try again.');
+  }
 });
 
 // Show Forgot Password modal
@@ -1012,8 +1051,6 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
         const weightUnit = row.querySelector(".unit-select").value;
         const progressNextWorkout = row.querySelector(".progress-checkbox").checked;
 
-       console.log("Exercise:" , workout, "Progress Next Workout:", progressNextWorkout);
-
         const sets = Array.from(row.querySelectorAll(".sets-container .set")).map(setDiv => {
             const weight = parseFloat(setDiv.querySelector(".weight").value);
             const reps = parseInt(setDiv.querySelector(".reps").value);
@@ -1110,17 +1147,6 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
       }
     });
  
- 
-// LogOut 
-    const logoutBtn = document.querySelector(".logout");
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("username");
-      updateWelcomeMessage(); //reset welcome message
-   recentWorkoutsList.innerHTML = ""; // Clear the list
-   noWorkoutsMessage.style.display = "block"; // Show the "no workouts" message
-   recentWorkoutsList.style.display = "none"; // Hide the workouts list
-    });
- 
     // Auto-load recent workouts on page load
     loadRecentWorkouts();
   });
@@ -1136,7 +1162,7 @@ function createExerciseBlock(index, skipDefaultSet = false) {
   div.innerHTML = `
     <input type="text" placeholder="Exercise name" class="exercise-name" />
     <label>
-      <input type="checkbox" class="progress-checkbox" /> Progress Next Workout?
+      <input type="checkbox" class="progress-checkbox" /> Plan to progress next session
     </label>
     <select class="unit-select">
       <option value="kg">kg</option>
