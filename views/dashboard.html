@@ -489,6 +489,7 @@ margin: 5px 0;
 </div>
 
 <!-- Signup Modal -->
+
 <div id="signup-modal" class="modal">
   <div class="modal-content">
     <span class="close" id="close-signup-modal">&times;</span>
@@ -497,25 +498,29 @@ margin: 5px 0;
       <!-- Username Input -->
       <label for="signup-username">Username:</label><br />
       <input type="text" id="signup-username" required placeholder="Enter your username" /><br /><br />
-      
       <!-- Email Input -->
       <label for="signup-email">Email:</label><br />
       <input type="email" id="signup-email" required placeholder="Enter your email" /><br /><br />
-      
       <!-- Password Input -->
       <label for="signup-password">Password:</label><br />
       <div class="password-container">
         <input type="password" id="signup-password" required placeholder="Enter your password" />
-        <span id="toggle-signup-password" class="eye-icon">&#128065;</span> <!-- Eye icon to toggle visibility -->
+        <span id="toggle-signup-password" class="eye-icon">&#128065;</span>
       </div><br />
-      
       <!-- Confirm Password Input -->
       <label for="signup-confirm-password">Confirm Password:</label><br />
       <div class="password-container">
         <input type="password" id="signup-confirm-password" required placeholder="Confirm your password" />
-        <span id="toggle-confirm-password" class="eye-icon">&#128065;</span> <!-- Eye icon to toggle visibility -->
+        <span id="toggle-confirm-password" class="eye-icon">&#128065;</span>
       </div><br />
-      
+      <!-- Marketing Consent Checkbox -->
+      <div class="checkbox-container">
+        <input type="checkbox" id="marketing-consent" name="marketing-consent" />
+        <label for="marketing-consent" style="display: inline;">
+          I agree to receive promotional emails from Rep Dog. You can unsubscribe at any time. See our
+          <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
+        </label>
+      </div><br />
       <!-- Submit Button -->
       <button type="submit" class="btn">Sign Up</button>
     </form>
