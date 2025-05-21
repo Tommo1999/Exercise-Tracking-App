@@ -538,7 +538,7 @@ margin: 5px 0;
    <div class="dashboard-section">
   <div class="card">
     <h2>Recent Workouts</h2>
-<p> Click for workout details. </p>
+<p> Tap a workout to view or edit. </p>
     <p id="no-workouts" class="empty-message">No workouts added yet.</p>
     <ul id="recent-workouts-list" style="display: none;"></ul>
 
@@ -589,7 +589,7 @@ margin: 5px 0;
 
       <!-- New questions under the workout table -->
       <div class="question">
-        <label>Did you progress your lifts? (Yes/No)</label>
+        <label>Progress since last session? (Yes/No)</label>
         <select>
           <option value="yes">Yes</option>
           <option value="no">No</option>
@@ -604,7 +604,7 @@ margin: 5px 0;
       </div>
  
       <div class="question">
-        <label>Additional Workout Notes</label>
+        <label>Additional workout notes</label>
         <textarea placeholder="Write any notes..." rows="4"></textarea>
       </div>
  
@@ -1156,7 +1156,7 @@ function createExerciseBlock(index, skipDefaultSet = false) {
   div.innerHTML = `
     <input type="text" placeholder="Exercise name" class="exercise-name" />
     <label>
-      <input type="checkbox" class="progress-checkbox" /> Progress Next Workout?
+      <input type="checkbox" class="progress-checkbox" /> Plan to progress next session
     </label>
     <select class="unit-select">
       <option value="kg">kg</option>
