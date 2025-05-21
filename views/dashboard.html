@@ -615,7 +615,7 @@ margin: 5px 0;
   </div>
  
   <script>
- document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
   const username = localStorage.getItem("username");
 
   const loginModal = document.getElementById("login-modal");
@@ -630,9 +630,9 @@ margin: 5px 0;
   const closeForgotPasswordModal = document.getElementById("close-forgot-password-modal");
   const submitForgotPassword = document.getElementById("submit-forgot-password");
 
-  const welcomeMessage = document.getElementById("welcome-message"); // Add this to your HTML
-  const recentWorkoutsList = document.getElementById("recent-workouts-list"); // if exists
-  const noWorkoutsMessage = document.getElementById("no-workouts-message"); // if exists
+  const welcomeMessage = document.getElementById("welcome-message");
+  const recentWorkoutsList = document.getElementById("recent-workouts-list");
+  const noWorkoutsMessage = document.getElementById("no-workouts-message");
 
   function updateWelcomeMessage() {
     if (welcomeMessage) {
@@ -667,40 +667,38 @@ margin: 5px 0;
     if (noWorkoutsMessage) noWorkoutsMessage.style.display = "block";
     if (recentWorkoutsList) recentWorkoutsList.style.display = "none";
   });
-});
 
-// Open modals
-loginBtn.addEventListener("click", () => {
-  loginModal.style.display = "block";
-  document.body.style.overflow = "hidden";
-});
+  // ✅ MOVE THESE INSIDE!
+  loginBtn.addEventListener("click", () => {
+    loginModal.style.display = "block";
+    document.body.style.overflow = "hidden";
+  });
 
-signupBtn.addEventListener("click", () => {
-  signupModal.style.display = "block";
-  document.body.style.overflow = "hidden";
-});
+  signupBtn.addEventListener("click", () => {
+    signupModal.style.display = "block";
+    document.body.style.overflow = "hidden";
+  });
 
-// Close modals
-closeLogin.addEventListener("click", () => {
-  loginModal.style.display = "none";
-  document.body.style.overflow = "";
-});
-
-closeSignup.addEventListener("click", () => {
-  signupModal.style.display = "none";
-  document.body.style.overflow = "";
-});
-
-// Optional: Close modals by clicking outside content
-window.addEventListener("click", (e) => {
-  if (e.target === loginModal) {
+  closeLogin.addEventListener("click", () => {
     loginModal.style.display = "none";
     document.body.style.overflow = "";
-  }
-  if (e.target === signupModal) {
+  });
+
+  closeSignup.addEventListener("click", () => {
     signupModal.style.display = "none";
     document.body.style.overflow = "";
-  }
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === loginModal) {
+      loginModal.style.display = "none";
+      document.body.style.overflow = "";
+    }
+    if (e.target === signupModal) {
+      signupModal.style.display = "none";
+      document.body.style.overflow = "";
+    }
+  });
 });
 
 // Eye icon toggle password visibility for both password fields in signup modal
