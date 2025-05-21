@@ -738,39 +738,37 @@ toggleSignupPassword.addEventListener("click", () => {
 const signupForm = document.getElementById("signup-form");
 
 signupForm.addEventListener("submit", async (event) => {
-  event.preventDefault(); // Prevent default form submission
+  event.preventDefault();
 
   const username = document.getElementById("signup-username").value;
   const email = document.getElementById("signup-email").value;
   const password = document.getElementById("signup-password").value;
   const confirmPassword = document.getElementById("signup-confirm-password").value;
 
-  // Check if password and confirm password match
   if (password !== confirmPassword) {
     alert("Passwords do not match!");
     return;
   }
 
-  // Make the API call to register the user
   try {
     const response = await fetch('/signup', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password }),
     });
 
     const data = await response.json();
 
     if (response.ok) {
-localStorage.setItem("username", username);
-  updateWelcomeMessage();// Update welcome message
-      alert('User registered successfully!'); // User successfully registered
-      signupModal.style.display = "none"; // Close the signup modal
-      document.body.style.overflow = ""; // Restore overflow
+      localStorage.setItem("username", username);
+      localStorage.setItem("isLoggedIn", "true");
+      updateWelcomeMessage();
+      updateNavbar();
+
+      alert('User registered successfully!');
+      signupModal.style.display = "none";
+      document.body.style.overflow = "";
     } else {
-      // Handle registration error
       alert(data.message || 'Error registering user');
     }
   } catch (error) {
@@ -779,55 +777,50 @@ localStorage.setItem("username", username);
   }
 });
 
-// Eye icon toggle password visibility for login modal
+// Toggle login password visibility
 const toggleLoginPassword = document.getElementById("toggle-login-password");
 const loginPasswordInput = document.getElementById("login-password");
 
 toggleLoginPassword.addEventListener("click", () => {
-  // Toggle password visibility for the login password field
-  const type = loginPasswordInput.type === "password" ? "text" : "password";
-  loginPasswordInput.type = type;
+  loginPasswordInput.type = loginPasswordInput.type === "password" ? "text" : "password";
 });
 
 // Login form submission
 const loginForm = document.getElementById("login-form");
 
 loginForm.addEventListener("submit", async (event) => {
-  event.preventDefault(); // Prevent default form submission
+  event.preventDefault();
 
   const usernameOrEmail = document.getElementById("login-username").value;
   const password = document.getElementById("login-password").value;
 
-try {
-  const response = await fetch('/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ usernameOrEmail, password }),
-  });
+  try {
+    const response = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usernameOrEmail, password }),
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-if (response.ok) {
-  localStorage.setItem("username", data.username);
-  updateWelcomeMessage(); // Update welcome message
-  
-  // Close login modal and allow for page update before loading recent workouts
-  loginModal.style.display = "none";
-  document.body.style.overflow = "";
+    if (response.ok) {
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("isLoggedIn", "true");
+      updateWelcomeMessage();
+      updateNavbar();
 
-  // Now load recent workouts after closing modal
-  loadRecentWorkouts();  // Immediately load recent workouts after modal is closed
-  
-  alert('Login successful!');
-} else {
-  alert(data.message || 'Invalid credentials');
-}
- } catch (error) {
-  console.error('Error logging in user:', error);
-  alert('There was an error. Please try again.');
-}
+      loginModal.style.display = "none";
+      document.body.style.overflow = "";
+      loadRecentWorkouts();
+
+      alert('Login successful!');
+    } else {
+      alert(data.message || 'Invalid credentials');
+    }
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    alert('There was an error. Please try again.');
+  }
 });
 
 // Show Forgot Password modal
