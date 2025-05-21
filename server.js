@@ -9,6 +9,14 @@ const crypto = require('crypto');
 
 const app = express();
 
+// force https on Heroku
+app.use((req, res, next) => {
+if(req.headers['x-forwarded-proto'] !== 'https') {
+return res.redirect('https://' + req.headers.host + req.url);
+}
+next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/images', express.static(path.join(__dirname, 'images')));
