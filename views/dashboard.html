@@ -444,10 +444,11 @@ margin: 5px 0;
   <div class="button-container">
     <button class="btn signup-btn">Sign Up</button>
     <button class="btn login-btn">Log In</button>
-    <button class="btn logout" style="display: none;">Log Out</button>
+    <button class="btn logout" onclick="logout()">Log Out</button>
   </div>
   <div id="welcome-message" class="welcome-text"></div>
 </div>
+
 
 <!-- Login Modal -->
 <div id="login-modal" class="modal">
@@ -615,90 +616,74 @@ margin: 5px 0;
   </div>
  
   <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const username = localStorage.getItem("username");
+  document.addEventListener("DOMContentLoaded", () => {
+const username = localStorage.getItem("username");
+  if (username) {
+    updateWelcomeMessage();  // Update the welcome message with username
+  } else {
+    updateWelcomeMessage();  // Show "Welcome!"
+  }
 
-  const loginModal = document.getElementById("login-modal");
-  const signupModal = document.getElementById("signup-modal");
-  const loginBtn = document.querySelector(".login-btn");
-  const signupBtn = document.querySelector(".signup-btn");
-  const logoutBtn = document.querySelector(".logout");
-  const closeLogin = document.getElementById("close-login-modal");
-  const closeSignup = document.getElementById("close-signup-modal");
-  const forgotPasswordLink = document.getElementById("forgot-password-link");
-  const forgotPasswordModal = document.getElementById("forgot-password-modal");
-  const closeForgotPasswordModal = document.getElementById("close-forgot-password-modal");
-  const submitForgotPassword = document.getElementById("submit-forgot-password");
+//sets welcome message fuction
 
+    function updateWelcomeMessage() {
   const welcomeMessage = document.getElementById("welcome-message");
-  const recentWorkoutsList = document.getElementById("recent-workouts-list");
-  const noWorkoutsMessage = document.getElementById("no-workouts-message");
+  const username = localStorage.getItem("username");
+  welcomeMessage.textContent = username ? `Logged in as: ${username}` : "Welcome!";
+}
+    const modal = document.getElementById("create-workout-modal");
+    const addWorkoutBtn = document.getElementById("add-workout-btn");
+    const closeModal = document.getElementById("close-workout-modal");
+    const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
+    const exerciseRowsContainer = document.getElementById("exercise-rows");
+ 
+    const recentWorkoutsList = document.getElementById("recent-workouts-list");
+    const noWorkoutsMessage = document.getElementById("no-workouts");
 
-  function updateWelcomeMessage() {
-    if (welcomeMessage) {
-      welcomeMessage.textContent = username
-        ? `Logged in as: ${username}`
-        : "Welcome!";
-    }
-  }
+// Auth modal logic
+const loginModal = document.getElementById("login-modal");
+const signupModal = document.getElementById("signup-modal");
+const loginBtn = document.querySelector(".login-btn");
+const signupBtn = document.querySelector(".signup-btn");
+const closeLogin = document.getElementById("close-login-modal");
+const closeSignup = document.getElementById("close-signup-modal");
+const forgotPasswordLink = document.getElementById("forgot-password-link");
+const forgotPasswordModal = document.getElementById("forgot-password-modal");
+const closeForgotPasswordModal = document.getElementById("close-forgot-password-modal");
+const submitForgotPassword = document.getElementById("submit-forgot-password");
 
-  function toggleAuthButtons() {
-    if (username) {
-      signupBtn.style.display = "none";
-      loginBtn.style.display = "none";
-      logoutBtn.style.display = "inline-block";
-    } else {
-      signupBtn.style.display = "inline-block";
-      loginBtn.style.display = "inline-block";
-      logoutBtn.style.display = "none";
-    }
-  }
+// Open modals
+loginBtn.addEventListener("click", () => {
+  loginModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
 
-  updateWelcomeMessage();
-  toggleAuthButtons();
+signupBtn.addEventListener("click", () => {
+  signupModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
 
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("username");
+// Close modals
+closeLogin.addEventListener("click", () => {
+  loginModal.style.display = "none";
+  document.body.style.overflow = "";
+});
 
-    updateWelcomeMessage();
-    toggleAuthButtons();
+closeSignup.addEventListener("click", () => {
+  signupModal.style.display = "none";
+  document.body.style.overflow = "";
+});
 
-    if (recentWorkoutsList) recentWorkoutsList.innerHTML = "";
-    if (noWorkoutsMessage) noWorkoutsMessage.style.display = "block";
-    if (recentWorkoutsList) recentWorkoutsList.style.display = "none";
-  });
-
-  // ✅ MOVE THESE INSIDE!
-  loginBtn.addEventListener("click", () => {
-    loginModal.style.display = "block";
-    document.body.style.overflow = "hidden";
-  });
-
-  signupBtn.addEventListener("click", () => {
-    signupModal.style.display = "block";
-    document.body.style.overflow = "hidden";
-  });
-
-  closeLogin.addEventListener("click", () => {
+// Optional: Close modals by clicking outside content
+window.addEventListener("click", (e) => {
+  if (e.target === loginModal) {
     loginModal.style.display = "none";
     document.body.style.overflow = "";
-  });
-
-  closeSignup.addEventListener("click", () => {
+  }
+  if (e.target === signupModal) {
     signupModal.style.display = "none";
     document.body.style.overflow = "";
-  });
-
-  window.addEventListener("click", (e) => {
-    if (e.target === loginModal) {
-      loginModal.style.display = "none";
-      document.body.style.overflow = "";
-    }
-    if (e.target === signupModal) {
-      signupModal.style.display = "none";
-      document.body.style.overflow = "";
-    }
-  });
+  }
 });
 
 // Eye icon toggle password visibility for both password fields in signup modal
@@ -978,7 +963,7 @@ console.log("Workout ID:", workout.id);
 
     // Populate exercises dynamically
     workout.exercises.forEach((exercise, index) => {
-        const exerciseBlock = createExerciseBlock(index);
+        const exerciseBlock = createExerciseBlock(index, true);
         exerciseBlock.querySelector(".exercise-name").value = exercise.name;
         exerciseBlock.querySelector(".unit-select").value = exercise.weightUnit;
         exerciseBlock.querySelector(".progress-checkbox").checked = exercise.progressNextWorkout;
@@ -1123,14 +1108,26 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
       }
     });
  
+ 
+// LogOut 
+    const logoutBtn = document.querySelector(".logout");
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("username");
+      updateWelcomeMessage(); //reset welcome message
+   recentWorkoutsList.innerHTML = ""; // Clear the list
+   noWorkoutsMessage.style.display = "block"; // Show the "no workouts" message
+   recentWorkoutsList.style.display = "none"; // Hide the workouts list
+    });
+ 
     // Auto-load recent workouts on page load
     loadRecentWorkouts();
- 
+  });
+
 const exerciseRowsContainer = document.getElementById("exercise-rows");
 const addExerciseBtn = document.getElementById("add-exercise-btn");
 const resetFormBtn = document.getElementById("reset-form-btn");
 
-function createExerciseBlock(index) {
+function createExerciseBlock(index, skipDefaultSet = false) {
   const div = document.createElement("div");
   div.className = "exercise-row";
   div.setAttribute("data-index", index);
@@ -1144,19 +1141,26 @@ function createExerciseBlock(index) {
       <option value="lbs">lbs</option>
     </select>
     <div class="sets-container">
-      <!-- Sets inputs go here -->
-      <div class="set">
-        <input type="number" placeholder="Weight" class="weight" />
-        <input type="number" placeholder="Reps" class="reps" />
-      </div>
+      <!-- Removed default set here to avoid extra set on edit -->
     </div>
     <button class="add-set-btn">Add Set</button>
     <button class="remove-exercise-btn">Remove Exercise</button>
   `;
 
-  // Add event listeners for add-set and remove-exercise buttons inside this block
+  const setsContainer = div.querySelector(".sets-container");
+
+  // Add default set ONLY if skipDefaultSet is false (new)
+  if (!skipDefaultSet) {
+    const defaultSet = document.createElement("div");
+    defaultSet.className = "set";
+    defaultSet.innerHTML = `
+      <input type="number" placeholder="Weight" class="weight" />
+      <input type="number" placeholder="Reps" class="reps" />
+    `;
+    setsContainer.appendChild(defaultSet);
+  }
+
   div.querySelector(".add-set-btn").addEventListener("click", () => {
-    const setsContainer = div.querySelector(".sets-container");
     const newSet = document.createElement("div");
     newSet.className = "set";
     newSet.innerHTML = `
@@ -1177,6 +1181,7 @@ function createExerciseBlock(index) {
 
   return div;
 }
+
 
 addExerciseBtn.addEventListener("click", () => {
   const index = exerciseRowsContainer.children.length;
