@@ -35,6 +35,8 @@ MongoClient.connect(MONGO_URI)
       res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
     });
 
+//signup logic
+
     app.post('/signup', async (req, res) => {
       const { username, email, password } = req.body;
       if (!username || !email || !password) return res.status(400).send('All fields are required.');
@@ -51,6 +53,8 @@ MongoClient.connect(MONGO_URI)
       res.status(200).json({ message: 'User registered successfully' });
     });
 
+//login logic
+
     app.post('/login', async (req, res) => {
       const { usernameOrEmail, password } = req.body;
       const user = await usersCollection.findOne({
@@ -61,6 +65,9 @@ MongoClient.connect(MONGO_URI)
       if (!isPasswordCorrect) return res.status(401).json({ success: false, message: 'Invalid password.' });
       res.status(200).json({ success: true, message: 'Login successful', username: user.username });
     });
+
+
+//forgot passsword logic
 
     app.post('/forgot-password', async (req, res) => {
       const { usernameOrEmail } = req.body;
