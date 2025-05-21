@@ -615,194 +615,389 @@ margin: 5px 0;
     </div>
   </div>
  
-  <script>
-document.addEventListener("DOMContentLoaded", () => {
-  // Elements
-  const welcomeMessage = document.getElementById("welcome-message");
-  const modal = document.getElementById("create-workout-modal");
-  const addWorkoutBtn = document.getElementById("add-workout-btn");
-  const closeModal = document.getElementById("close-workout-modal");
-  const exerciseRowsContainer = document.getElementById("exercise-rows");
-  const addExerciseBtn = document.getElementById("add-exercise-btn");
-  const resetFormBtn = document.getElementById("reset-form-btn");
-  const recentWorkoutsList = document.getElementById("recent-workouts-list");
-  const noWorkoutsMessage = document.getElementById("no-workouts");
-
-  // Auth modals/buttons
-  const loginModal = document.getElementById("login-modal");
-  const signupModal = document.getElementById("signup-modal");
-  const forgotPasswordModal = document.getElementById("forgot-password-modal");
-
-  const loginBtn = document.querySelector(".login-btn");
-  const signupBtn = document.querySelector(".signup-btn");
-  const logoutBtn = document.querySelector(".logout");
-
-  const closeLogin = document.getElementById("close-login-modal");
-  const closeSignup = document.getElementById("close-signup-modal");
-  const forgotPasswordLink = document.getElementById("forgot-password-link");
-  const closeForgotPasswordModal = document.getElementById("close-forgot-password-modal");
-  const submitForgotPassword = document.getElementById("submit-forgot-password");
-
-  // Password toggles
-  const toggleSignupPassword = document.getElementById("toggle-signup-password");
-  const signupPasswordInput = document.getElementById("signup-password");
-  const signupConfirmPasswordInput = document.getElementById("signup-confirm-password");
-
-  const toggleLoginPassword = document.getElementById("toggle-login-password");
-  const loginPasswordInput = document.getElementById("login-password");
-
-  // Forms
-  const signupForm = document.getElementById("signup-form");
-  const loginForm = document.getElementById("login-form");
-
-  // Welcome message update
-  function updateWelcomeMessage() {
-    const username = localStorage.getItem("username");
-    welcomeMessage.textContent = username ? `Logged in as: ${username}` : "Welcome!";
+ <script>
+  document.addEventListener("DOMContentLoaded", () => {
+const username = localStorage.getItem("username");
+  if (username) {
+    updateWelcomeMessage();  // Update the welcome message with username
+  } else {
+    updateWelcomeMessage();  // Show "Welcome!"
   }
 
-  // Load recent workouts
-  function loadRecentWorkouts() {
-    const username = localStorage.getItem("username");
-    if (!username) return;
+//sets welcome message fuction
 
-    fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
-      .then(res => res.json())
-      .then(workouts => {
-        recentWorkoutsList.innerHTML = "";
+    function updateWelcomeMessage() {
+  const welcomeMessage = document.getElementById("welcome-message");
+  const username = localStorage.getItem("username");
+  welcomeMessage.textContent = username ? Logged in as: ${username} : "Welcome!";
+}
+    const modal = document.getElementById("create-workout-modal");
+    const addWorkoutBtn = document.getElementById("add-workout-btn");
+    const closeModal = document.getElementById("close-workout-modal");
+    const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
+    const exerciseRowsContainer = document.getElementById("exercise-rows");
+ 
+    const recentWorkoutsList = document.getElementById("recent-workouts-list");
+    const noWorkoutsMessage = document.getElementById("no-workouts");
 
-        if (workouts.length === 0) {
-          noWorkoutsMessage.style.display = "block";
-          recentWorkoutsList.style.display = "none";
-          return;
-        }
+// Auth modal logic
+const loginModal = document.getElementById("login-modal");
+const signupModal = document.getElementById("signup-modal");
+const loginBtn = document.querySelector(".login-btn");
+const signupBtn = document.querySelector(".signup-btn");
+const closeLogin = document.getElementById("close-login-modal");
+const closeSignup = document.getElementById("close-signup-modal");
+const forgotPasswordLink = document.getElementById("forgot-password-link");
+const forgotPasswordModal = document.getElementById("forgot-password-modal");
+const closeForgotPasswordModal = document.getElementById("close-forgot-password-modal");
+const submitForgotPassword = document.getElementById("submit-forgot-password");
 
+// Open modals
+loginBtn.addEventListener("click", () => {
+  loginModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
+
+signupBtn.addEventListener("click", () => {
+  signupModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
+
+// Close modals
+closeLogin.addEventListener("click", () => {
+  loginModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+closeSignup.addEventListener("click", () => {
+  signupModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+// Optional: Close modals by clicking outside content
+window.addEventListener("click", (e) => {
+  if (e.target === loginModal) {
+    loginModal.style.display = "none";
+    document.body.style.overflow = "";
+  }
+  if (e.target === signupModal) {
+    signupModal.style.display = "none";
+    document.body.style.overflow = "";
+  }
+});
+
+// Eye icon toggle password visibility for both password fields in signup modal
+const toggleSignupPassword = document.getElementById("toggle-signup-password");
+const passwordInput = document.getElementById("signup-password");
+const confirmPasswordInput = document.getElementById("signup-confirm-password");
+
+toggleSignupPassword.addEventListener("click", () => {
+  // Toggle visibility for both password and confirm password fields
+  const type = passwordInput.type === "password" ? "text" : "password";
+  passwordInput.type = type;
+  confirmPasswordInput.type = type; // Make confirm password field also toggle
+});
+
+// Signup form submission
+const signupForm = document.getElementById("signup-form");
+
+signupForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Prevent default form submission
+
+  const username = document.getElementById("signup-username").value;
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+  const confirmPassword = document.getElementById("signup-confirm-password").value;
+
+  // Check if password and confirm password match
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  // Make the API call to register the user
+  try {
+    const response = await fetch('/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, email, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+localStorage.setItem("username", username);
+  updateWelcomeMessage();// Update welcome message
+      alert('User registered successfully!'); // User successfully registered
+      signupModal.style.display = "none"; // Close the signup modal
+      document.body.style.overflow = ""; // Restore overflow
+    } else {
+      // Handle registration error
+      alert(data.message || 'Error registering user');
+    }
+  } catch (error) {
+    console.error('Error registering user:', error);
+    alert('There was an error. Please try again.');
+  }
+});
+
+// Eye icon toggle password visibility for login modal
+const toggleLoginPassword = document.getElementById("toggle-login-password");
+const loginPasswordInput = document.getElementById("login-password");
+
+toggleLoginPassword.addEventListener("click", () => {
+  // Toggle password visibility for the login password field
+  const type = loginPasswordInput.type === "password" ? "text" : "password";
+  loginPasswordInput.type = type;
+});
+
+// Login form submission
+const loginForm = document.getElementById("login-form");
+
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Prevent default form submission
+
+  const usernameOrEmail = document.getElementById("login-username").value;
+  const password = document.getElementById("login-password").value;
+
+try {
+  const response = await fetch('/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ usernameOrEmail, password }),
+  });
+
+  const data = await response.json();
+
+if (response.ok) {
+  localStorage.setItem("username", data.username);
+  updateWelcomeMessage(); // Update welcome message
+  
+  // Close login modal and allow for page update before loading recent workouts
+  loginModal.style.display = "none";
+  document.body.style.overflow = "";
+
+  // Now load recent workouts after closing modal
+  loadRecentWorkouts();  // Immediately load recent workouts after modal is closed
+  
+  alert('Login successful!');
+} else {
+  alert(data.message || 'Invalid credentials');
+}
+ } catch (error) {
+  console.error('Error logging in user:', error);
+  alert('There was an error. Please try again.');
+}
+});
+
+// Show Forgot Password modal
+forgotPasswordLink.addEventListener("click", () => {
+  loginModal.style.display = "none"; // hide login modal
+  forgotPasswordModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+});
+
+// Close modal
+closeForgotPasswordModal.addEventListener("click", () => {
+  forgotPasswordModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+// Handle submit
+submitForgotPassword.addEventListener("click", async () => {
+  const usernameOrEmail = document.getElementById("forgot-identifier").value.trim();
+
+  if (!usernameOrEmail) {
+    alert("Please enter your username or email.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ usernameOrEmail }),
+    });
+
+    const resultText = await response.text();
+    alert(resultText);
+    forgotPasswordModal.style.display = "none";
+    document.body.style.overflow = "";
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    alert("There was an error. Please try again.");
+  }
+});
+ 
+// Fetch and display recent workouts
+function loadRecentWorkouts() {
+  const username = localStorage.getItem("username"); // fresh value
+  if (!username) return;
+
+  fetch(/get-workouts?username=${encodeURIComponent(username)})
+    .then(res => res.json())
+    .then(workouts => {
+      const normalizedWorkouts = workouts.map(w => ({
+        ...w,
+        id: w._id
+      }));
+
+      recentWorkoutsList.innerHTML = "";
+
+      if (normalizedWorkouts.length === 0) {
+        noWorkoutsMessage.style.display = "block";
+        recentWorkoutsList.style.display = "none";
+      } else {
         noWorkoutsMessage.style.display = "none";
         recentWorkoutsList.style.display = "block";
-
-        // Sort by date desc
+       
+        // Sort workouts by date descending
         workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
         workouts.slice(0, 5).forEach(w => {
           const li = document.createElement("li");
 
+          // Convert date string to UK format
           const date = new Date(w.date);
           const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
-            day: '2-digit', month: 'long', year: 'numeric'
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
           }).format(date);
 
-          li.textContent = `${ukFormattedDate} :  ${w.workout}`;
-          li.dataset.workoutId = w._id || w.id;
-          li.addEventListener("click", () => showWorkoutDetails(w));
+          li.textContent = ${ukFormattedDate} :  ${w.workout};
+          li.dataset.workoutId = w.id; // Add workout ID to the list item
+          li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event
           recentWorkoutsList.appendChild(li);
         });
-      })
-      .catch(err => {
-        console.error("Failed to load workouts:", err);
-      });
-  }
-
-  // Show workout details modal
-  function showWorkoutDetails(workout) {
-    const workoutDetailsModal = document.getElementById("workout-details-modal");
-    const workoutDetailsBody = document.getElementById("workout-details-body");
-
-    const date = new Date(workout.date);
-    const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
-      day: '2-digit', month: 'long', year: 'numeric'
-    }).format(date);
-
-    const workoutDetails = `
-      <span class="close" id="close-workout-details-modal">&times;</span>
-      <h2>${ukFormattedDate}: ${workout.workout}</h2>
-      <h3>Exercises:</h3>
-      <ul>
-        ${workout.exercises.map(exercise => `
-          <li>
-            <strong>${exercise.name}</strong>
-            <p>Progress Next Workout: ${exercise.progressNextWorkout ? 'Yes' : 'No'}</p>
-            <ul>
-              ${exercise.sets.map(set => `
-                <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
-              `).join("")}
-            </ul>
-          </li>
-        `).join("")}
-      </ul>
-      <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
-      <p>Rating: ${workout.workoutRating}</p>
-      <h3>Notes:</h3>
-      <p>${workout.additionalNotes}</p>
-      <h3>Cardio:</h3>
-      <p>${workout.cardio}</p>
-      <button id="edit-workout-btn">Edit Workout</button>
-    `;
-
-    workoutDetailsBody.innerHTML = workoutDetails;
-
-    // Show modal
-    workoutDetailsModal.style.display = "block";
-    document.body.style.overflow = "hidden";
-
-    // Close button for details modal
-    document.getElementById("close-workout-details-modal").addEventListener("click", () => {
-      workoutDetailsModal.style.display = "none";
-      document.body.style.overflow = "";
+      }
+    })
+    .catch(err => {
+      console.error("Failed to load workouts:", err);
     });
+}
+ 
+   function showWorkoutDetails(workout) {
 
-    // Edit button handler
-    document.getElementById("edit-workout-btn").addEventListener("click", () => {
-      openEditWorkoutModal(workout);
-      workoutDetailsModal.style.display = "none";
-    });
-  }
+// Convert date string to UK format
+          const date = new Date(workout.date);
+          const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          }).format(date);
 
-  // Open edit workout modal prefilled
-  function openEditWorkoutModal(workout) {
+
+  const workoutDetailsModal = document.getElementById("workout-details-modal");
+  const workoutDetailsContent = document.getElementById("workout-details-content");
+
+  // Build the modal content, starting with the close button
+  const workoutDetails = 
+    <span class="close" id="close-workout-details-modal">&times;</span>
+    <h2> ${ukFormattedDate}: ${workout.workout}</h2>
+    <h3>Exercises:</h3>
+    <ul>
+      ${workout.exercises.map(exercise => 
+        <li>
+          <strong>${exercise.name}</strong>
+          <p> Progress Next Workout: ${exercise.progressNextWorkout ? 'Yes' : 'No'}</p>
+          <ul>
+            ${exercise.sets.map(set => 
+              <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
+            ).join("")}
+          </ul>
+        </li>
+      ).join("")}
+    </ul>
+    <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
+    <p>Rating: ${workout.workoutRating}</p>
+    <h3>Notes:</h3>
+    <p>${workout.additionalNotes}</p>
+    <h3>Cardio:</h3>
+    <p>${workout.cardio}</p>
+  ;
+
+  // Inject content
+  document.getElementById("workout-details-body").innerHTML = workoutDetails;
+
+// Attach the Edit button click event
+document.getElementById("edit-workout-btn").addEventListener("click", () => {
+    openEditWorkoutModal(workout); // Open the form with pre-filled data
+    workoutDetailsModal.style.display = "none"; // Close the details modal
+});
+
+  // Reattach close functionality since we injected new HTML
+  document.getElementById("close-workout-details-modal").addEventListener("click", () => {
+    workoutDetailsModal.style.display = "none";
+    document.body.style.overflow = "";
+  });
+
+
+function openEditWorkoutModal(workout) {
+    // Open the modal
     modal.style.display = "block";
     document.body.style.overflow = "hidden";
 
-    modal.dataset.editingWorkoutId = workout._id || workout.id;
+console.log("Editing workout object:", workout);
+console.log("Workout ID:", workout.id);
 
-    // Fill workout info
+    // Set the editing workout ID
+    modal.dataset.editingWorkoutId = workout.id || workout._id;
+
+    // Populate basic workout info
     document.getElementById("workout-name").value = workout.workout;
     document.getElementById("workout-date").value = new Date(workout.date).toISOString().slice(0, 10);
-    document.querySelectorAll(".question select")[0].value = workout.progressYourLifts || "";
+    document.querySelectorAll(".question select")[0].value = workout.progressYourLifts;
     document.querySelectorAll(".question input[type='number']")[0].value = workout.workoutRating || "";
     document.querySelectorAll(".question textarea")[0].value = workout.additionalNotes || "";
     document.querySelectorAll(".question textarea")[1].value = workout.cardio || "";
 
-    // Clear existing exercises
+    // Clear current exercise rows
     exerciseRowsContainer.innerHTML = "";
 
-    // Populate exercises
+    // Populate exercises dynamically
     workout.exercises.forEach((exercise, index) => {
-      const exerciseBlock = createExerciseBlock(index, true);
-      exerciseBlock.querySelector(".exercise-name").value = exercise.name;
-      exerciseBlock.querySelector(".unit-select").value = exercise.weightUnit;
-      exerciseBlock.querySelector(".progress-checkbox").checked = exercise.progressNextWorkout;
+        const exerciseBlock = createExerciseBlock(index, true);
+        exerciseBlock.querySelector(".exercise-name").value = exercise.name;
+        exerciseBlock.querySelector(".unit-select").value = exercise.weightUnit;
+        exerciseBlock.querySelector(".progress-checkbox").checked = exercise.progressNextWorkout;
 
-      const setsContainer = exerciseBlock.querySelector(".sets-container");
-      exercise.sets.forEach(set => {
-        const setDiv = document.createElement("div");
-        setDiv.className = "set";
-        setDiv.innerHTML = `
-          <input type="number" placeholder="Weight" class="weight" value="${set.weight}" />
-          <input type="number" placeholder="Reps" class="reps" value="${set.reps}" />
-          <button class="remove-set-btn">Remove Set</button>
-        `;
-        setsContainer.appendChild(setDiv);
+        const setsContainer = exerciseBlock.querySelector(".sets-container");
+        exercise.sets.forEach(set => {
+            const setDiv = document.createElement("div");
+            setDiv.className = "set";
+            setDiv.innerHTML = 
+                <input type="number" placeholder="Weight" class="weight" value="${set.weight}" />
+                <input type="number" placeholder="Reps" class="reps" value="${set.reps}" />
+                <button class="remove-set-btn">Remove Set</button>
+            ;
+            setsContainer.appendChild(setDiv);
 
-        setDiv.querySelector(".remove-set-btn").addEventListener("click", () => setDiv.remove());
-      });
+            setDiv.querySelector(".remove-set-btn").addEventListener("click", () => {
+                setDiv.remove();
+            });
+        });
 
-      exerciseRowsContainer.appendChild(exerciseBlock);
+        exerciseRowsContainer.appendChild(exerciseBlock);
     });
-  }
+}
 
-  // Save workout handler
-  document.getElementById("save-workout-btn").addEventListener("click", () => {
+  // Show the modal
+  workoutDetailsModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+}
+ 
+
+// Save workout
+document.getElementById("save-workout-btn").addEventListener("click", () => {
     const workoutId = modal.dataset.editingWorkoutId || null;
+    console.log("Saving workout ID:", workoutId);
     const username = localStorage.getItem("username");
     const workout = document.getElementById("workout-name").value.trim();
     const date = document.getElementById("workout-date").value;
@@ -813,302 +1008,197 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const exerciseRows = Array.from(document.querySelectorAll(".exercise-row"));
     const exercises = exerciseRows.map(row => {
-      const name = row.querySelector(".exercise-name").value.trim();
-      const weightUnit = row.querySelector(".unit-select").value;
-      const progressNextWorkout = row.querySelector(".progress-checkbox").checked;
+        const name = row.querySelector(".exercise-name").value.trim();
+        const weightUnit = row.querySelector(".unit-select").value;
+        const progressNextWorkout = row.querySelector(".progress-checkbox").checked;
 
-      const sets = Array.from(row.querySelectorAll(".sets-container .set")).map(setDiv => {
-        const weight = parseFloat(setDiv.querySelector(".weight").value);
-        const reps = parseInt(setDiv.querySelector(".reps").value);
-        return { weight, reps };
-      }).filter(set => !isNaN(set.weight) && !isNaN(set.reps));
+       console.log("Exercise:" , workout, "Progress Next Workout:", progressNextWorkout);
 
-      return { name, weightUnit, progressNextWorkout, sets };
-    }).filter(ex => ex.name && ex.sets.length > 0);
+        const sets = Array.from(row.querySelectorAll(".sets-container .set")).map(setDiv => {
+            const weight = parseFloat(setDiv.querySelector(".weight").value);
+            const reps = parseInt(setDiv.querySelector(".reps").value);
+            return { weight, reps };
+        }).filter(set => !isNaN(set.weight) && !isNaN(set.reps));
+
+        return { name, weightUnit, progressNextWorkout, sets };
+    }).filter(ex => ex.sets.length > 0 && ex.name);
 
     if (!username || !workout || !date || exercises.length === 0) {
-      alert("Please fill in all required fields.");
-      return;
+        alert("Please fill in all required fields.");
+        return;
     }
 
     const workoutData = {
-      username,
-      workout,
-      date,
-      exercises,
-      progressYourLifts,
-      workoutRating,
-      additionalNotes,
-      cardio,
+        username,
+        workout,
+        date,
+        exercises,
+        progressYourLifts,
+        workoutRating,
+        additionalNotes,
+        cardio,
     };
 
-    const endpoint = workoutId ? `/update-workout/${workoutId}` : "/add-workout";
+    const endpoint = workoutId ? /update-workout/${workoutId} : "/add-workout";
     const method = workoutId ? "PUT" : "POST";
 
     fetch(endpoint, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(workoutData)
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(workoutData)
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to save workout");
+    .then(res => {
+        if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
-      })
-      .then(data => {
-        alert(workoutId ? "Workout updated successfully" : "Workout added successfully");
+    })
+    .then(data => {
+        alert("Workout saved successfully!");
         modal.style.display = "none";
         document.body.style.overflow = "";
-        resetFormBtn.click();
-        delete modal.dataset.editingWorkoutId;
+        resetWorkoutForm();
         loadRecentWorkouts();
-      })
-      .catch(err => {
-        alert(err.message);
-      });
-  });
-
-  // Create a new exercise block
-  function createExerciseBlock(index, includeDefaultSet = false) {
-    const exerciseDiv = document.createElement("div");
-    exerciseDiv.classList.add("exercise-row");
-
-    exerciseDiv.innerHTML = `
-      <input
-        class="exercise-name"
-        type="text"
-        placeholder="Exercise Name"
-        required
-      />
-      <select class="unit-select">
-        <option value="kg">kg</option>
-        <option value="lb">lb</option>
-      </select>
-      <label>
-        <input type="checkbox" class="progress-checkbox" />
-        Progress Next Workout
-      </label>
-      <div class="sets-container"></div>
-      <button class="add-set-btn">Add Set</button>
-      <button class="remove-exercise-btn">Remove Exercise</button>
-    `;
-
-    const setsContainer = exerciseDiv.querySelector(".sets-container");
-    const addSetBtn = exerciseDiv.querySelector(".add-set-btn");
-    const removeExerciseBtn = exerciseDiv.querySelector(".remove-exercise-btn");
-
-    // Add default set if requested
-    if (includeDefaultSet) {
-      const setDiv = document.createElement("div");
-      setDiv.className = "set";
-      setDiv.innerHTML = `
-        <input type="number" placeholder="Weight" class="weight" />
-        <input type="number" placeholder="Reps" class="reps" />
-        <button class="remove-set-btn">Remove Set</button>
-      `;
-      setsContainer.appendChild(setDiv);
-
-      setDiv.querySelector(".remove-set-btn").addEventListener("click", () => setDiv.remove());
-    }
-
-    // Add set handler
-    addSetBtn.addEventListener("click", () => {
-      const setDiv = document.createElement("div");
-      setDiv.className = "set";
-      setDiv.innerHTML = `
-        <input type="number" placeholder="Weight" class="weight" />
-        <input type="number" placeholder="Reps" class="reps" />
-        <button class="remove-set-btn">Remove Set</button>
-      `;
-      setsContainer.appendChild(setDiv);
-
-      setDiv.querySelector(".remove-set-btn").addEventListener("click", () => setDiv.remove());
+    })
+    .catch(err => {
+        console.error("Failed to save workout:", err);
+        alert("Error saving workout. Check console for details.");
     });
+});
 
-    // Remove exercise handler
-    removeExerciseBtn.addEventListener("click", () => {
-      exerciseDiv.remove();
-    });
+ 
+ function resetWorkoutForm() {
+  // Clear basic input fields
+  document.getElementById("workout-name").value = "";
+  document.getElementById("workout-date").value = "";
+  document.querySelectorAll(".question select").forEach(select => select.value = "");
+  document.querySelectorAll(".question input[type='number']").forEach(input => input.value = "");
+  document.querySelectorAll(".question textarea").forEach(textarea => textarea.value = "");
+  
+  // ✅ Reset all checkboxes to unchecked
+  document.querySelectorAll(".question input[type='checkbox']").forEach(checkbox => checkbox.checked = false);
 
-    return exerciseDiv;
-  }
+  // Clear the exercise rows container
+  const exerciseRowsContainer = document.getElementById("exercise-rows");
+  exerciseRowsContainer.innerHTML = "";
 
-  // Add exercise button click
-  addExerciseBtn.addEventListener("click", () => {
-    const exerciseBlock = createExerciseBlock(exerciseRowsContainer.children.length, true);
-    exerciseRowsContainer.appendChild(exerciseBlock);
-  });
+   // ✅ Add a new blank exercise row using your existing function
+  exerciseRowsContainer.appendChild(createExerciseBlock(0));
+}
 
-  // Reset form button click
-  resetFormBtn.addEventListener("click", () => {
-    // Clear form fields
-    document.getElementById("workout-name").value = "";
-    document.getElementById("workout-date").value = new Date().toISOString().slice(0, 10);
-    document.querySelectorAll(".question select")[0].value = "";
-    document.querySelectorAll(".question input[type='number']")[0].value = "";
-    document.querySelectorAll(".question textarea")[0].value = "";
-    document.querySelectorAll(".question textarea")[1].value = "";
 
-    // Clear exercise rows and add one empty
-    exerciseRowsContainer.innerHTML = "";
-    const exerciseBlock = createExerciseBlock(0, true);
-    exerciseRowsContainer.appendChild(exerciseBlock);
+ addWorkoutBtn.addEventListener("click", () => {
+    // Clear any previous workout data from the form
+    resetWorkoutForm();
 
-    // Clear editing workout id if any
-    delete modal.dataset.editingWorkoutId;
-  });
+    // Make sure we are not in edit mode
+    modal.removeAttribute("data-editingWorkoutId");
 
-  // Open workout modal
-  addWorkoutBtn.addEventListener("click", () => {
+    // Show the modal
     modal.style.display = "block";
     document.body.style.overflow = "hidden";
-    resetFormBtn.click();
-  });
+});
 
-  // Close workout modal
-  closeModal.addEventListener("click", () => {
-    modal.style.display = "none";
-    document.body.style.overflow = "";
-  });
 
-  // Authentication UI handlers
-  function showModal(modalElement) {
-    modalElement.style.display = "block";
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeModalFunc(modalElement) {
-    modalElement.style.display = "none";
-    document.body.style.overflow = "";
-  }
-
-  loginBtn.addEventListener("click", () => {
-    showModal(loginModal);
-  });
-
-  signupBtn.addEventListener("click", () => {
-    showModal(signupModal);
-  });
-
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("username");
-    localStorage.setItem("isLoggedIn", "false");
-    updateWelcomeMessage();
+    closeModal.addEventListener("click", () => {
+      modal.style.display = "none";
+      document.body.style.overflow = "";
+    });
+ 
+    window.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+      }
+    });
+ 
+ 
+// LogOut 
+    const logoutBtn = document.querySelector(".logout");
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("username");
+      updateWelcomeMessage(); //reset welcome message
+   recentWorkoutsList.innerHTML = ""; // Clear the list
+   noWorkoutsMessage.style.display = "block"; // Show the "no workouts" message
+   recentWorkoutsList.style.display = "none"; // Hide the workouts list
+    });
+ 
+    // Auto-load recent workouts on page load
     loadRecentWorkouts();
   });
 
-  closeLogin.addEventListener("click", () => {
-    closeModalFunc(loginModal);
-  });
+const exerciseRowsContainer = document.getElementById("exercise-rows");
+const addExerciseBtn = document.getElementById("add-exercise-btn");
+const resetFormBtn = document.getElementById("reset-form-btn");
 
-  closeSignup.addEventListener("click", () => {
-    closeModalFunc(signupModal);
-  });
+function createExerciseBlock(index, skipDefaultSet = false) {
+  const div = document.createElement("div");
+  div.className = "exercise-row";
+  div.setAttribute("data-index", index);
+  div.innerHTML = 
+    <input type="text" placeholder="Exercise name" class="exercise-name" />
+    <label>
+      <input type="checkbox" class="progress-checkbox" /> Progress Next Workout?
+    </label>
+    <select class="unit-select">
+      <option value="kg">kg</option>
+      <option value="lbs">lbs</option>
+    </select>
+    <div class="sets-container">
+      <!-- Removed default set here to avoid extra set on edit -->
+    </div>
+    <button class="add-set-btn">Add Set</button>
+    <button class="remove-exercise-btn">Remove Exercise</button>
+  ;
 
-  forgotPasswordLink.addEventListener("click", () => {
-    closeModalFunc(loginModal);
-    showModal(forgotPasswordModal);
-  });
+  const setsContainer = div.querySelector(".sets-container");
 
-  closeForgotPasswordModal.addEventListener("click", () => {
-    closeModalFunc(forgotPasswordModal);
-  });
-
-  submitForgotPassword.addEventListener("click", () => {
-    alert("Password reset link sent to your email.");
-    closeModalFunc(forgotPasswordModal);
-  });
-
-  // Signup form submit
-  signupForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const username = document.getElementById("signup-username").value.trim();
-    const password = signupPasswordInput.value;
-    const confirmPassword = signupConfirmPasswordInput.value;
-
-    if (password !== confirmPassword) {
-      alert("Passwords do not match.");
-      return;
-    }
-
-    fetch("/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          alert("Signup successful! Please log in.");
-          closeModalFunc(signupModal);
-        } else {
-          alert(data.message || "Signup failed.");
-        }
-      })
-      .catch(err => {
-        alert("Error signing up.");
-      });
-  });
-
-  // Login form submit
-  loginForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const username = document.getElementById("login-username").value.trim();
-    const password = loginPasswordInput.value;
-
-    fetch("/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          localStorage.setItem("username", username);
-          localStorage.setItem("isLoggedIn", "true");
-          updateWelcomeMessage();
-          loadRecentWorkouts();
-          alert("Login successful!");
-          closeModalFunc(loginModal);
-        } else {
-          alert(data.message || "Login failed.");
-        }
-      })
-      .catch(err => {
-        alert("Error logging in.");
-      });
-  });
-
-  // Toggle signup password visibility
-  if (toggleSignupPassword && signupPasswordInput && signupConfirmPasswordInput) {
-    toggleSignupPassword.addEventListener("click", () => {
-      const type = signupPasswordInput.type === "password" ? "text" : "password";
-      signupPasswordInput.type = type;
-      signupConfirmPasswordInput.type = type;
-      toggleSignupPassword.classList.toggle("fa-eye");
-      toggleSignupPassword.classList.toggle("fa-eye-slash");
-    });
+  // Add default set ONLY if skipDefaultSet is false (new)
+  if (!skipDefaultSet) {
+    const defaultSet = document.createElement("div");
+    defaultSet.className = "set";
+    defaultSet.innerHTML = 
+      <input type="number" placeholder="Weight" class="weight" />
+      <input type="number" placeholder="Reps" class="reps" />
+    ;
+    setsContainer.appendChild(defaultSet);
   }
 
-  // Toggle login password visibility
-  if (toggleLoginPassword && loginPasswordInput) {
-    toggleLoginPassword.addEventListener("click", () => {
-      const type = loginPasswordInput.type === "password" ? "text" : "password";
-      loginPasswordInput.type = type;
-      toggleLoginPassword.classList.toggle("fa-eye");
-      toggleLoginPassword.classList.toggle("fa-eye-slash");
+  div.querySelector(".add-set-btn").addEventListener("click", () => {
+    const newSet = document.createElement("div");
+    newSet.className = "set";
+    newSet.innerHTML = 
+      <input type="number" placeholder="Weight" class="weight" />
+      <input type="number" placeholder="Reps" class="reps" />
+      <button class="remove-set-btn">Remove Set</button>
+    ;
+    setsContainer.appendChild(newSet);
+
+    newSet.querySelector(".remove-set-btn").addEventListener("click", () => {
+      newSet.remove();
     });
-  }
+  });
 
-  // Initialize UI on page load
-  updateWelcomeMessage();
-  loadRecentWorkouts();
+  div.querySelector(".remove-exercise-btn").addEventListener("click", () => {
+    div.remove();
+  });
 
-  // Reset form with one empty exercise
-  resetFormBtn.click();
+  return div;
+}
+
+addExerciseBtn.addEventListener("click", () => {
+  const index = exerciseRowsContainer.children.length;
+  exerciseRowsContainer.appendChild(createExerciseBlock(index));
 });
-</script>
+
+resetFormBtn.addEventListener("click", () => {
+  exerciseRowsContainer.innerHTML = "";
+  exerciseRowsContainer.appendChild(createExerciseBlock(0));
+});
+
+// Initialize form with one exercise
+resetFormBtn.click();
+
+ </script>
+
  
   </body>
   </html>
