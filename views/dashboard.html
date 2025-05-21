@@ -748,6 +748,7 @@ signupForm.addEventListener("submit", async (event) => {
   const email = document.getElementById("signup-email").value;
   const password = document.getElementById("signup-password").value;
   const confirmPassword = document.getElementById("signup-confirm-password").value;
+  const marketingConsent = document.getElementById("marketing-consent").checked; // ✅ get checkbox value
 
   if (password !== confirmPassword) {
     alert("Passwords do not match!");
@@ -758,7 +759,12 @@ signupForm.addEventListener("submit", async (event) => {
     const response = await fetch('/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password }),
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+        marketingConsent, // ✅ include checkbox in request
+      }),
     });
 
     const data = await response.json();
