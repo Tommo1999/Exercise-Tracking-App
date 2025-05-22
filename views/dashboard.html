@@ -648,13 +648,17 @@ Email: privacy@repdog.fit
       placeholder="Search by workout name or date..."
       style="width: 100%; margin-bottom: 10px; padding: 8px; font-size: 16px;"
     >
- 
     <p>Tap a workout to view or edit.</p>
     <p id="no-workouts" class="empty-message">No workouts added yet.</p>
     <ul id="recent-workouts-list" style="display: none;"></ul>
   </div>
 </div>
+
    
+  </div>
+</div>
+  </div>
+ 
 <div id="workout-details-modal" class="modal">
   <div class="modal-content">
     <div id="workout-details-body"><!-- Injected content goes here --></div>
@@ -1011,18 +1015,6 @@ submitForgotPassword.addEventListener("click", async () => {
 });
  
 // Fetch and display recent workouts
-
-const workoutSearchInput = document.getElementById("workout-search");
-workoutSearchInput.addEventListener("input", () => {
-  const searchTerm = workoutSearchInput.value.toLowerCase();
-  const workouts = recentWorkoutsList.querySelectorAll("li");
-  workouts.forEach(li => {
-    const text = li.textContent.toLowerCase();
-    if (text.includes(searchTerm)) {
-      li.style.display = "";
-    } else {
-      li.style.display = "none";
-
 function loadRecentWorkouts() {
   const username = localStorage.getItem("username"); // fresh value
   if (!username) return;
@@ -1296,6 +1288,7 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
  
     // Auto-load recent workouts on page load
     loadRecentWorkouts();
+  });
 
 const exerciseRowsContainer = document.getElementById("exercise-rows");
 const addExerciseBtn = document.getElementById("add-exercise-btn");
@@ -1370,6 +1363,21 @@ resetFormBtn.addEventListener("click", () => {
 // Initialize form with one exercise
 resetFormBtn.click();
 
+
+//search workout logic
+
+const workoutSearchInput = document.getElementById("workout-search");
+workoutSearchInput.addEventListener("input", () => {
+  const searchTerm = workoutSearchInput.value.toLowerCase();
+  const workouts = recentWorkoutsList.querySelectorAll("li");
+  workouts.forEach(li => {
+    const text = li.textContent.toLowerCase();
+    if (text.includes(searchTerm)) {
+      li.style.display = "";
+    } else {
+      li.style.display = "none";
+    }
+  });
 });
 
   </script>
