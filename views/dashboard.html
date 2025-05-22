@@ -637,12 +637,23 @@ Email: privacy@repdog.fit
 <button class="btn" id="add-workout-btn">Create Workout</button>
     </div>
  
-   <div class="dashboard-section">
+  <div class="dashboard-section">
   <div class="card">
     <h2>Recent Workouts</h2>
-<p> Tap a workout to view or edit. </p>
+
+    <!-- 👇 Search input inserted here -->
+    <input
+      type="text"
+      id="workout-search"
+      placeholder="Search by workout name or date..."
+      style="width: 100%; margin-bottom: 10px; padding: 8px; font-size: 16px;"
+    >
+
+    <p>Tap a workout to view or edit.</p>
     <p id="no-workouts" class="empty-message">No workouts added yet.</p>
     <ul id="recent-workouts-list" style="display: none;"></ul>
+  </div>
+</div>
 
    
   </div>
@@ -1051,6 +1062,19 @@ function loadRecentWorkouts() {
       console.error("Failed to load workouts:", err);
     });
 }
+
+// Search filter logic 
+workoutSearch.addEventListener("input", () => {
+  const query = workoutSearch.value.toLowerCase();
+  const filtered = allRecentWorkouts.filter(w =>
+    w.workout.toLowerCase().includes(query) ||
+    w.formattedDate.toLowerCase().includes(query)
+  );
+
+  renderWorkouts(filtered);
+});
+
+loadRecentWorkouts();
  
    function showWorkoutDetails(workout) {
 
