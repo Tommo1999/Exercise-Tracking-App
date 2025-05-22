@@ -1041,20 +1041,20 @@ function loadRecentWorkouts() {
        workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
        workouts.forEach(w => {
+  const li = document.createElement("li"); 
 
-          // Convert date string to UK format
-          const date = new Date(w.date);
-          const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
-          }).format(date);
+  const date = new Date(w.date);
+  const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
 
-          li.textContent = `${ukFormattedDate} :  ${w.workout}`;
-          li.dataset.workoutId = w.id; // Add workout ID to the list item
-          li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event
-          recentWorkoutsList.appendChild(li);
-        });
+  li.textContent = `${ukFormattedDate} : ${w.workout}`;
+  li.dataset.workoutId = w.id;
+  li.addEventListener("click", () => showWorkoutDetails(w));
+  recentWorkoutsList.appendChild(li);
+});
       }
     })
     .catch(err => {
