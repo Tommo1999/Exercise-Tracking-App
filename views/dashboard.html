@@ -428,12 +428,18 @@ thead tr:first-child th:nth-child(2) {
 
 /* Recent Workouts Styling */
 #recent-workouts-list {
-list-style-type: none; /* Remove bullet points */
-padding: 0; /* Remove default padding */
-text-align: left; /* left align text */
+  list-style-type: none;   /* Remove bullet points */
+  padding: 0;              /* Remove default padding */
+  text-align: left;        /* Left align text */
+
+  max-height: 300px;       /* Set max height for scroll */
+  overflow-y: auto;        /* Enable vertical scrolling */
+  padding-right: 10px;     /* Prevent content from getting cut off by scrollbar */
+  margin: 0;
 }
+
 #recent-workouts-list li {
-margin: 5px 0;
+  margin: 5px 0;
 }
 </style>
   </head>
@@ -1026,10 +1032,9 @@ function loadRecentWorkouts() {
         recentWorkoutsList.style.display = "block";
        
         // Sort workouts by date descending
-        workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
+       workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        workouts.slice(0, 5).forEach(w => {
-          const li = document.createElement("li");
+       workouts.forEach(w => {
 
           // Convert date string to UK format
           const date = new Date(w.date);
