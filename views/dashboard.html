@@ -1064,6 +1064,8 @@ function loadRecentWorkouts() {
 }
 
 // Search filter logic 
+
+const workoutSearch = document.getElementById("workout-search");
 workoutSearch.addEventListener("input", () => {
   const query = workoutSearch.value.toLowerCase();
   const filtered = allRecentWorkouts.filter(w =>
