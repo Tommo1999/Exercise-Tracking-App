@@ -436,6 +436,34 @@ text-align: left; /* left align text */
 margin: 5px 0;
 }
 
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
 </style>
   </head>
   <body>
@@ -453,6 +481,9 @@ margin: 5px 0;
 <div id="login-modal" class="modal">
   <div class="modal-content">
     <span class="close" id="close-login-modal">&times;</span>
+    <p style="margin-top: 10px;">
+  <a href="#" id="show-cookie-policy" style="color: blue;">Cookie Policy</a>
+</p>
     <h2>Log In</h2>
     <form id="login-form">
       <!-- Username Input -->
@@ -518,7 +549,7 @@ margin: 5px 0;
         <input type="checkbox" id="marketing-consent" name="marketing-consent" />
         <label for="marketing-consent" style="display: inline;">
           I agree to receive promotional emails from Rep Dog. You can unsubscribe at any time. See our
-          <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
+         <a href="#" id="show-privacy-policy" style="color: blue;">Privacy Policy</a>
         </label>
       </div><br />
       <!-- Submit Button -->
@@ -527,6 +558,105 @@ margin: 5px 0;
   </div>
 </div>
  
+<!-- Cookie Policy Modal -->
+<div id="cookie-policy-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-cookie-policy-modal">&times;</span>
+    <h2>Cookie Policy</h2>
+    <p style="white-space: pre-wrap;">
+Effective Date: 22/05/2025
+RepDog does not currently use cookies to track you, serve ads, or analyse your behaviour.
+We may use essential session-based technologies to help the app function (such as remembering your login session). These do not store data permanently and are not used for tracking or profiling.
+We may update this policy if we introduce analytics, advertising, or other features that use cookies.
+If you have any questions, contact us at privacy@repdog.fit
+    </p>
+  </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div id="privacy-policy-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-privacy-policy-modal">&times;</span>
+    <h2>Privacy Policy</h2>
+    <p style="white-space: pre-wrap; max-height: 60vh; overflow-y: auto;">
+Effective Date: 22/05/2025
+
+1. Who We Are
+RepDog is a web-based fitness and exercise tracking app available at www.repdog.fit...
+
+2. What Information We Collect
+
+We collect and process the following types of data:
+
+Account Information: name, email address, password (hashed)
+Workout Data: exercises, sets, reps, weights, and progress logs
+Technical Data: IP address, browser type, operating system
+Usage Data: pages visited, time spent on site
+Cookies: see section 6 below
+
+3. How We Use Your Information
+We use your data to:
+
+Provide and maintain your user account
+Enable exercise tracking and progress features
+Send transactional emails (e.g. password resets, confirmations)
+Improve app performance and usability
+Respond to support requests
+We do not sell your personal data to third parties.
+
+4. Legal Basis for Processing
+We rely on the following legal bases:
+
+Consent – for cookies and marketing communications
+Contract – to provide the core tracking service
+Legitimate Interest – for basic analytics and security
+Legal Obligation – if required to comply with legal processes
+
+5. Data Retention
+We retain your data as long as you maintain an account. If you delete your account, we will delete your data within 30 days.
+
+6. Cookies and Tracking
+We use cookies to:
+
+Remember your login session
+Understand how users interact with the app (basic analytics)
+You can control cookies via your browser settings. By continuing to use the site, you consent to our use of cookies.
+
+7. Your Rights
+You have the right to:
+
+Access or download your personal data
+Request correction or deletion
+Object to processing or withdraw consent
+File a complaint with a data protection authority (e.g. ICO if in the UK)
+To exercise your rights, email: privacy@repdog.fit
+
+8. Third-Party Services
+We use trusted services to operate the app, such as:
+
+Email delivery (e.g. Brevo)
+Web hosting and database services
+We ensure they meet strong security and privacy standards.
+
+9. Data Security
+We take appropriate technical and organizational measures to protect your data, including encryption, access controls, and secure hosting environments.
+
+10. Changes to This Policy
+We may update this Privacy Policy occasionally. If so, we’ll notify you via the app or email.
+
+11. Contact Us
+If you have questions about this policy or your data, contact:
+RepDog
+Email: privacy@repdog.fit
+    </p>
+  </div>
+</div>
+
+
+
+
+
+
   <div class="container">
     <div class="header">
 	<img src="../images/RepDog.png" alt="RepDog Logo" width="300" height="200" />
@@ -657,6 +787,30 @@ const forgotPasswordModal = document.getElementById("forgot-password-modal");
 const closeForgotPasswordModal = document.getElementById("close-forgot-password-modal");
 const submitForgotPassword = document.getElementById("submit-forgot-password");
 const logoutBtn = document.querySelector(".logout");
+
+// Cookie Policy
+  document.getElementById('show-cookie-policy').onclick = function () {
+    document.getElementById('cookie-policy-modal').style.display = 'block';
+  };
+  document.getElementById('close-cookie-policy-modal').onclick = function () {
+    document.getElementById('cookie-policy-modal').style.display = 'none';
+  };
+
+  // Privacy Policy
+  document.getElementById('show-privacy-policy').onclick = function () {
+    document.getElementById('privacy-policy-modal').style.display = 'block';
+  };
+  document.getElementById('close-privacy-policy-modal').onclick = function () {
+    document.getElementById('privacy-policy-modal').style.display = 'none';
+  };
+
+  // Close modals when clicking outside
+  window.onclick = function (event) {
+    ['cookie-policy-modal', 'privacy-policy-modal'].forEach(id => {
+      const modal = document.getElementById(id);
+      if (event.target === modal) modal.style.display = 'none';
+    });
+  };
 
 // Check login state from localStorage
 
