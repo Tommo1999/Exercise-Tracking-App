@@ -1066,14 +1066,18 @@ function loadRecentWorkouts() {
 // Search filter logic 
 
 const workoutSearch = document.getElementById("workout-search");
-workoutSearch.addEventListener("input", () => {
-  const query = workoutSearch.value.toLowerCase();
-  const filtered = allRecentWorkouts.filter(w =>
-    w.workout.toLowerCase().includes(query) ||
-    w.formattedDate.toLowerCase().includes(query)
-  );
+workoutSearch.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
 
-  renderWorkouts(filtered);
+    const query = workoutSearch.value.toLowerCase();
+    const filtered = allRecentWorkouts.filter(w =>
+      w.workout.toLowerCase().includes(query) ||
+      w.formattedDate.toLowerCase().includes(query)
+    );
+
+    renderWorkouts(filtered);
+  }
 });
 
 loadRecentWorkouts();
