@@ -1030,57 +1030,68 @@ function loadRecentWorkouts() {
 
       recentWorkoutsList.innerHTML = "";
 
-      if (normalizedWorkouts.length === 0) {
+     let allRecentWorkouts = [];
+
+    function renderWorkouts(workouts) {
+      recentWorkoutsList.innerHTML = "";
+
+      if (workouts.length === 0) {
         noWorkoutsMessage.style.display = "block";
         recentWorkoutsList.style.display = "none";
       } else {
         noWorkoutsMessage.style.display = "none";
         recentWorkoutsList.style.display = "block";
-       
-        // Sort workouts by date descending
-       workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    workouts.forEach(w => {
-  const li = document.createElement("li");  // <--- Create new li here
-
-  // Convert date string to UK format
-  const date = new Date(w.date);
-  const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
-
-  li.textContent = `${ukFormattedDate} :  ${w.workout}`;
-  li.dataset.workoutId = w.id; // Add workout ID to the list item
-  li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event
-  recentWorkoutsList.appendChild(li);
-});
+        workouts.forEach(w => {
+          const li = document.createElement("li");
+          li.textContent = `${w.formattedDate} : ${w.workout}`;
+          li.dataset.workoutId = w.id;
+          li.addEventListener("click", () => showWorkoutDetails(w));
+          recentWorkoutsList.appendChild(li);
+        });
       }
-    })
-    .catch(err => {
-      console.error("Failed to load workouts:", err);
+    }
+
+    function loadRecentWorkouts() {
+      const username = localStorage.getItem("username");
+      if (!username) return;
+
+      fetch(`/get-workouts?username=${encodeURIComponent(username)}`)
+        .then(res => res.json())
+        .then(workouts => {
+          allRecentWorkouts = workouts.map(w => ({
+            ...w,
+            id: w._id,
+            formattedDate: new Intl.DateTimeFormat('en-GB', {
+              day: '2-digit',
+              month: 'long',
+              year: 'numeric',
+            }).format(new Date(w.date))
+          }));
+
+          allRecentWorkouts.sort((a, b) => new Date(b.date) - new Date(a.date));
+          renderWorkouts(allRecentWorkouts);
+        })
+        .catch(err => {
+          console.error("Failed to load workouts:", err);
+        });
+    }
+
+    // Real-time search
+    const workoutSearch = document.getElementById("workout-search");
+    workoutSearch.addEventListener("input", () => {
+      const query = workoutSearch.value.toLowerCase();
+
+      const filtered = allRecentWorkouts.filter(w =>
+        w.workout.toLowerCase().includes(query) ||
+        w.formattedDate.toLowerCase().includes(query)
+      );
+
+      renderWorkouts(filtered);
     });
-}
 
-// Search filter logic 
-
-const workoutSearch = document.getElementById("workout-search");
-workoutSearch.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-
-    const query = workoutSearch.value.toLowerCase();
-    const filtered = allRecentWorkouts.filter(w =>
-      w.workout.toLowerCase().includes(query) ||
-      w.formattedDate.toLowerCase().includes(query)
-    );
-
-    renderWorkouts(filtered);
-  }
-});
-
-loadRecentWorkouts();
+    loadRecentWorkouts();
+  });
  
    function showWorkoutDetails(workout) {
 
