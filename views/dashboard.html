@@ -639,7 +639,7 @@ Email: privacy@repdog.fit
  
   <div class="dashboard-section">
   <div class="card">
-    <h2>Recent Workouts</h2>
+    <h2>Previous Workouts</h2>
 
     <!-- 👇 Search input inserted here -->
     <input
@@ -648,6 +648,22 @@ Email: privacy@repdog.fit
       placeholder="Search by workout name or date..."
       style="width: 100%; margin-bottom: 10px; padding: 8px; font-size: 16px;"
     >
+
+<script>
+const workoutSearchInput = document.getElementById("workout-search");
+workoutSearchInput.addEventListener("input", () => {
+  const searchTerm = workoutSearchInput.value.toLowerCase();
+  const workouts = recentWorkoutsList.querySelectorAll("li");
+  workouts.forEach(li => {
+    const text = li.textContent.toLowerCase();
+    if (text.includes(searchTerm)) {
+      li.style.display = "";
+    } else {
+      li.style.display = "none";
+    }
+  });
+});
+</script>
 
     <p>Tap a workout to view or edit.</p>
     <p id="no-workouts" class="empty-message">No workouts added yet.</p>
