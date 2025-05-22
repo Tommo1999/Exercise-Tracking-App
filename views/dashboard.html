@@ -1367,6 +1367,7 @@ resetFormBtn.click();
 //search workout logic
 
 const workoutSearchInput = document.getElementById("workout-search");
+const recentWorkoutsList = document.getElementById("recent-workouts-list");
 workoutSearchInput.addEventListener("input", () => {
   const searchTerm = workoutSearchInput.value.toLowerCase();
   const workouts = recentWorkoutsList.querySelectorAll("li");
