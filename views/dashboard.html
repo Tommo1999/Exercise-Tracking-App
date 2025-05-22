@@ -629,11 +629,6 @@ Email: privacy@repdog.fit
   </div>
 </div>
 
-
-
-
-
-
   <div class="container">
     <div class="header">
 	<img src="../images/RepDog.png" alt="RepDog Logo" width="300" height="200" />
@@ -1034,21 +1029,22 @@ function loadRecentWorkouts() {
         // Sort workouts by date descending
        workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-       workouts.forEach(w => {
+    workouts.forEach(w => {
+  const li = document.createElement("li");  // <--- Create new li here
 
-          // Convert date string to UK format
-          const date = new Date(w.date);
-          const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
-          }).format(date);
+  // Convert date string to UK format
+  const date = new Date(w.date);
+  const ukFormattedDate = new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
 
-          li.textContent = `${ukFormattedDate} :  ${w.workout}`;
-          li.dataset.workoutId = w.id; // Add workout ID to the list item
-          li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event
-          recentWorkoutsList.appendChild(li);
-        });
+  li.textContent = `${ukFormattedDate} :  ${w.workout}`;
+  li.dataset.workoutId = w.id; // Add workout ID to the list item
+  li.addEventListener("click", () => showWorkoutDetails(w)); // Add click event
+  recentWorkoutsList.appendChild(li);
+});
       }
     })
     .catch(err => {
