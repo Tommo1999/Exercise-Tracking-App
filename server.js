@@ -118,7 +118,7 @@ app.post('/forgot-password', async (req, res) => {
         workout,
         date,
         exercises,
-        progressYourLifts,
+        progressSinceLastSession,
         workoutRating,
         additionalNotes,
         cardio
@@ -146,14 +146,14 @@ app.post('/forgot-password', async (req, res) => {
           date,
           exercises: exercises.map(ex => ({
             name: ex.name,
-            progressNextWorkout: ex.progressNextWorkout,
+            planToProgressNextSession: ex.planToProgressNextSession,
             weightUnit: ex.weightUnit || 'kg',
             sets: ex.sets.map(set => ({
               weight: Number(set.weight),
               reps: Number(set.reps)
             }))
           })),
-          progressYourLifts,
+          progressSinceLastSession,
           workoutRating,
           additionalNotes,
           cardio,
@@ -189,7 +189,7 @@ app.post('/forgot-password', async (req, res) => {
  
     app.put('/update-workout/:id', async (req, res) => {
       const { id } = req.params;
-      const { workout, date, exercises, progressYourLifts, workoutRating, additionalNotes, cardio } = req.body;
+      const { workout, date, exercises, progressSinceLastSession, workoutRating, additionalNotes, cardio } = req.body;
 
       if (!workout || !date || !Array.isArray(exercises) || exercises.length === 0) {
         return res.status(400).json({ message: 'Invalid workout data' });
@@ -212,14 +212,14 @@ app.post('/forgot-password', async (req, res) => {
           date,
           exercises: exercises.map(ex => ({
             name: ex.name,
-            progressNextWorkout: ex.progressNextWorkout,
+            planToProgressNextSession: ex.planToProgressNextSession,
             weightUnit: ex.weightUnit || 'kg',
             sets: ex.sets.map(set => ({
               weight: Number(set.weight),
               reps: Number(set.reps)
             }))
           })),
-          progressYourLifts,
+          progressSinceLastSession,,
           workoutRating,
           additionalNotes,
           cardio,
