@@ -43,6 +43,11 @@ MongoClient.connect(MONGO_URI)
     app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
     });
+
+   app.get('/reset-password', (req, res) => {
+   res.sendFile(__dirname + '/public/reset-password.html');
+   });
+
 //signup logic
 app.post('/signup', async (req, res) => {
   const { username, email, password, marketingConsent } = req.body;
@@ -106,6 +111,31 @@ app.post('/forgot-password', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Failed to send email.");
+  }
+});
+
+// Reset password form submission
+app.post('/reset-password', async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).send("Missing token or password.");
+  }
+
+  try {
+    const user = await findUserByResetToken(token); // You need to implement this
+    if (!user) return res.status(400).send("Invalid or expired token.");
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.resetToken = null;
+    user.resetTokenExpires = null;
+    await user.save();
+
+    res.send("Password successfully reset.");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error.");
   }
 });
 
