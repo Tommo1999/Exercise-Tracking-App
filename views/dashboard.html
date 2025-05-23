@@ -1,9 +1,31 @@
 <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Rep Dog Workout Tracker</title>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RepDog | Workout Tracker for Fitness Enthusiasts</title>
+
+  <!-- SEO Meta -->
+  <meta name="description" content="Track your workouts and fitness progress with RepDog. Plan, log, and review your fitness journey—all in one place." />
+  <meta name="keywords" content="RepDog, workout tracker, fitness log, exercise planner, gym journal, fitness tracker" />
+  <meta name="author" content="RepDog Team" />
+
+  <!-- Social Sharing Meta (Open Graph) -->
+  <meta property="og:title" content="RepDog | Workout Tracker for Fitness Enthusiasts" />
+  <meta property="og:description" content="Your fitness journey starts here. Log and track your workouts with RepDog." />
+  <meta property="og:image" content="https://www.repdog.fit/images/logo.png" />
+  <meta property="og:url" content="https://www.repdog.fit" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Meta -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="RepDog | Workout Tracker" />
+  <meta name="twitter:description" content="Track your workouts and reach your goals with RepDog." />
+  <meta name="twitter:image" content="https://www.repdog.fit/images/Twitter.png" />
+
+  <!-- Favicon -->
+   <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
+
 <style>
 body {
   margin: 0;
@@ -731,6 +753,10 @@ Email: privacy@repdog.fit
     </div>
   </div>
  
+<footer style="text-align: center; padding: 20px;">
+  <a href="mailto:topdog@repdog.fit" style="color: #fff;">Contact Us</a>
+</footer>
+
   <script>
   document.addEventListener("DOMContentLoaded", () => {
 
@@ -988,30 +1014,19 @@ closeForgotPasswordModal.addEventListener("click", () => {
 
 // Handle submit
 submitForgotPassword.addEventListener("click", async () => {
-  const usernameOrEmail = document.getElementById("forgot-identifier").value.trim();
+  const email = document.getElementById("forgot-identifier").value.trim();
 
-  if (!usernameOrEmail) {
-    alert("Please enter your username or email.");
-    return;
-  }
+if (!email) {
+  alert("Please enter your email.");
+  return;
+}
 
-  try {
-    const response = await fetch("/forgot-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ usernameOrEmail }),
-    });
-
-    const resultText = await response.text();
-    alert(resultText);
-    forgotPasswordModal.style.display = "none";
-    document.body.style.overflow = "";
-  } catch (err) {
-    console.error("Forgot password error:", err);
-    alert("There was an error. Please try again.");
-  }
+const response = await fetch("/forgot-password", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ email }),
 });
  
 // Fetch and display recent workouts
