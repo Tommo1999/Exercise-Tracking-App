@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 
 const app = express();
 
@@ -83,43 +84,30 @@ app.post('/signup', async (req, res) => {
 
 //forgot passsword logic
 
-    app.post('/forgot-password', async (req, res) => {
-      const { usernameOrEmail } = req.body;
-      const user = await usersCollection.findOne({
-        $or: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
-      });
-      if (!user) return res.send('User not found');
-      const resetToken = crypto.randomBytes(20).toString('hex');
-      const resetLink = `http://localhost:${PORT}/reset-password/${resetToken}`;
-      await usersCollection.updateOne(
-        { _id: user._id },
-        { $set: { resetToken, resetTokenExpiration: Date.now() + 3600000 } }
-      );
-      const mailOptions = {
-        from: process.env.EMAIL,
-        to: user.email,
-        subject: 'Password Reset',
-        text: `Click to reset your password: ${resetLink}`,
-      };
-      transporter.sendMail(mailOptions);
-      res.send('Password reset link has been sent');
-    });
+   const defaultClient = SibApiV3Sdk.ApiClient.instance;
+const apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
 
-    app.post('/reset-password/:token', async (req, res) => {
-      const { token } = req.params;
-      const { password } = req.body;
-      const user = await usersCollection.findOne({
-        resetToken: token,
-        resetTokenExpiration: { $gt: Date.now() },
-      });
-      if (!user) return res.send('Token is invalid or expired');
-      const hashedPassword = await bcrypt.hash(password, 12);
-      await usersCollection.updateOne(
-        { _id: user._id },
-        { $set: { password: hashedPassword, resetToken: null, resetTokenExpiration: null } }
-      );
-      res.send('Password reset successfully');
-    });
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  const resetLink = `https://www.repdog.fit/reset-password?email=${encodeURIComponent(email)}`;
+
+  const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+  const sendSmtpEmail = {
+    to: [{ email }],
+    sender: { name: "RepDog", email: "topdog@repdog.fit" },
+    subject: "Reset Your Password",
+    htmlContent: `<p>Click the link below to reset your password:</p><a href="${resetLink}">${resetLink}</a>`
+  };
+
+  try {
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
+    res.status(200).send("Password reset email sent.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Failed to send email.");
+  }
+});
 
 
 // add workout data to Mongo
@@ -130,7 +118,7 @@ app.post('/signup', async (req, res) => {
         workout,
         date,
         exercises,
-        progressYourLifts,
+        progressSinceLastSession,
         workoutRating,
         additionalNotes,
         cardio
@@ -158,14 +146,14 @@ app.post('/signup', async (req, res) => {
           date,
           exercises: exercises.map(ex => ({
             name: ex.name,
-            progressNextWorkout: ex.progressNextWorkout,
+            planToProgressNextSession: ex.planToProgressNextSession,
             weightUnit: ex.weightUnit || 'kg',
             sets: ex.sets.map(set => ({
               weight: Number(set.weight),
               reps: Number(set.reps)
             }))
           })),
-          progressYourLifts,
+          progressSinceLastSession,
           workoutRating,
           additionalNotes,
           cardio,
@@ -201,7 +189,7 @@ app.post('/signup', async (req, res) => {
  
     app.put('/update-workout/:id', async (req, res) => {
       const { id } = req.params;
-      const { workout, date, exercises, progressYourLifts, workoutRating, additionalNotes, cardio } = req.body;
+      const { workout, date, exercises, progressSinceLastSession, workoutRating, additionalNotes, cardio } = req.body;
 
       if (!workout || !date || !Array.isArray(exercises) || exercises.length === 0) {
         return res.status(400).json({ message: 'Invalid workout data' });
@@ -224,14 +212,14 @@ app.post('/signup', async (req, res) => {
           date,
           exercises: exercises.map(ex => ({
             name: ex.name,
-            progressNextWorkout: ex.progressNextWorkout,
+            planToProgressNextSession: ex.planToProgressNextSession,
             weightUnit: ex.weightUnit || 'kg',
             sets: ex.sets.map(set => ({
               weight: Number(set.weight),
               reps: Number(set.reps)
             }))
           })),
-          progressYourLifts,
+          progressSinceLastSession,
           workoutRating,
           additionalNotes,
           cardio,
