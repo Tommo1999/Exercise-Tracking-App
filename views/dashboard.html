@@ -720,7 +720,6 @@ Email: privacy@repdog.fit
 
 </div>
 
-
       <!-- New questions under the workout table -->
       <div class="question">
         <label>Progress since last session? (Yes/No)</label>
@@ -730,8 +729,6 @@ Email: privacy@repdog.fit
         </select>
       </div>
 
- 
-    
       <div class="question">
         <label>How do you feel the workout went? (1-10)</label>
         <input type="number" min="1" max="10" />
@@ -779,7 +776,7 @@ const username = localStorage.getItem("username");
     const closeModal = document.getElementById("close-workout-modal");
     const addExerciseRowBtn = document.getElementById("add-exercise-row-btn");
     const exerciseRowsContainer = document.getElementById("exercise-rows");
- 
+
     const recentWorkoutsList = document.getElementById("recent-workouts-list");
     const noWorkoutsMessage = document.getElementById("no-workouts");
 
@@ -1014,10 +1011,10 @@ closeForgotPasswordModal.addEventListener("click", () => {
 
 // Handle submit
 submitForgotPassword.addEventListener("click", async () => {
-  const email = document.getElementById("forgot-identifier").value.trim();
+  const usernameOrEmail = document.getElementById("forgot-identifier").value.trim();
 
-  if (!email) {
-    alert("Please enter your email.");
+  if (!usernameOrEmail) {
+    alert("Please enter your username or email.");
     return;
   }
 
@@ -1027,7 +1024,7 @@ submitForgotPassword.addEventListener("click", async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ usernameOrEmail }),
     });
 
     const resultText = await response.text();
@@ -1039,7 +1036,7 @@ submitForgotPassword.addEventListener("click", async () => {
     alert("There was an error. Please try again.");
   }
 });
- 
+
 // Fetch and display recent workouts
 function loadRecentWorkouts() {
   const username = localStorage.getItem("username"); // fresh value
@@ -1086,7 +1083,7 @@ function loadRecentWorkouts() {
       console.error("Failed to load workouts:", err);
     });
 }
- 
+
    function showWorkoutDetails(workout) {
 
 // Convert date string to UK format
@@ -1196,7 +1193,7 @@ console.log("Workout ID:", workout.id);
   workoutDetailsModal.style.display = "block";
   document.body.style.overflow = "hidden";
 }
- 
+
 
 // Save workout
 document.getElementById("save-workout-btn").addEventListener("click", () => {
@@ -1266,7 +1263,7 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
     });
 });
 
- 
+
  function resetWorkoutForm() {
   // Clear basic input fields
   document.getElementById("workout-name").value = "";
@@ -1274,7 +1271,7 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
   document.querySelectorAll(".question select").forEach(select => select.value = "");
   document.querySelectorAll(".question input[type='number']").forEach(input => input.value = "");
   document.querySelectorAll(".question textarea").forEach(textarea => textarea.value = "");
-  
+
   // ✅ Reset all checkboxes to unchecked
   document.querySelectorAll(".question input[type='checkbox']").forEach(checkbox => checkbox.checked = false);
 
@@ -1304,17 +1301,18 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
       modal.style.display = "none";
       document.body.style.overflow = "";
     });
- 
+
     window.addEventListener("click", (event) => {
       if (event.target === modal) {
         modal.style.display = "none";
         document.body.style.overflow = "";
       }
     });
- 
+
     // Auto-load recent workouts on page load
     loadRecentWorkouts();
- 
+  });
+
 const exerciseRowsContainer = document.getElementById("exercise-rows");
 const addExerciseBtn = document.getElementById("add-exercise-btn");
 const resetFormBtn = document.getElementById("reset-form-btn");
@@ -1407,6 +1405,5 @@ workoutSearchInput.addEventListener("input", () => {
 });
 
   </script>
- 
+
   </body>
-  </html>
