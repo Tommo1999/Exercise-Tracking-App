@@ -512,8 +512,8 @@ thead tr:first-child th:nth-child(2) {
   <div class="modal-content">
     <span class="close" id="close-forgot-password-modal">&times;</span>
     <h2>Forgot Password</h2>
-    <p>Enter your email or username, and we'll send you a password reset link.</p>
-    <input type="text" id="forgot-identifier" placeholder="Email or Username" required />
+    <p>Enter your email and we'll send you a password reset link.</p>
+    <input type="email" id="forgot-identifier" placeholder="Enter your email" required />
     <button id="submit-forgot-password" class="btn">Send Reset Link</button>
   </div>
 </div>
@@ -1013,7 +1013,7 @@ closeForgotPasswordModal.addEventListener("click", () => {
 submitForgotPassword.addEventListener("click", async () => {
   const usernameOrEmail = document.getElementById("forgot-identifier").value.trim();
 
-  if (!usernameOrEmail) {
+  if (!email) {
     alert("Please enter your username or email.");
     return;
   }
@@ -1024,7 +1024,7 @@ submitForgotPassword.addEventListener("click", async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ usernameOrEmail }),
+      body: JSON.stringify({ email }),
     });
 
     const resultText = await response.text();
