@@ -1107,7 +1107,7 @@ function loadRecentWorkouts() {
       ${workout.exercises.map(exercise => `
         <li>
           <strong>${exercise.name}</strong>
-          <p> Progress Next Workout: ${exercise.progressNextWorkout ? 'Yes' : 'No'}</p>
+          <p> Plant to progress next session: ${exercise.planToProgressNextSession ? 'Yes' : 'No'}</p>
           <ul>
             ${exercise.sets.map(set => `
               <li>Weight: ${set.weight} ${exercise.weightUnit} | Reps: ${set.reps}</li>
@@ -1116,7 +1116,7 @@ function loadRecentWorkouts() {
         </li>
       `).join("")}
     </ul>
-    <p>Progress Your Lifts: ${workout.progressYourLifts}</p>
+    <p>Progress since last session: ${workout.progressSinceLastSession}</p>
     <p>Rating: ${workout.workoutRating}</p>
     <h3>Notes:</h3>
     <p>${workout.additionalNotes}</p>
