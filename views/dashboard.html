@@ -1011,7 +1011,7 @@ closeForgotPasswordModal.addEventListener("click", () => {
 
 // Handle submit
 submitForgotPassword.addEventListener("click", async () => {
-  const usernameOrEmail = document.getElementById("forgot-identifier").value.trim();
+  const email = document.getElementById("forgot-identifier").value.trim();
 
   if (!email) {
     alert("Please enter your username or email.");
