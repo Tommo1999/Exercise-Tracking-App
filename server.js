@@ -86,7 +86,7 @@ app.post('/signup', async (req, res) => {
 
    const defaultClient = SibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = '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';
+apiKey.apiKey = process.env.BREVO_API_KEY;
 
 app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
