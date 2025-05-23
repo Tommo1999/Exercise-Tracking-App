@@ -219,7 +219,7 @@ app.post('/forgot-password', async (req, res) => {
               reps: Number(set.reps)
             }))
           })),
-          progressSinceLastSession,,
+          progressSinceLastSession,
           workoutRating,
           additionalNotes,
           cardio,
