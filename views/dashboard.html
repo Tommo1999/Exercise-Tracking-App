@@ -1016,17 +1016,28 @@ closeForgotPasswordModal.addEventListener("click", () => {
 submitForgotPassword.addEventListener("click", async () => {
   const email = document.getElementById("forgot-identifier").value.trim();
 
-if (!email) {
-  alert("Please enter your email.");
-  return;
-}
+  if (!email) {
+    alert("Please enter your email.");
+    return;
+  }
 
-const response = await fetch("/forgot-password", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ email }),
+  try {
+    const response = await fetch("/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const resultText = await response.text();
+    alert(resultText);
+    forgotPasswordModal.style.display = "none";
+    document.body.style.overflow = "";
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    alert("There was an error. Please try again.");
+  }
 });
  
 // Fetch and display recent workouts
