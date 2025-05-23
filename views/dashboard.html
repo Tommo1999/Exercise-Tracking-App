@@ -24,7 +24,7 @@
   <meta name="twitter:image" content="https://www.repdog.fit/images/Twitter.png" />
 
   <!-- Favicon -->
-   <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
+   <link rel="icon" href="/images/repdog_favicon.ico" type="image/x-icon" />
 
 <style>
 body {
@@ -1116,7 +1116,9 @@ function loadRecentWorkouts() {
         </li>
       `).join("")}
     </ul>
-    <h3>Progress since last session?: ${workout.progressSinceLastSession || ""}</h3>
+<h3>Progress since last session?: ${
+  workout.progressSinceLastSession === true ? "Yes" : "No"
+}</h3>
     <h3>Rating: ${workout.workoutRating}</h3>
     <h3>Notes:</h3>
     <p>${workout.additionalNotes}</p>
