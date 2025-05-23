@@ -1098,7 +1098,7 @@ function loadRecentWorkouts() {
   const workoutDetailsModal = document.getElementById("workout-details-modal");
   const workoutDetailsContent = document.getElementById("workout-details-content");
 
-  // Build the modal content, starting with the close button
+  // Create workout modal 
   const workoutDetails = `
     <span class="close" id="close-workout-details-modal">&times;</span>
     <h2> ${ukFormattedDate}: ${workout.workout}</h2>
@@ -1116,8 +1116,8 @@ function loadRecentWorkouts() {
         </li>
       `).join("")}
     </ul>
-    <p>Progress since last session: ${workout.progressSinceLastSession}</p>
-    <p>Rating: ${workout.workoutRating}</p>
+    <h3>Progress since last session?: ${workout.progressSinceLastSession || ""}</h3>
+    <h3>Rating: ${workout.workoutRating}</h3>
     <h3>Notes:</h3>
     <p>${workout.additionalNotes}</p>
     <h3>Cardio:</h3>
