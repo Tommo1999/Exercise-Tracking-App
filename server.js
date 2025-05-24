@@ -44,9 +44,9 @@ MongoClient.connect(MONGO_URI)
       res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
     });
 
-   app.get('/reset-password', (req, res) => {
-   res.sendFile(__dirname + '/public/reset-password.html');
-   });
+  app.get('/reset-password', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'reset-password.html'));
+});
 
 //signup logic
 app.post('/signup', async (req, res) => {
