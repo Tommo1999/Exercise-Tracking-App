@@ -7,6 +7,8 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const SibApiV3Sdk = require('sib-api-v3-sdk');
+const crypto = require('crypto');
+const User = require("./models/User"); // Adjust path to your User model
 
 const app = express();
 
@@ -86,16 +88,24 @@ app.post('/signup', async (req, res) => {
       res.status(200).json({ success: true, message: 'Login successful', username: user.username });
     });
 
+//forgot password logic
 
-//forgot passsword logic
-
-   const defaultClient = SibApiV3Sdk.ApiClient.instance;
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = process.env.BREVO_API_KEY;
 
 app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
-  const resetLink = `https://www.repdog.fit/reset-password?email=${encodeURIComponent(email)}`;
+
+  const user = await User.findOne({ email });
+  if (!user) return res.status(400).send("User not found.");
+
+  const token = crypto.randomBytes(32).toString("hex");
+  user.resetToken = token;
+  user.resetTokenExpires = Date.now() + 3600000; // 1 hour
+  await user.save();
+
+  const resetLink = `https://www.repdog.fit/reset-password?token=${encodeURIComponent(token)}`;
 
   const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
   const sendSmtpEmail = {
@@ -114,7 +124,6 @@ app.post('/forgot-password', async (req, res) => {
   }
 });
 
-// Reset password form submission
 app.post('/reset-password', async (req, res) => {
   const { token, newPassword } = req.body;
 
@@ -123,7 +132,11 @@ app.post('/reset-password', async (req, res) => {
   }
 
   try {
-    const user = await findUserByResetToken(token); // You need to implement this
+    const user = await User.findOne({
+      resetToken: token,
+      resetTokenExpires: { $gt: Date.now() }
+    });
+
     if (!user) return res.status(400).send("Invalid or expired token.");
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
