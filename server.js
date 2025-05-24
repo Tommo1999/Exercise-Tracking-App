@@ -7,7 +7,6 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const SibApiV3Sdk = require('sib-api-v3-sdk');
-const crypto = require('crypto');
 const User = require("./models/User"); // Adjust path to your User model
 
 const app = express();
