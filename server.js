@@ -7,7 +7,6 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const SibApiV3Sdk = require('sib-api-v3-sdk');
-const User = require("./models/User"); // Adjust path to your User model
 
 const app = express();
 
@@ -96,13 +95,16 @@ apiKey.apiKey = process.env.BREVO_API_KEY;
 app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await usersCollection.findOne({ email: email.toLowerCase() });
   if (!user) return res.status(400).send("User not found.");
 
   const token = crypto.randomBytes(32).toString("hex");
-  user.resetToken = token;
-  user.resetTokenExpires = Date.now() + 3600000; // 1 hour
-  await user.save();
+  const resetTokenExpires = Date.now() + 3600000; // 1 hour
+
+  await usersCollection.updateOne(
+    { email: email.toLowerCase() },
+    { $set: { resetToken: token, resetTokenExpires } }
+  );
 
   const resetLink = `https://www.repdog.fit/reset-password?token=${encodeURIComponent(token)}`;
 
@@ -130,26 +132,26 @@ app.post('/reset-password', async (req, res) => {
     return res.status(400).send("Missing token or password.");
   }
 
-  try {
-    const user = await User.findOne({
-      resetToken: token,
-      resetTokenExpires: { $gt: Date.now() }
-    });
+  const user = await usersCollection.findOne({
+    resetToken: token,
+    resetTokenExpires: { $gt: Date.now() }
+  });
 
-    if (!user) return res.status(400).send("Invalid or expired token.");
+  if (!user) return res.status(400).send("Invalid or expired token.");
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    user.resetToken = null;
-    user.resetTokenExpires = null;
-    await user.save();
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    res.send("Password successfully reset.");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error.");
-  }
+  await usersCollection.updateOne(
+    { _id: user._id },
+    {
+      $set: { password: hashedPassword },
+      $unset: { resetToken: "", resetTokenExpires: "" }
+    }
+  );
+
+  res.send("Password successfully reset.");
 });
+
 
 
 // add workout data to Mongo
