@@ -125,6 +125,8 @@ app.post('/forgot-password', async (req, res) => {
   }
 });
 
+//reset password logic
+
 app.post('/reset-password', async (req, res) => {
   const { token, newPassword } = req.body;
 
