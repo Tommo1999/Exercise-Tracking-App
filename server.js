@@ -43,6 +43,11 @@ MongoClient.connect(MONGO_URI)
     app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
     });
+
+  app.get('/reset-password', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'reset-password.html'));
+});
+
 //signup logic
 app.post('/signup', async (req, res) => {
   const { username, email, password, marketingConsent } = req.body;
@@ -81,16 +86,27 @@ app.post('/signup', async (req, res) => {
       res.status(200).json({ success: true, message: 'Login successful', username: user.username });
     });
 
+//forgot password logic
 
-//forgot passsword logic
-
-   const defaultClient = SibApiV3Sdk.ApiClient.instance;
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = process.env.BREVO_API_KEY;
 
 app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
-  const resetLink = `https://www.repdog.fit/reset-password?email=${encodeURIComponent(email)}`;
+
+  const user = await usersCollection.findOne({ email: email.toLowerCase() });
+  if (!user) return res.status(400).send("User not found.");
+
+  const token = crypto.randomBytes(32).toString("hex");
+  const resetTokenExpires = Date.now() + 3600000; // 1 hour
+
+  await usersCollection.updateOne(
+    { email: email.toLowerCase() },
+    { $set: { resetToken: token, resetTokenExpires } }
+  );
+
+  const resetLink = `https://www.repdog.fit/reset-password?token=${encodeURIComponent(token)}`;
 
   const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
   const sendSmtpEmail = {
@@ -108,6 +124,36 @@ app.post('/forgot-password', async (req, res) => {
     res.status(500).send("Failed to send email.");
   }
 });
+
+//reset password logic
+
+app.post('/reset-password', async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).send("Missing token or password.");
+  }
+
+  const user = await usersCollection.findOne({
+    resetToken: token,
+    resetTokenExpires: { $gt: Date.now() }
+  });
+
+  if (!user) return res.status(400).send("Invalid or expired token.");
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await usersCollection.updateOne(
+    { _id: user._id },
+    {
+      $set: { password: hashedPassword },
+      $unset: { resetToken: "", resetTokenExpires: "" }
+    }
+  );
+
+  res.send("Password successfully reset.");
+});
+
 
 
 // add workout data to Mongo
