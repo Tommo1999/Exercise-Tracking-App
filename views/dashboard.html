@@ -1266,6 +1266,35 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
     });
 });
 
+document.getElementById("delete-workout-btn").addEventListener("click", () => {
+  const confirmed = confirm("Are you sure you want to delete this workout?");
+  if (!confirmed) return;
+
+  const workoutId = modal.dataset.editingWorkoutId;
+
+  if (!workoutId) {
+    alert("No workout ID found.");
+    return;
+  }
+
+  fetch(`/delete-workout/${workoutId}`, {
+    method: "DELETE",
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to delete workout");
+      return res.json();
+    })
+    .then(data => {
+      alert("Workout deleted successfully!");
+      document.getElementById("workout-details-modal").style.display = "none";
+      document.body.style.overflow = "";
+      loadRecentWorkouts(); // Refresh the list
+    })
+    .catch(err => {
+      console.error("Delete error:", err);
+      alert("Failed to delete workout.");
+    });
+});
 
  function resetWorkoutForm() {
   // Clear basic input fields
