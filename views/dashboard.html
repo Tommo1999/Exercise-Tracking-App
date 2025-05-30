@@ -1128,6 +1128,7 @@ function loadRecentWorkouts() {
 
   // Inject content
   document.getElementById("workout-details-body").innerHTML = workoutDetails;
+  document.getElementById("delete-workout-btn").dataset.workoutId = workout.id || workout._id;
 
 // Attach the Edit button click event
 document.getElementById("edit-workout-btn").addEventListener("click", () => {
@@ -1266,11 +1267,13 @@ document.getElementById("save-workout-btn").addEventListener("click", () => {
     });
 });
 
+//delete workout logic
+
 document.getElementById("delete-workout-btn").addEventListener("click", () => {
   const confirmed = confirm("Are you sure you want to delete this workout?");
   if (!confirmed) return;
 
-  const workoutId = modal.dataset.editingWorkoutId;
+  const workoutId = document.getElementById("delete-workout-btn").dataset.workoutId;
 
   if (!workoutId) {
     alert("No workout ID found.");
