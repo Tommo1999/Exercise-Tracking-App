@@ -10,6 +10,27 @@ A simple and convenient app for logging your workouts and exercise routines at t
 
 📊 View summaries of past workouts
 
-✔️ Simple, clean interface
+✔️ Clean and simple HTML/CSS interface
 
-💾 Data stored locally or via your chosen backend (depending on your setup)
+💾 Persistent data storage with MongoDB
+
+🔧 Node.js backend for API and data handling
+
+🛠️ Tech Stack
+Frontend
+
+HTML
+
+CSS
+
+Backend
+
+Node.js
+
+Express.js 
+
+JavaScript
+
+Database
+
+MongoDB
