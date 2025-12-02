@@ -17,6 +17,7 @@ A simple and convenient app for logging your workouts and exercise routines at t
 🔧 Node.js backend for API and data handling
 
 🛠️ Tech Stack
+
 Frontend
 
 HTML
